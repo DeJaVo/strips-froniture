@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BusinessLogic
 {
-    class Rotate
+    public class Rotate
     {
     }
 }
