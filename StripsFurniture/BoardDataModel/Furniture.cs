@@ -9,18 +9,14 @@ namespace BoardDataModel
 
     public class Furniture
     {
-        internal static int id=0;
         private readonly Rectangle furnitureDescription;
-        public Furniture(Rectangle rec)
+        public Furniture(Rectangle rec,int id)
         {
             furnitureDescription = rec;
-            id++;
+            ID = id;
         }
-        
-        public int Id 
-        {
-            get { return id; }
-        }
+
+        public int ID { get; set;}
 
         public Rectangle Description
         {
