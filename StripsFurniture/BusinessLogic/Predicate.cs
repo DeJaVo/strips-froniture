@@ -19,33 +19,35 @@ namespace BusinessLogic
     /// </summary>
     public class Predicate
     {
-        public Predicate(PredType PT)
-        {
-            predType = PT;
-        }
-
         private PredType predType;
 
+        public Predicate(PredType pt)
+        {
+            predType = pt;
+        }
     }
 
     public class PClean : Predicate
     {
+        private IList<Rectangle> rectList;
+
         public PClean(IList<Rectangle> predRectList) : base(PredType.Clean)
         {
             rectList = predRectList;
         }    
-        private IList<Rectangle> rectList;
     }
 
     public class PLocation : Predicate
     {
-        public PLocation(int id, Rectangle predRect) : base(PredType.Clean)
+        private int furnitureId;
+        private Rectangle rect;
+
+        public PLocation(int id, Rectangle predRect)
+            : base(PredType.Clean)
         {
             furnitureId = id;
             rect = predRect;
         }
 
-        private int furnitureId;
-        private Rectangle rect;
     }
 }
