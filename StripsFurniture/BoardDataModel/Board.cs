@@ -23,9 +23,9 @@ namespace BoardDataModel
         /// </summary>
         public CellType[,] Rooms { get; set; }
 
-        private IList<Furniture> furnitureList; 
+        public IDictionary<Furniture, Rectangle> furnitureDestination;
         
-        private Board()
+        public Board()
         {
             //Vertical Seprated wall
             for (int i = 0; i < 11; i++)
@@ -69,9 +69,12 @@ namespace BoardDataModel
             if (instance.InBounds(furStart) && instance.InBounds(furDest) && instance.IsEmpty(furStart) &&
                 instance.IsEmpty(furDest))
             {
-                //create new furniture, add to furniture list, update board that these cells are allocated
-                var newFurniture = new Furniture(furStart, furnitureList.Count+1);
-                furnitureList.Add(newFurniture);
+                //add test: in case star&end positions of the fur' are in defferent rooms check fur' can pass the door!
+                //create new furniture
+                var newFurniture = new Furniture(furStart, furnitureDestination.Count+1);
+                //add furniture and its end position to the boards' map
+                furnitureDestination.Add(newFurniture,furDest);
+                // change the relevant cell type on the board to allocated
                 AllocateOnBoard(newFurniture);
                 return newFurniture.ID;
             }
