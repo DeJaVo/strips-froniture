@@ -22,6 +22,8 @@ namespace BoardDataModel
         /// Board
         /// </summary>
         public CellType[,] Rooms { get; set; }
+
+        private IList<Furniture> furnitureList; 
         
         private Board()
         {
@@ -57,14 +59,65 @@ namespace BoardDataModel
         }
 
         /// <summary>
-        /// returns if it is valid to add a furniture at the given start and destination descriptions
+        /// Adds a furniture at the given start and destination descriptions create 
         /// </summary>
         /// <param name="furStart"></param>
         /// <param name="furDest"></param>
-        /// <returns>id of the furniture if the given params are valid else -1</returns>
+        /// <returns>if given params are valid ->creates new furnitre at start position and returns id of the furniture, else -> -1</returns>
         public int CreateFurniture(Rectangle furStart, Rectangle furDest)
         {
-            return 1;
+            if (instance.InBounds(furStart) && instance.InBounds(furDest) && instance.IsEmpty(furStart) &&
+                instance.IsEmpty(furDest))
+            {
+                //create new furniture, add to furniture list, update board that these cells are allocated
+                var newFurniture = new Furniture(furStart, furnitureList.Count+1);
+                furnitureList.Add(newFurniture);
+                AllocateOnBoard(newFurniture);
+                return newFurniture.ID;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// allocates area on board according to the furniture's rect.
+        /// </summary>
+        /// <param name="furniture"></param>
+        private void AllocateOnBoard(Furniture furniture)
+        {            
+            var rect = furniture.Description;
+            int xl = rect.X;
+            int yh = rect.Y;
+            int xh = xl + rect.Width;
+            int yl = yh - rect.Height;
+
+            for (int i = yl; i <= yh; i++)
+            {
+                for (int j = xl; j <= xh; j++)
+                {
+                    instance.Rooms[i,j] = CellType.Allocated;
+                }
+            }   
+        }
+
+        /// <summary>
+        /// deallocates area from boaard according to furniture's rect
+        /// </summary>
+        /// <param name="furniture"></param>
+        private void DeallocateFromBoard(Furniture furniture)
+        {
+            var rect = furniture.Description;
+            int xl = rect.X;
+            int yh = rect.Y;
+            int xh = xl + rect.Width;
+            int yl = yh - rect.Height;
+
+            for (int i = yl; i <= yh; i++)
+            {
+                for (int j = xl; j <= xh; j++)
+                {
+                    instance.Rooms[i, j] = CellType.Empty;
+                }
+            }
         }
 
         /// <summary>
