@@ -25,32 +25,48 @@ namespace BoardDataModel
         public IDictionary<Furniture, Rectangle> furnitureDestination;
         
         /// <summary>
-        /// Board constructor - Need to be implemented correctly
+        /// Board constructor
         /// </summary>
-        public Board()
+        private Board()
         {
-            Rooms = new CellType[10,20];
-            //Vertical Seprated wall
-            for (int i = 0; i < 10; i++)
+            Rooms = new CellType[13,22];
+            //Rooms = new CellType[10, 20];
+
+            for (int i = 0; i < 13; i++)
             {
-                if (((i >= 1) && (i <= 2)) || ((i >= 5) && (i <= 8))) continue;
+                Rooms[i, 0] = CellType.Wall;
+                Rooms[i, 21] = CellType.Wall;
+            }
+
+            for (int j = 0; j < 22; j++)
+            {
+                Rooms[0,j] = CellType.Wall;
+                Rooms[12,j] = CellType.Wall;
+            }
+
+            //Vertical Seprated wall
+            for (int i = 0; i < 13; i++)
+            {
+                if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10))) continue;
                 Rooms[i, 10] = CellType.Wall;
             }
 
             //Horizontal Separted wall
-            for (int j = 11; j < 20; j++)
+            for (int j = 11; j < 22; j++)
             {
-                Rooms[4, j] = CellType.Wall;
+                Rooms[5, j] = CellType.Wall;
             }
 
             //Doors
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 13; i++)
             {
-                if (((i >= 1) && (i <= 2)) || ((i >= 5) && (i <= 8)))
+                if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10)))
                 {
                     Rooms[i, 10] = CellType.Door;
                 }
             }
+
+            furnitureDestination = new Dictionary<Furniture, Rectangle>();
         }
 
         /// <summary>
@@ -71,10 +87,9 @@ namespace BoardDataModel
         /// <returns>if given params are valid ->creates new furnitre at start position and returns id of the furniture, else -> -1</returns>
         public int CreateFurniture(Rectangle furStart, Rectangle furDest)
         {
-            if (instance.InBounds(furStart) && instance.InBounds(furDest) && instance.IsEmpty(furStart) &&
-                instance.IsEmpty(furDest))
+            if (Instance.InBounds(furStart) && Instance.InBounds(furDest) && Instance.IsEmpty(furStart) &&
+                Instance.IsEmpty(furDest) && Instance.IsDestFurValid(furStart, furDest) && Instance.WillPassDoor(furStart, furDest))
             {
-                //add test: in case star&end positions of the fur' are in defferent rooms check fur' can pass the door!
                 //create new furniture
                 var newFurniture = new Furniture(furStart, furnitureDestination.Count+1);
                 //add furniture and its end position to the boards' map
@@ -87,6 +102,71 @@ namespace BoardDataModel
         }
 
         /// <summary>
+        /// Checks if the dimensions of the destination furniture are the same as in the start (consider rotatation)
+        /// </summary>
+        /// <param name="furStart"></param>
+        /// <param name="furDest"></param>
+        /// <returns></returns>
+        private bool IsDestFurValid(Rectangle furStart, Rectangle furDest)
+        {
+            return (((furStart.Width == furDest.Width) && (furStart.Height == furDest.Height)) ||
+                    ((furStart.Width == furDest.Height) && (furStart.Height == furDest.Width)));
+        }
+
+        /// <summary>
+        /// Checks if the furniture needs to pass a door
+        /// if true checks if it wiil be able to pass it
+        /// </summary>
+        /// <param name="furStart"></param>
+        /// <param name="furDest"></param>
+        private bool WillPassDoor(Rectangle furStart, Rectangle furDest)
+        {
+            bool needToPassUpperDoor = false;
+            bool needToPassLowerDoor = false;
+
+            //int furStartRight = furDest.X + furDest.Width;
+            //int furStartBottom = furDest.Y + furDest.Height;
+
+            //int furDestRight = furDest.X + furDest.Width;
+            //int furDestBottom = furDest.Y + furDest.Height;
+            
+            // pass room1 to room 2 or vise versa
+            if (((furStart.X <= 11) && (furDest.X > 11) && (furDest.Y < 5)) ||
+                ((furDest.X <= 11) && (furStart.X > 11) && (furStart.Y < 5)))
+            {
+                needToPassUpperDoor = true;
+            }
+                // pass room 1 to room 3 or vise versa
+            else if (((furStart.X <= 11) && (furDest.X > 11) && (furDest.Y > 5)) ||
+                     ((furDest.X <= 11) && (furStart.X > 11) && (furStart.Y > 5)))
+            {
+                needToPassLowerDoor = true;
+            }
+            // pass room 2 to room 3 or vise versa
+            else if ((furStart.X > 11) && (furDest.X > 11) &&
+                     (((furStart.Y < 5) && (furDest.Y > 5)) ||
+                      ((furDest.Y < 5) && (furStart.Y > 5))))
+            {
+                needToPassUpperDoor = true;
+                needToPassLowerDoor = true;
+            }
+
+            if ((needToPassUpperDoor) &&
+                ((furStart.Width > 2) || (furStart.Height > 2)))
+            {
+                return false;
+            }
+
+            if ((needToPassLowerDoor) &&
+                ((furStart.Width > 4) || (furStart.Height > 4)))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// allocates area on board according to the furniture's rect.
         /// </summary>
         /// <param name="furniture"></param>
@@ -96,11 +176,11 @@ namespace BoardDataModel
             int xl = rect.X;
             int yh = rect.Y;
             int xh = xl + rect.Width;
-            int yl = yh - rect.Height;
+            int yl = yh + rect.Height;
 
-            for (int i = yl; i <= yh; i++)
+            for (int i = yl; i < yh; i++)
             {
-                for (int j = xl; j <= xh; j++)
+                for (int j = xl; j < xh; j++)
                 {
                     instance.Rooms[i,j] = CellType.Allocated;
                 }
@@ -123,7 +203,7 @@ namespace BoardDataModel
             {
                 for (int j = xl; j <= xh; j++)
                 {
-                    instance.Rooms[i, j] = CellType.Empty;
+                    Instance.Rooms[i, j] = CellType.Empty;
                 }
             }
         }
@@ -136,8 +216,6 @@ namespace BoardDataModel
         {
             return false;
         }
-        // stabs for GUI
-
 
         /// <summary>
         /// Checks if given rectangle is an empty slot on Rooms board
@@ -150,11 +228,11 @@ namespace BoardDataModel
             int y = rectangle.Y;
             int width = rectangle.Width;
             int height = rectangle.Height;
-            for (; x < x + height; x++)
+            for (; x < rectangle.X + width; x++)
             {
-                for (; y < y + width; y++)
+                for (; y < rectangle.Y + height; y++)
                 {
-                    if (Rooms[x, y] != CellType.Empty)
+                    if (Rooms[ y,x] != CellType.Empty)
                     {
                         return false;
                     }
@@ -170,7 +248,7 @@ namespace BoardDataModel
         public bool InBounds(Rectangle rectangle)
         {
             //Out of board bounds
-            if (rectangle.X <= 0 || rectangle.Y <= 0 || rectangle.X > 11 || rectangle.Y > 20)
+            if (rectangle.X <= 0 || rectangle.Y <= 0 || rectangle.X > 21 || rectangle.Y > 12)
             {
                 return false;
             }
