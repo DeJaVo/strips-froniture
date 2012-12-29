@@ -52,7 +52,7 @@ namespace Heuristics
             {
                 //use smart heuristic for ordering the pLocation predicates;
                 IList<Predicate> orderedPLocation = new List<Predicate>();
-                orderedPLocation = OrderPLocationPredicate(pLocation);
+                orderedPLocation = OrderLocationPredicate(pLocation);
                 //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
                 result = (IList<Predicate>)result.Concat(pClean);
                 result = (IList<Predicate>)result.Concat(orderedPLocation);
@@ -70,7 +70,7 @@ namespace Heuristics
 
         }
 
-        private IList<Predicate> OrderPLocationPredicate(IList<Predicate> pLocation)
+        private IList<Predicate> OrderLocationPredicate(IList<Predicate> pLocation)
         {
             throw new NotImplementedException();
         }
