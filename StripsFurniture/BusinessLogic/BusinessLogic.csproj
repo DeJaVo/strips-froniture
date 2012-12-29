@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Predicate.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -52,6 +51,10 @@
     <ProjectReference Include="..\BoardDataModel\BoardDataModel.csproj">
       <Project>{702ea510-73c1-49ff-b702-c5aba0948c39}</Project>
       <Name>BoardDataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Heuristics\Heuristics.csproj">
+      <Project>{3E3A933F-DBC7-4F91-BC85-D77464584CF7}</Project>
+      <Name>Heuristics</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
