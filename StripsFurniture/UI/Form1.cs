@@ -129,11 +129,18 @@ namespace UI
             if (furId != -1)
             {
                 // draw the furniture start position
-                this.DrawFurniture(furStart,furId);
+                this.DrawFurniture(furStart, furId);
 
                 // enable actions
                 this.runButton.Enabled = true;
                 this.nextStepButton.Enabled = true;
+
+                // clear comboboxes to enter another furniture
+                this.ClearCombos();
+            }
+            else
+            {
+                MessageBox.Show("Invalid input");
             }
         }
 
@@ -191,6 +198,17 @@ namespace UI
             this.runButton.Enabled = false;
             this.nextStepButton.Enabled = false;
             this.operationsStack.Items.Clear();
+            this.ClearCombos();
+
+            board = Board.Instance;
+            pause = false;
+            stripsLogic = null;
+
+            this.BuildBoard();
+        }
+
+        private void ClearCombos()
+        {
             this.furStartXCombo.Text = "";
             this.furStartYCombo.Text = "";
             this.furDestXCombo.Text = "";
@@ -199,14 +217,7 @@ namespace UI
             this.furStartWidthCombo.Text = "";
             this.furDestHeightCombo.Text = "";
             this.furDestWidthCombo.Text = "";
-
-            board = new Board();
-            pause = false;
-            stripsLogic = null;
-
-            this.BuildBoard();
         }
-
         private void pauseButton_Click(object sender, EventArgs e)
         {
             pause = true;
@@ -271,6 +282,24 @@ namespace UI
             }
         }
         #endregion
+
+        private void furStartWidthCombo_TextUpdate(object sender, EventArgs e)
+        {
+            if (furStartHeightCombo.Text != "")
+            {
+                furDestHeightCombo.Text = furStartHeightCombo.Text;
+                furDestWidthCombo.Text = furStartWidthCombo.Text;
+            }
+        }
+
+        private void furStartHeightCombo_TextUpdate(object sender, EventArgs e)
+        {
+            if (furStartWidthCombo.Text != "")
+            {
+                furDestHeightCombo.Text = furStartHeightCombo.Text;
+                furDestWidthCombo.Text = furStartWidthCombo.Text;
+            }
+        }
 
     }
 }
