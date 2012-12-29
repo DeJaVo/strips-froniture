@@ -1,26 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using BoardDataModel;
 
 namespace BusinessLogic
 {
+    /// <summary>
+    /// Rotation 90° to the right - ClockWise
+    /// Rotation 90° to the left - CounterClockWise
+    /// </summary>
     public enum RotationDirection
     {
         ClockWise,
         CounterClockWise
     }
 
+    /// <summary>
+    /// Horizontal - (---------)
+    ///
+    ///             |
+    ///             |
+    /// vertical   -|
+    ///             |
+    ///             |
+    /// </summary>
     public enum Orientation
     {
         Horizontal,
         Vertical
     }
+
+    /// <summary>
+    /// Rotate class
+    /// </summary>
     public class Rotate :Operation
     {
         private readonly Board board = Board.Instance;
+
+        
+
         /// <summary>
         /// returns direction
         /// </summary>
@@ -41,8 +58,6 @@ namespace BusinessLogic
         {
             int width = furniture.Description.Width;
             int height = furniture.Description.Height;
-            int x = furniture.Description.X;
-            int y = furniture.Description.Y;
             Rectangle temp1, temp2;
             Orientation orientation = width > height ? Orientation.Horizontal : Orientation.Vertical;
             CheckRotateByDirection(furniture, direction, orientation, out temp1, out temp2);
@@ -73,20 +88,22 @@ namespace BusinessLogic
             int x = furniture.Description.X;
             int y = furniture.Description.Y;
             int value = orientation == Orientation.Horizontal ? width : height;
+            Rectangle rec1 = new Rectangle(), rec2 = new Rectangle();
+           
             switch (direction)
             {
                     case RotationDirection.ClockWise:
                     {
                         if (orientation == Orientation.Horizontal)
                         {
-                            temp1 = new Rectangle(x - (value) / 2, y + (value) / 2, value / 2,
+                            rec1 = new Rectangle(x - (value) / 2, y + (value) / 2, value / 2,
                                                       (int)Math.Ceiling((double)value / 2));
-                            temp2 = new Rectangle(x + 1, y +(int)Math.Ceiling((double)value / 2), value / 2, (int)Math.Ceiling((double)value / 2));
+                            rec2 = new Rectangle(x + 1, y + (int)Math.Ceiling((double)value / 2), value / 2, (int)Math.Ceiling((double)value / 2));
                         }
                         else if (orientation == Orientation.Vertical)
                         {
-                            temp1 = new Rectangle(x+1, y - (value) / 2, (int)Math.Ceiling((double)value / 2), (value / 2));
-                            temp2 = new Rectangle(x + (int)Math.Ceiling((double)value / 2), y + width,
+                            rec1 = new Rectangle(x + 1, y - (value) / 2, (int)Math.Ceiling((double)value / 2), (value / 2));
+                            rec2 = new Rectangle(x + (int)Math.Ceiling((double)value / 2), y + width,
                                                       (int)Math.Ceiling((double)value / 2), (value) / 2);
                         }
                         break;
@@ -95,22 +112,57 @@ namespace BusinessLogic
                     {
                         if (orientation == Orientation.Horizontal)
                         {
-                            temp1 = new Rectangle(x - (value)/2, y + (value)/2, value/2,
+                            rec1 = new Rectangle(x - (value)/2, y + (value)/2, value/2,
                                                       (int) Math.Ceiling((double) value/2));
-                            temp2 = new Rectangle(x + 1, y, value/2, (int) Math.Ceiling((double) value/2));
+                            rec2 = new Rectangle(x + 1, y, value/2, (int) Math.Ceiling((double) value/2));
                         }
                         else if(orientation==Orientation.Vertical)
                         {
-                            temp1 = new Rectangle(x, y - (value)/2, (int) Math.Ceiling((double) value/2), (value/2));
-                            temp2 = new Rectangle(x + (int) Math.Ceiling((double) value/2), y + width,
+                            rec1 = new Rectangle(x, y - (value)/2, (int) Math.Ceiling((double) value/2), (value/2));
+                            rec2 = new Rectangle(x + (int) Math.Ceiling((double) value/2), y + width,
                                                       (int) Math.Ceiling((double) value/2), (value)/2);
                         }
                         break;
                     }
             }
 
-            temp1 = new Rectangle();
-            temp2 = new Rectangle();
+            temp1 = rec1;
+            temp2 = rec2;
+        }
+        /// <summary>
+        /// Execute rotation
+        /// </summary>
+        /// <param name="furniture"></param>
+        public override void Execute(Furniture furniture)
+        {
+            int width = furniture.Description.Width;
+            int height = furniture.Description.Height;
+            int x = furniture.Description.X;
+            int y = furniture.Description.Y;
+            Orientation orientation = width > height ? Orientation.Horizontal : Orientation.Vertical;
+            int value = orientation == Orientation.Horizontal ? width : height;
+            var rec1 = new Rectangle();
+            if (IsValidRotate(furniture, this.RotationDirection))
+            {
+                switch (orientation)
+                {
+                    case Orientation.Horizontal:
+                        {
+                            rec1 = new Rectangle(x - (value) / 2, y + (value) / 2, width,height);
+                            break;
+                        }
+                    case Orientation.Vertical:
+                        {
+                            rec1 = new Rectangle(x + (value) / 2, y - (value) / 2, width, height);
+                            break;
+                        }
+                        
+                }
+                board.DeallocateFromBoard(furniture);
+                var newFurniture = new Furniture(rec1, furniture.ID);
+                board.AllocateOnBoard(newFurniture);
+
+            }
         }
     }
 }

@@ -65,6 +65,7 @@ namespace BusinessLogic
         /// <returns></returns>
         public Operation GetNextOperation()
         {
+            
             return new Operation();
         }
 
