@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace BoardDataModel
@@ -23,29 +19,36 @@ namespace BoardDataModel
         /// </summary>
         public CellType[,] Rooms { get; set; }
 
+        /// <summary>
+        /// List of furnitures
+        /// </summary>
         public IDictionary<Furniture, Rectangle> furnitureDestination;
         
+        /// <summary>
+        /// Board constructor - Need to be implemented correctly
+        /// </summary>
         public Board()
         {
+            Rooms = new CellType[10,20];
             //Vertical Seprated wall
-            for (int i = 0; i < 11; i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10))) continue;
-                Rooms[i, 11] = CellType.Wall;
+                if (((i >= 1) && (i <= 2)) || ((i >= 5) && (i <= 8))) continue;
+                Rooms[i, 10] = CellType.Wall;
             }
 
             //Horizontal Separted wall
-            for (int j = 12; j < 20; j++)
+            for (int j = 11; j < 20; j++)
             {
-                Rooms[5, j] = CellType.Wall;
+                Rooms[4, j] = CellType.Wall;
             }
 
             //Doors
-            for (int i = 0; i < 11; i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10)))
+                if (((i >= 1) && (i <= 2)) || ((i >= 5) && (i <= 8)))
                 {
-                    Rooms[i, 11] = CellType.Door;
+                    Rooms[i, 10] = CellType.Door;
                 }
             }
         }
@@ -58,6 +61,8 @@ namespace BoardDataModel
             get { return instance ?? (instance = new Board()); }
         }
 
+        //Talk with Sheira about this implemenation.
+        //My point of view - only create a new furniture than the calling env. will call the allocateOnBoard function.
         /// <summary>
         /// Adds a furniture at the given start and destination descriptions create 
         /// </summary>
@@ -85,7 +90,7 @@ namespace BoardDataModel
         /// allocates area on board according to the furniture's rect.
         /// </summary>
         /// <param name="furniture"></param>
-        private void AllocateOnBoard(Furniture furniture)
+        public void AllocateOnBoard(Furniture furniture)
         {            
             var rect = furniture.Description;
             int xl = rect.X;
@@ -106,7 +111,7 @@ namespace BoardDataModel
         /// deallocates area from boaard according to furniture's rect
         /// </summary>
         /// <param name="furniture"></param>
-        private void DeallocateFromBoard(Furniture furniture)
+        public void DeallocateFromBoard(Furniture furniture)
         {
             var rect = furniture.Description;
             int xl = rect.X;
@@ -133,16 +138,6 @@ namespace BoardDataModel
         }
         // stabs for GUI
 
-        /// <summary>
-        /// Swap width and height
-        /// </summary>
-        public void SwapWidthHeight(Furniture furniture)
-        {
-            Rectangle rectangle = furniture.Description;
-            var tempWidth = rectangle.Width;
-            rectangle.Width = rectangle.Height;
-            rectangle.Height = tempWidth;
-        }
 
         /// <summary>
         /// Checks if given rectangle is an empty slot on Rooms board

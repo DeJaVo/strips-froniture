@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using BoardDataModel;
+
 namespace BusinessLogic
 {
     public enum OperationType
@@ -14,40 +14,17 @@ namespace BusinessLogic
 
     public class Operation
     {
-        private int furnitureId;
-        private Furniture furnitureOldData;
-        private Furniture furnitureNewData;
-        private OperationType operationType;
+        public  OperationType OperationType { get; set; }
+        public  int FurnitureId { get; set; }
+        public  Furniture FurnitureOldData { get; set; }
+        public  Furniture FurnitureNewData { get; set; }
 
-        public OperationType OperationType
+        /// <summary>
+        ///  Execute 
+        ///  </summary>
+        public virtual void Execute(Furniture furniture)
         {
-            get
-            {
-                return operationType;
-            }
-        }
-        public int FurnitureId
-        {
-            get
-            {
-                return furnitureId;
-            }
-        }
-
-        public Furniture FurnitureOldData
-        {
-            get
-            {
-                return furnitureOldData;
-            }
-        }
-
-        public Furniture FurnitureNewData
-        {
-            get
-            {
-                return furnitureNewData;
-            }
+            throw new NotImplementedException();
         }
     }
 }
