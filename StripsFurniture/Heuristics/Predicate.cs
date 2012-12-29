@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace BusinessLogic
+namespace Heuristics
 {
     public enum PredType
     {
@@ -19,7 +19,7 @@ namespace BusinessLogic
     /// </summary>
     public class Predicate
     {
-        private PredType predType;
+        public PredType predType;
 
         public Predicate(PredType pt)
         {
