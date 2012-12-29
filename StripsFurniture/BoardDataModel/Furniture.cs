@@ -70,7 +70,7 @@ namespace BoardDataModel
             }
 
             // Return true if the fields match:
-            return a.Description.X == b.Description .X && a.Description .Y == b.Description .Y && a.Id == b.Id;
+            return a.Description.X == b.Description .X && a.Description .Y == b.Description .Y && a.ID == b.ID;
         }
 
         /// <summary>
