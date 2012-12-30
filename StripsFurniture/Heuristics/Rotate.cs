@@ -135,6 +135,12 @@ namespace Heuristics
         /// <param name="furniture"></param>
         public override void Execute(Furniture furniture)
         {
+            this.FurnitureOldData =
+                new Rectangle(furniture.Description.X,
+                              furniture.Description.Y,
+                              furniture.Description.Width,
+                              furniture.Description.Height);
+
             int width = furniture.Description.Width;
             int height = furniture.Description.Height;
             int x = furniture.Description.X;
@@ -159,9 +165,10 @@ namespace Heuristics
                         
                 }
                 board.DeallocateFromBoard(furniture);
-                var newFurniture = new Furniture(rec1, furniture.ID);
-                board.AllocateOnBoard(newFurniture);
+                furniture.Description = rec1;
+                board.AllocateOnBoard(furniture);
 
+                this.FurnitureNewData = rec1;
             }
         }
     }
