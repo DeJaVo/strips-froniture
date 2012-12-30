@@ -5,7 +5,7 @@ namespace BoardDataModel
 
     public class Furniture
     {
-        private readonly Rectangle furnitureDescription;
+        private Rectangle furnitureDescription;
         public Furniture(Rectangle rec,int id)
         {
             furnitureDescription = rec;
@@ -19,6 +19,10 @@ namespace BoardDataModel
             get
             {
                 return furnitureDescription;
+            }
+            set
+            {
+                furnitureDescription = value;
             }
         }
 

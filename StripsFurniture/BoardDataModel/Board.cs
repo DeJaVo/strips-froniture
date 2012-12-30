@@ -10,7 +10,6 @@ namespace BoardDataModel
         {
             Empty,
             Allocated,
-            Door,
             Wall
         }
 
@@ -75,7 +74,7 @@ namespace BoardDataModel
             {
                 if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10)))
                 {
-                    Rooms[i, 10] = CellType.Door;
+                    Rooms[i, 10] = CellType.Empty;// Door;
                 }
             }
 
@@ -273,6 +272,24 @@ namespace BoardDataModel
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Checks if given rectangle is an empty slot on Rooms board
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
+        public bool IsFurnitureInRectangle(int furId,Rectangle rectangle)
+        {
+            foreach (Furniture currFur in furnitureDestination.Keys)
+            {
+                if ((furId == currFur.ID) &&
+                    (rectangle.Equals(currFur.Description)))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

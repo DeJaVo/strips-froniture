@@ -95,6 +95,10 @@
       <Project>{bdddb072-67aa-4446-8fc3-ee814f707552}</Project>
       <Name>BusinessLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Heuristics\Heuristics.csproj">
+      <Project>{3e3a933f-dbc7-4f91-bc85-d77464584cf7}</Project>
+      <Name>Heuristics</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

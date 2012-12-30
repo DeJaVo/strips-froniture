@@ -8,8 +8,10 @@ using BoardDataModel;
 
 namespace Heuristics
 {
-    public class Heuristic
+    public interface IHeuristic
     {
-        
+        IList<StackItem> OrderPredicates(IList<StackItem> predicates);
+
+        Operation ChooseOperation(Board board,Predicate predicateToSatisfy);
     }
 }

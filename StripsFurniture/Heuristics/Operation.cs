@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using BoardDataModel;
 
-namespace BusinessLogic
+namespace Heuristics
 {
     public enum OperationType
     {
