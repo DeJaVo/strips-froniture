@@ -8,28 +8,33 @@ using System.Drawing;
 namespace BusinessLogic
 {
     public class Strips
-    {     
-        public IList<Operation> operationList= new List<Operation>();
-        
+    {
+        //public IList<Operation> operationList= new List<Operation>();
+        private Stack<IList<StackItem>> stack = new Stack<IList<StackItem>>();
+        private Board board;
+
         //maybe hold a list with all final operations- usefull for get next operation. 
         public Strips(Board board)
         {
-            var stack = new Stack<IList<StackItem>>();
-            var goalState = FindGoalStatePredicates(board);
+            this.board = board;
 
+            var goalState = FindGoalStatePredicates(board);
             stack.Push(goalState);
-            while (stack.Count>0)
-            {
-                StripsStep(stack, board);
-            }                     
+
+            //while (stack.Count>0)
+            //{
+            //    StripsStep(stack, board);
+            //}                     
         }
 
         /// <summary>
         /// strips step
+        /// returns the executed operation.
+        /// if there was no Operation in the current step returns null
         /// </summary>
         /// <param name="stack"></param>
         /// <param name="board"></param>
-        public void StripsStep(Stack<IList<StackItem>> stack, Board board)
+        public Operation StripsStep()
         {          
             var item = stack.Peek();
             bool satisfied = false;
@@ -41,7 +46,7 @@ namespace BusinessLogic
             if (allArePredicateKind && satisfied)
             {
                 stack.Pop();
-                return;
+                return null;
             }
             //case 2- goals is unsatisfied and conjunctive- order goals by heuristic and add each one to stack 
             if (allArePredicateKind && item.Count > 1 && !satisfied)
@@ -53,7 +58,7 @@ namespace BusinessLogic
                     tempList.Add(pred);
                     stack.Push(tempList);
                 }
-                return;
+                return null;
             }
             // case 3- goal is a single unsatisfied goal- choose an operation push it and all is pre condtiotions
             if (allArePredicateKind && item.Count == 1 && !satisfied)
@@ -61,14 +66,19 @@ namespace BusinessLogic
                 StackItem operation = ChooseOperation(board, item);
                 stack.Push((IList<StackItem>)operation);
                 // push it's pre condition into stack- need to implement a function that calculates precondition per move
+
+                return null;
             }
             //case 4- item is an operation- pop it, execute it and add to operation list
             if (item.Count==1 && item.First() is Operation)
             {
                 var operation = stack.Pop().First();
                 //operation.execute
-                operationList.Add((Operation)operation);
+                //operationList.Add((Operation)operation);
+                return (Operation)operation;
             }
+
+            return null;
         }      
 
         /// <summary>
@@ -77,7 +87,13 @@ namespace BusinessLogic
         /// <returns></returns>
         public Operation GetNextOperation()
         {
-            return new Operation();
+            Operation opToPerform = null;
+            while ((stack.Count > 0) && (opToPerform == null))
+            {
+                opToPerform = StripsStep();
+            }
+
+            return opToPerform;
         }
 
         /// <summary>

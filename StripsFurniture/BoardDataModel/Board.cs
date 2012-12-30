@@ -29,7 +29,20 @@ namespace BoardDataModel
         /// </summary>
         private Board()
         {
-            Rooms = new CellType[13,22];
+            this.Reset();
+        }
+
+        /// <summary>
+        /// Board singelton
+        /// </summary>
+        public static Board Instance
+        {
+            get { return instance ?? (instance = new Board()); }
+        }
+
+        public void Reset()
+        {
+            Rooms = new CellType[13, 22];
             //Rooms = new CellType[10, 20];
 
             for (int i = 0; i < 13; i++)
@@ -40,8 +53,8 @@ namespace BoardDataModel
 
             for (int j = 0; j < 22; j++)
             {
-                Rooms[0,j] = CellType.Wall;
-                Rooms[12,j] = CellType.Wall;
+                Rooms[0, j] = CellType.Wall;
+                Rooms[12, j] = CellType.Wall;
             }
 
             //Vertical Seprated wall
@@ -67,14 +80,6 @@ namespace BoardDataModel
             }
 
             furnitureDestination = new Dictionary<Furniture, Rectangle>();
-        }
-
-        /// <summary>
-        /// Board singelton
-        /// </summary>
-        public static Board Instance
-        {
-            get { return instance ?? (instance = new Board()); }
         }
 
         //Talk with Sheira about this implemenation.
@@ -232,7 +237,18 @@ namespace BoardDataModel
         /// <returns></returns>
         public bool IsBoardSolved()
         {
-            return false;
+            foreach (Furniture currFur in furnitureDestination.Keys)
+            {
+                Rectangle furDestDescription = furnitureDestination[currFur];
+                if ((currFur.Description.X != furDestDescription.X) ||
+                    (currFur.Description.Y != furDestDescription.Y) ||
+                    (((currFur.Description.Width != furDestDescription.Width) || (currFur.Description.Height != furDestDescription.Height)) &&
+                     ((currFur.Description.Height == furDestDescription.Width) || (currFur.Description.Width != furDestDescription.Height))))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>

@@ -6,7 +6,6 @@ using System.Text;
 
 using BoardDataModel;
 
-
 namespace Heuristics
 {
     public class Heuristic

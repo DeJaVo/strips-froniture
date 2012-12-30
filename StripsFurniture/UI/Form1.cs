@@ -147,11 +147,13 @@ namespace UI
 
         private void runButton_Click(object sender, EventArgs e)
         {
+            this.createFurnitureButton.Enabled = false;
             this.PerformOperation(true);
         }
 
         private void nextStepButton_Click(object sender, EventArgs e)
         {
+            this.createFurnitureButton.Enabled = false;
             this.PerformOperation(false);
         }
 
@@ -184,6 +186,8 @@ namespace UI
             }
 
             MessageBox.Show("Solved!!!");
+            this.runButton.Enabled = false;
+            this.nextStepButton.Enabled = false;
         }
 
         private void ExecuteOperation(Operation currOp)
@@ -198,10 +202,12 @@ namespace UI
             this.pauseButton.Enabled = false;
             this.runButton.Enabled = false;
             this.nextStepButton.Enabled = false;
+            this.createFurnitureButton.Enabled = true;
             this.operationsStack.Items.Clear();
             this.ClearCombos();
 
             board = Board.Instance;
+            board.Reset();
             pause = false;
             stripsLogic = null;
 
