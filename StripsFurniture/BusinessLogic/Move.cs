@@ -96,6 +96,7 @@ namespace BusinessLogic
             {
                 board.DeallocateFromBoard(furniture);
                 board.AllocateOnBoard(newFurniture);
+                //should we update the new/old 
             }
         }
     }
