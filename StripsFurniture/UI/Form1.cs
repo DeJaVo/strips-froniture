@@ -129,7 +129,8 @@ namespace UI
             if (furId != -1)
             {
                 // draw the furniture start position
-                this.DrawFurniture(furStart, furId);
+                this.DrawFurniture(furDest, furId, true);
+                this.DrawFurniture(furStart, furId,false);
 
                 // enable actions
                 this.runButton.Enabled = true;
@@ -187,8 +188,8 @@ namespace UI
 
         private void ExecuteOperation(Operation currOp)
         {
-            this.DeleteFurniture(currOp.FurnitureOldData.Description);
-            this.DrawFurniture(currOp.FurnitureNewData.Description,currOp.FurnitureId);
+            this.DeleteFurniture(currOp.FurnitureOldData.Description,false);
+            this.DrawFurniture(currOp.FurnitureNewData.Description,currOp.FurnitureId,false);
             operationsStack.Items.Add(currOp.ToString());
         }
 
@@ -225,34 +226,54 @@ namespace UI
         }
 
         #region UI utils
-        private void DrawFurniture(Rectangle rec,int id)
+        private void DrawFurniture(Rectangle rec,int id,bool isDest)
         {
             for (int i = rec.Top; i < rec.Top + rec.Height; i++)
             {
                 for (int j = rec.Left; j < rec.Left + rec.Width; j++)
                 {
-                    using (Font myFont = new Font("Arial", 20))
-                    {
-                        squares[i, j].BorderStyle = BorderStyle.Fixed3D;
-                        squares[i, j].BackColor = Color.LightGreen;
-                        squares[i, j].Text = id.ToString();
-                        squares[i, j].TextAlign = ContentAlignment.MiddleCenter;
-                        squares[i, j].Font = myFont;
-
-                    }
+                    this.DrawCell(i, j, id, isDest);
                 }
             }
         }
 
-        private void DeleteFurniture(Rectangle rec)
+        private void DrawCell(int i, int j, int id, bool isDest)
+        {
+            if (isDest && ((!drawFurnituresDestCheckBox.Checked) || (squares[i, j].BorderStyle != BorderStyle.FixedSingle)))
+                return;
+
+            using (Font myFont = new Font("Arial", 20))
+            {
+                int alpha = isDest ? 20 : 255;
+                BorderStyle style = isDest ? BorderStyle.FixedSingle : BorderStyle.Fixed3D;
+                squares[i, j].BorderStyle = style;
+                squares[i, j].BackColor = Color.FromArgb(alpha, Color.LightGreen);
+                squares[i, j].Text = id.ToString();
+                squares[i, j].TextAlign = ContentAlignment.MiddleCenter;
+                squares[i, j].Font = myFont;
+                squares[i, j].Tag = id;
+            }
+        }
+
+        private void DeleteFurniture(Rectangle rec,bool isDest)
         {
             for (int i = rec.Top; i < rec.Top + rec.Height; i++)
             {
                 for (int j = rec.Left; j < rec.Left + rec.Width; j++)
                 {
+                    if (isDest && (squares[i, j].BorderStyle != BorderStyle.FixedSingle))
+                    {
+                        continue;
+                    }
+
                     squares[i, j].BorderStyle = BorderStyle.FixedSingle;
                     squares[i, j].BackColor = Color.Gray;
                     squares[i, j].Text = "";
+
+                    if ((squares[i, j].Tag != null) && (!isDest))
+                    {
+                        this.DrawCell(i, j, (int)squares[i, j].Tag, true);
+                    }
                 }
             }
         }
@@ -300,6 +321,25 @@ namespace UI
                 furDestWidthCombo.Text = furStartWidthCombo.Text;
             }
         }
+
+        private void drawFurnituresDestCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (drawFurnituresDestCheckBox.Checked)
+            {
+                foreach (Furniture currFur in this.board.furnitureDestination.Keys)
+                {
+                    DrawFurniture(board.furnitureDestination[currFur], currFur.ID, true);
+                }
+            }
+            else
+            {
+                foreach (Rectangle currDest in this.board.furnitureDestination.Values)
+                {
+                    DeleteFurniture(currDest, true);
+                }
+            }
+        }
+
 
     }
 }

@@ -88,7 +88,7 @@ namespace BoardDataModel
         public int CreateFurniture(Rectangle furStart, Rectangle furDest)
         {
             if (Instance.InBounds(furStart) && Instance.InBounds(furDest) && Instance.IsEmpty(furStart) &&
-                Instance.IsEmpty(furDest) && Instance.IsDestFurValid(furStart, furDest) && Instance.WillPassDoor(furStart, furDest))
+                Instance.IsDestNotOverlapps(furDest) && Instance.IsDestFurValid(furStart, furDest) && Instance.WillPassDoor(furStart, furDest))
             {
                 //create new furniture
                 var newFurniture = new Furniture(furStart, furnitureDestination.Count+1);
@@ -99,6 +99,24 @@ namespace BoardDataModel
                 return newFurniture.ID;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Checks if the destination of the furniture doesnt overlapps other furniture destinations
+        /// </summary>
+        /// <param name="furDest"></param>
+        /// <returns></returns>
+        private bool IsDestNotOverlapps(Rectangle furDest)
+        {
+            foreach (Rectangle currFur in this.furnitureDestination.Values)
+            {
+                if (currFur.IntersectsWith(furDest))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
