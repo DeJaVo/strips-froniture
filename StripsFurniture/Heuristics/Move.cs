@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using BoardDataModel;
 
-namespace BusinessLogic
+namespace Heuristics
 {
     /// <summary>
     /// Moving Direction
@@ -34,7 +34,7 @@ namespace BusinessLogic
         /// <param name="furniture"></param>
         /// <param name="newFurniture"></param>
         /// <returns></returns>
-        public bool IsValidMove(Furniture furniture, out Furniture newFurniture)
+        public bool IsValidMove(Furniture furniture)
         {
             //calculate new rectangle
             var newdestRectangle = new Rectangle
@@ -71,18 +71,17 @@ namespace BusinessLogic
             //inbounds
             if (board.InBounds(newdestRectangle))
             {
-                newFurniture = null;
                 return false;
             }
             //isempty
             if (board.IsEmpty(newdestRectangle))
             {
-                newFurniture = null;
                 return false;
             }
 
-            //Create new furniture
-            newFurniture = new Furniture(newdestRectangle, furniture.ID);
+            // update the furniture
+            furniture.Description = newdestRectangle;
+            //newFurniture = new Furniture(newdestRectangle, furniture.ID);
             return true;
         }
 
@@ -91,11 +90,10 @@ namespace BusinessLogic
         /// </summary>
         public override void Execute(Furniture furniture)
         {
-            Furniture newFurniture;
-            if (IsValidMove(furniture, out newFurniture))
+            if (IsValidMove(furniture))
             {
                 board.DeallocateFromBoard(furniture);
-                board.AllocateOnBoard(newFurniture);
+                board.AllocateOnBoard(furniture);
                 //should we update the new/old 
             }
         }

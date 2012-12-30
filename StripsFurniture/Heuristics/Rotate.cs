@@ -2,7 +2,7 @@
 using System.Drawing;
 using BoardDataModel;
 
-namespace BusinessLogic
+namespace Heuristics
 {
     /// <summary>
     /// Rotation 90° to the right - ClockWise

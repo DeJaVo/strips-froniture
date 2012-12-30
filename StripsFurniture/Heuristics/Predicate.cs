@@ -1,13 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace BusinessLogic
+namespace Heuristics
 {
-    public enum PredType
-    {
-        Clean,
-        Location
-    }
 
     /// <summary>
     /// predicates are from 2 types: 
@@ -16,33 +11,28 @@ namespace BusinessLogic
     /// </summary>
     public class Predicate:StackItem
     {
-        public PredType predType;
-
-        public Predicate(PredType pt)
+        public Predicate()
         {
-            predType = pt;
         }
     }
 
     // derived classes
         public class PClean : Predicate
         {
-            private IList<Rectangle> rectList;
+            public Rectangle cleanRect;
 
-            public PClean(IList<Rectangle> predRectList)
-                : base(PredType.Clean)
+            public PClean(Rectangle predRect)
             {
-                rectList = predRectList;
+                cleanRect = predRect;
             }
         }
 
         public class PLocation : Predicate
         {
-            private int furnitureId;
-            private Rectangle rect;
+            public int furnitureId;
+            public Rectangle rect;
 
             public PLocation(int id, Rectangle predRect)
-                : base(PredType.Clean)
             {
                 furnitureId = id;
                 rect = predRect;

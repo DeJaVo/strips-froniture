@@ -4,6 +4,7 @@ using System.Linq;
 using BoardDataModel;
 using System.Drawing;
 
+using Heuristics;
 
 namespace BusinessLogic
 {
@@ -12,6 +13,7 @@ namespace BusinessLogic
         //public IList<Operation> operationList= new List<Operation>();
         private Stack<IList<StackItem>> stack = new Stack<IList<StackItem>>();
         private Board board;
+        private IHeuristic heuristics;
 
         //maybe hold a list with all final operations- usefull for get next operation. 
         public Strips(Board board)
@@ -21,6 +23,7 @@ namespace BusinessLogic
             var goalState = FindGoalStatePredicates(board);
             stack.Push(goalState);
 
+            heuristics = new Heuristic();
             //while (stack.Count>0)
             //{
             //    StripsStep(stack, board);
@@ -51,7 +54,7 @@ namespace BusinessLogic
             //case 2- goals is unsatisfied and conjunctive- order goals by heuristic and add each one to stack 
             if (allArePredicateKind && item.Count > 1 && !satisfied)
             {
-                IList<StackItem> ordered =OrderPredicates(item);
+                IList<StackItem> ordered = heuristics.OrderPredicates(item);
                 foreach (var pred in ordered)
                 {
                     var tempList = new List<StackItem>();
@@ -60,12 +63,12 @@ namespace BusinessLogic
                 }
                 return null;
             }
-            // case 3- goal is a single unsatisfied goal- choose an operation push it and all is pre condtiotions
+            // case 3- goal is a single unsatisfied goal- choose an operation push it and all its pre condtiotions
             if (allArePredicateKind && item.Count == 1 && !satisfied)
             {
-                StackItem operation = ChooseOperation(board, item);
+                StackItem operation = heuristics.ChooseOperation(board, (Predicate)item[0]);
                 stack.Push((IList<StackItem>)operation);
-                // push it's pre condition into stack- need to implement a function that calculates precondition per move
+                // TODO : push it's pre condition into stack- need to implement a function that calculates precondition per move
 
                 return null;
             }
@@ -73,7 +76,9 @@ namespace BusinessLogic
             if (item.Count==1 && item.First() is Operation)
             {
                 var operation = stack.Pop().First();
-                //operation.execute
+
+                // TODO : impl
+                ((Operation)operation).Execute(null);
                 //operationList.Add((Operation)operation);
                 return (Operation)operation;
             }
@@ -111,99 +116,40 @@ namespace BusinessLogic
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private bool GoalsAreSatisfied(IList<StackItem> item)
+        private bool GoalsAreSatisfied(IList<StackItem> predicatesToSatisfy)
         {
-           //need to be implemented- for now returns true
+            foreach (StackItem currItem in predicatesToSatisfy)
+            {
+                Predicate currPredicateToSatisfy = (Predicate)currItem;
+                if (currPredicateToSatisfy is PClean)
+                {
+                    if (!this.CheckClean(currPredicateToSatisfy as PClean))
+                    {
+                        return false;
+                    }
+                }
+                    // PLocation
+                else
+                {
+                    if (this.CheckLocation(currPredicateToSatisfy as PLocation))
+                    {
+                        return false;
+                    }
+                }
+            }
             return true;
         }
-        private StackItem ChooseOperation(Board board, IList<StackItem> item)
+
+        private bool CheckClean(PClean cleanPredicate)
         {
-            //need to be implemented 
-            
-            Move move= new Move();
-            move.FurnitureId = 1;
-            move.OperationType = OperationType.Move;
-            move.Direction=Direction.Right;
-            move.HowManyStepsInDirection = 1;
-            //move.FurnitureNewData ???
-            //move.FurnitureOldData ??
-
-            throw new System.NotImplementedException();
+            return this.board.IsEmpty(cleanPredicate.cleanRect);
         }
 
-
-          /// <summary>
-        /// function that orders a predicates list        
-        /// </summary>
-        /// <param name="predicates"></param>
-        /// <returns> a list of ordered predicates- the first predicate is the first one to fulfill</returns>
-        public IList<StackItem> OrderPredicates(IList<StackItem> predicates)
+        private bool CheckLocation(PLocation locationPredicate)
         {
-            // split list to sub list according to predicates type
-            // if there is more than one location pred - call smart heuristic
-            //else- put 'clean' predicates before 'location' predicates
-
-            //split list to sub list- assuming there are 2 kind
-            IList<StackItem> result = new List<StackItem>();
-            IList<StackItem> pClean = new List<StackItem>();
-            IList<StackItem> pLocation = new List<StackItem>();
-            IList<IList<StackItem>> kindsOfPredicates = SplitPredicatesPerKind(predicates);
-            pClean = kindsOfPredicates.First();
-            pLocation = kindsOfPredicates.Last();
-
-            if (pLocation.Count > 1)
-            {
-                //use smart heuristic for ordering the pLocation predicates;
-                IList<StackItem> orderedPLocation = new List<StackItem>();
-                orderedPLocation = OrderLocationPredicate(pLocation);
-                //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
-                result = (IList<StackItem>)result.Concat(pClean);
-                result = (IList<StackItem>)result.Concat(orderedPLocation);
-                return result;
-
-            }
-            else
-            {
-                //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
-                result = (IList<StackItem>)result.Concat(pClean);
-                result = (IList<StackItem>)result.Concat(pLocation);
-                return result;
-            }
-
-
+            return this.board.IsFurnitureInRectangle(locationPredicate.furnitureId, locationPredicate.rect);
         }
-
-       public IList<StackItem> OrderLocationPredicate(IList<StackItem> pLocation)
-        {
-           //need to be implemented
-
-            return pLocation;
-        }
-
-        /// <summary>
-        /// splits a list of predicates into 2 sub list - first is clean pred, second is location pred;
-        /// </summary>
-        /// <param name="predicates"></param>
-        /// <returns></returns>
-        public IList<IList<StackItem>> SplitPredicatesPerKind(IList<StackItem> predicates)
-        {            
-            IList<StackItem> pClean = new List<StackItem>();
-            IList<StackItem> pLocation = new List<StackItem>();
-
-            foreach (var predicate in predicates)
-            {                
-                if (predicate is PClean)
-                    pClean.Add(predicate);
-                if (predicate is PLocation)
-                    pLocation.Add(predicate);
-            }
-            IList<IList<StackItem>> predicatePerKind = new List<IList<StackItem>>();
-            predicatePerKind.Add(pClean);
-            predicatePerKind.Add(pLocation);
-
-            return predicatePerKind;
-        }
-
+        
         /// <summary>
         /// finds all predicates that describe the goal positions
         /// </summary>
@@ -214,11 +160,8 @@ namespace BusinessLogic
             IList<StackItem> predicates = new List<StackItem>();
             foreach (KeyValuePair<Furniture, Rectangle> pair in board.furnitureDestination)
             {
-                IList<Rectangle> rectangels = new List<Rectangle>();
                 int id = pair.Key.ID;
-                Rectangle rect = pair.Value;
-                rectangels.Add(rect);
-                Predicate newPredicate = new PClean(rectangels);
+                Predicate newPredicate = new PLocation(id,pair.Value);
                 predicates.Add(newPredicate);
             }
             return predicates;

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 using BoardDataModel;
 using BusinessLogic;
+using Heuristics;
 namespace UI
 {
     public partial class Form1 : Form
