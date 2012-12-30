@@ -12,7 +12,7 @@ namespace BusinessLogic
         Rotate
     }
 
-    public class Operation
+    public class Operation:StackItem
     {
         public  OperationType OperationType { get; set; }
         public  int FurnitureId { get; set; }
