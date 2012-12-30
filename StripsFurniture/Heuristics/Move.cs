@@ -90,11 +90,18 @@ namespace Heuristics
         /// </summary>
         public override void Execute(Furniture furniture)
         {
+            this.FurnitureOldData = 
+                new Rectangle(furniture.Description.X,
+                              furniture.Description.Y,
+                              furniture.Description.Width,
+                              furniture.Description.Height);
             if (IsValidMove(furniture))
             {
                 board.DeallocateFromBoard(furniture);
                 board.AllocateOnBoard(furniture);
-                //should we update the new/old 
+
+                this.FurnitureNewData = furniture.Description;
+                
             }
         }
     }

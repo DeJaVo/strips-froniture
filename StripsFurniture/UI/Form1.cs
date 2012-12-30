@@ -193,8 +193,8 @@ namespace UI
 
         private void ExecuteOperation(Operation currOp)
         {
-            this.DeleteFurniture(currOp.FurnitureOldData.Description,false);
-            this.DrawFurniture(currOp.FurnitureNewData.Description,currOp.FurnitureId,false);
+            this.DeleteFurniture(currOp.FurnitureOldData,false);
+            this.DrawFurniture(currOp.FurnitureNewData,currOp.FurnitureId,false);
             operationsStack.Items.Add(currOp.ToString());
         }
 

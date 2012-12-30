@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 using BoardDataModel;
 
@@ -17,8 +18,8 @@ namespace Heuristics
     {
         public  OperationType OperationType { get; set; }
         public  int FurnitureId { get; set; }
-        public  Furniture FurnitureOldData { get; set; }
-        public  Furniture FurnitureNewData { get; set; }
+        public  Rectangle FurnitureOldData { get; set; }
+        public  Rectangle FurnitureNewData { get; set; }
 
         /// <summary>
         ///  Execute 

@@ -67,7 +67,7 @@ namespace BusinessLogic
             if (allArePredicateKind && item.Count == 1 && !satisfied)
             {
                 StackItem operation = heuristics.ChooseOperation(board, (Predicate)item[0]);
-                stack.Push((IList<StackItem>)operation);
+                stack.Push(new List<StackItem>{operation});
                 // TODO : push it's pre condition into stack- need to implement a function that calculates precondition per move
 
                 return null;
@@ -131,7 +131,7 @@ namespace BusinessLogic
                     // PLocation
                 else
                 {
-                    if (this.CheckLocation(currPredicateToSatisfy as PLocation))
+                    if (!this.CheckLocation(currPredicateToSatisfy as PLocation))
                     {
                         return false;
                     }

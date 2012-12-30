@@ -91,10 +91,7 @@ namespace Heuristics
             move.OperationType = OperationType.Move;
             move.Direction = Direction.Right;
             move.HowManyStepsInDirection = 1;
-            //move.FurnitureNewData ???
-            //move.FurnitureOldData ??
-
-            throw new System.NotImplementedException();
+            return move;
         }
     }
 }
