@@ -35,8 +35,18 @@ namespace Heuristics
     public class Rotate :Operation
     {
         private readonly Board board = Board.Instance;
-
-        
+        private readonly Orientation orientation;
+        /// <summary>
+        /// C'tor
+        /// </summary>
+        /// <param name="currentFurniture"></param>
+        public Rotate(Furniture currentFurniture)
+        {
+            this.Furniture = currentFurniture;
+            int width = furniture.Description.Width;
+            int height = furniture.Description.Height;
+            orientation = width > height ? Orientation.Horizontal : Orientation.Vertical;
+        }
 
         /// <summary>
         /// returns direction
@@ -51,16 +61,13 @@ namespace Heuristics
         /// <summary>
         /// Check if Rotation is valid
         /// </summary>
-        /// <param name="furniture"></param>
-        /// <param name="direction"></param>
         /// <returns></returns>
-        public bool IsValidRotate(Furniture furniture,RotationDirection direction)
+        public bool IsValidRotate()
         {
-            int width = furniture.Description.Width;
-            int height = furniture.Description.Height;
+
             Rectangle temp1, temp2;
-            Orientation orientation = width > height ? Orientation.Horizontal : Orientation.Vertical;
-            CheckRotateByDirection(furniture, direction, orientation, out temp1, out temp2);
+            
+            CheckRotateByDirection(out temp1, out temp2);
             if (!(board.InBounds(temp1) || board.InBounds(temp2)))
             {
                 return false;
@@ -75,13 +82,10 @@ namespace Heuristics
         /// <summary>
         ///  Check rotation rectangles for bounds and empty.
         /// </summary>
-        /// <param name="furniture"></param>
-        /// <param name="direction"></param>
-        /// <param name="orientation"></param>
         /// <param name="temp1"></param>
         /// <param name="temp2"></param>
         /// <returns></returns>
-        public void CheckRotateByDirection(Furniture furniture,RotationDirection direction,Orientation orientation,out Rectangle temp1, out Rectangle temp2)
+        public void CheckRotateByDirection(out Rectangle temp1, out Rectangle temp2)
         {
             int width = furniture.Description.Width;
             int height = furniture.Description.Height;
@@ -89,8 +93,8 @@ namespace Heuristics
             int y = furniture.Description.Y;
             int value = orientation == Orientation.Horizontal ? width : height;
             Rectangle rec1 = new Rectangle(), rec2 = new Rectangle();
-           
-            switch (direction)
+
+            switch (RotationDirection)
             {
                     case RotationDirection.ClockWise:
                     {
@@ -129,11 +133,11 @@ namespace Heuristics
             temp1 = rec1;
             temp2 = rec2;
         }
+
         /// <summary>
         /// Execute rotation
         /// </summary>
-        /// <param name="furniture"></param>
-        public override void Execute(Furniture furniture)
+        public override void Execute()
         {
             this.FurnitureOldData =
                 new Rectangle(furniture.Description.X,
@@ -145,10 +149,9 @@ namespace Heuristics
             int height = furniture.Description.Height;
             int x = furniture.Description.X;
             int y = furniture.Description.Y;
-            Orientation orientation = width > height ? Orientation.Horizontal : Orientation.Vertical;
             int value = orientation == Orientation.Horizontal ? width : height;
             var rec1 = new Rectangle();
-            if (IsValidRotate(furniture, this.RotationDirection))
+            if (IsValidRotate())
             {
                 switch (orientation)
                 {
