@@ -63,11 +63,15 @@ namespace Heuristics
             return true;
         }
 
-        Rectangle CalculateNewdestRectangle()
+        /// <summary>
+        /// Calculates new destination rectangle
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle CalculateNewdestRectangle()
         {
            var newdestRectangle = new Rectangle();
-           var Width = furniture.Description.Width;
-           var Height = furniture.Description.Height;
+           var width = furniture.Description.Width;
+           var height = furniture.Description.Height;
            var X = furniture.Description.X;
            var Y = furniture.Description.Y;
            switch (Direction)
