@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
+using BoardDataModel;
 namespace Heuristics
 {
 
@@ -29,12 +30,12 @@ namespace Heuristics
 
         public class PLocation : Predicate
         {
-            public int furnitureId;
+            public Furniture furniture;
             public Rectangle rect;
 
-            public PLocation(int id, Rectangle predRect)
+            public PLocation(Furniture fur, Rectangle predRect)
             {
-                furnitureId = id;
+                furniture = fur;
                 rect = predRect;
             }
 
