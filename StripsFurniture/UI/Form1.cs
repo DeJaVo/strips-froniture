@@ -258,7 +258,10 @@ namespace UI
                 squares[i, j].Text = id.ToString();
                 squares[i, j].TextAlign = ContentAlignment.MiddleCenter;
                 squares[i, j].Font = myFont;
-                squares[i, j].Tag = id;
+                if (isDest)
+                {
+                    squares[i, j].Tag = id;
+                }
             }
         }
 
@@ -280,6 +283,10 @@ namespace UI
                     if ((squares[i, j].Tag != null) && (!isDest))
                     {
                         this.DrawCell(i, j, (int)squares[i, j].Tag, true);
+                    }
+                    else
+                    {
+                        squares[i, j].Tag = null;
                     }
                 }
             }
