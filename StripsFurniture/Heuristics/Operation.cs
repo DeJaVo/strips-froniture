@@ -14,7 +14,7 @@ namespace Heuristics
         Rotate
     }
 
-    public class Operation:StackItem
+    public abstract class Operation:StackItem
     {
         public  OperationType OperationType { get; set; }
         public  int FurnitureId { get; set; }
@@ -24,9 +24,6 @@ namespace Heuristics
         /// <summary>
         ///  Execute 
         ///  </summary>
-        public virtual void Execute(Furniture furniture)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Execute(Furniture furniture);
     }
 }
