@@ -86,9 +86,7 @@ namespace Heuristics
         {
             //TODO : need to be implemented 
 
-            Move move = new Move();
-            move.FurnitureId = 1;
-            move.OperationType = OperationType.Move;
+            Move move = new Move(((PLocation)predicateToSatisfy).furniture);
             move.Direction = Direction.Right;
             move.HowManyStepsInDirection = 1;
             return move;

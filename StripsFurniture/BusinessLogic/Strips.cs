@@ -37,7 +37,7 @@ namespace BusinessLogic
         /// </summary>
         /// <param name="stack"></param>
         /// <param name="board"></param>
-        public Operation StripsStep()
+        private Operation StripsStep()
         {          
             var item = stack.Peek();
             bool satisfied = false;
@@ -77,9 +77,7 @@ namespace BusinessLogic
             {
                 var operation = stack.Pop().First();
 
-                // TODO : impl
-                ((Operation)operation).Execute(null);
-                //operationList.Add((Operation)operation);
+                ((Operation)operation).Execute();
                 return (Operation)operation;
             }
 
@@ -147,7 +145,7 @@ namespace BusinessLogic
 
         private bool CheckLocation(PLocation locationPredicate)
         {
-            return this.board.IsFurnitureInRectangle(locationPredicate.furnitureId, locationPredicate.rect);
+            return this.board.IsFurnitureInRectangle(locationPredicate.furniture.ID, locationPredicate.rect);
         }
         
         /// <summary>
@@ -160,8 +158,7 @@ namespace BusinessLogic
             IList<StackItem> predicates = new List<StackItem>();
             foreach (KeyValuePair<Furniture, Rectangle> pair in board.furnitureDestination)
             {
-                int id = pair.Key.ID;
-                Predicate newPredicate = new PLocation(id,pair.Value);
+                Predicate newPredicate = new PLocation(pair.Key, pair.Value);
                 predicates.Add(newPredicate);
             }
             return predicates;
