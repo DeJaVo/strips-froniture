@@ -47,12 +47,12 @@ namespace Heuristics
             Rectangle newdestRectangle = CalculateNewdestRectangle();                       
 
             //inbounds
-            if (board.InBounds(newdestRectangle))
+            if (!board.InBounds(newdestRectangle))
             {
                 return false;
             }
             //isempty
-            if (board.IsEmpty(newdestRectangle))
+            if (!board.IsEmpty(newdestRectangle))
             {
                 return false;
             }
@@ -77,14 +77,14 @@ namespace Heuristics
                         diffRect.X = destRect.X;
                         diffRect.Y = destRect.Y;
                         diffRect.Width = furniture.Description.Width;
-                        diffRect.Height = destRect.X - furniture.Description.X;
+                        diffRect.Height = destRect.Y - furniture.Description.Y;
                         break;
                     }
                 case Direction.Down:
                     {
-                        diffRect.X = furniture.Description.X - furniture.Description.Height;
-                        diffRect.Y = furniture.Description.Y;
-                        diffRect.Height = destRect.Height - (destRect.X - diffRect.X);
+                        diffRect.X = furniture.Description.X;
+                        diffRect.Y = furniture.Description.Y + destRect.Height;
+                        diffRect.Height = destRect.Y - diffRect.Y;
                         diffRect.Width = furniture.Description.Width;
                         break;
                     }
@@ -115,30 +115,30 @@ namespace Heuristics
         public Rectangle CalculateNewdestRectangle()
         {
            var newdestRectangle = new Rectangle();
-           var width = furniture.Description.Width;
-           var height = furniture.Description.Height;
-           var X = furniture.Description.X;
-           var Y = furniture.Description.Y;
+           newdestRectangle.Width = furniture.Description.Width;
+           newdestRectangle.Height = furniture.Description.Height;
+           newdestRectangle.X = furniture.Description.X;
+           newdestRectangle.Y = furniture.Description.Y;
            switch (Direction)
             {
                 case Direction.Down:
                     {
-                        newdestRectangle.Y = Y + HowManyStepsInDirection;
+                        newdestRectangle.Y += HowManyStepsInDirection;
                         break;
                     }
                 case Direction.Up:
                     {
-                        newdestRectangle.Y = Y - HowManyStepsInDirection;
+                        newdestRectangle.Y -= HowManyStepsInDirection;
                         break;
                     }
                 case Direction.Left:
                     {
-                        newdestRectangle.X = X - HowManyStepsInDirection;
+                        newdestRectangle.X -= HowManyStepsInDirection;
                         break;
                     }
                 case Direction.Right:
                     {
-                        newdestRectangle.X = X + HowManyStepsInDirection;
+                        newdestRectangle.X += HowManyStepsInDirection;
                         break;
                     }
             }
