@@ -34,16 +34,16 @@ namespace Heuristics
                 IList<StackItem> orderedPLocation = new List<StackItem>();
                 orderedPLocation = OrderLocationPredicate(pLocation);
                 //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
-                result = (IList<StackItem>)result.Concat(pClean);
-                result = (IList<StackItem>)result.Concat(orderedPLocation);
+                result = (IList<StackItem>)result.Concat(pClean).ToList();
+                result = (IList<StackItem>)result.Concat(orderedPLocation).ToList();
                 return result;
 
             }
             else
             {
                 //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
-                result = (IList<StackItem>)result.Concat(pClean);
-                result = (IList<StackItem>)result.Concat(pLocation);
+                result = (IList<StackItem>)result.Concat(pClean).ToList();
+                result = (IList<StackItem>)result.Concat(pLocation).ToList();
                 return result;
             }
 
@@ -86,10 +86,14 @@ namespace Heuristics
         {
             //TODO : need to be implemented 
 
-            Move move = new Move(((PLocation)predicateToSatisfy).furniture);
-            move.Direction = Direction.Right;
-            move.HowManyStepsInDirection = 1;
-            return move;
+            //Move move = new Move(((PLocation)predicateToSatisfy).furniture);
+            //move.Direction = Direction.Down;
+            //move.HowManyStepsInDirection = 1;
+            //return move;
+
+            Rotate rotate = new Rotate(((PLocation)predicateToSatisfy).furniture);
+            rotate.RotationDirection=RotationDirection.ClockWise;
+            return rotate;
         }
     }
 }
