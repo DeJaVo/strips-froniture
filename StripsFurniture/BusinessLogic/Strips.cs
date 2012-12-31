@@ -66,10 +66,22 @@ namespace BusinessLogic
             // case 3- goal is a single unsatisfied goal- choose an operation push it and all its pre condtiotions
             if (allArePredicateKind && item.Count == 1 && !satisfied)
             {
-                StackItem operation = heuristics.ChooseOperation(board, (Predicate)item[0]);
+                Operation operation = heuristics.ChooseOperation(board, (Predicate)item[0]);
                 stack.Push(new List<StackItem>{operation});
-                // TODO : push it's pre condition into stack- need to implement a function that calculates precondition per move
 
+                // push it's pre condition into stack - need to implement a function that calculates precondition per move
+                if (operation is Move)
+                {
+                    Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();
+                    stack.Push(new List<StackItem>{new PClean(rectToBeClean)});
+                }
+                    // Rotate
+                else
+                {
+                    Rectangle temp1, temp2;
+                    ((Rotate)operation).CheckRotateByDirection(out temp1,out temp2);
+                    stack.Push(new List<StackItem> { new PClean(temp1), new PClean(temp2) });
+                }
                 return null;
             }
             //case 4- item is an operation- pop it, execute it and add to operation list

@@ -19,7 +19,7 @@ namespace Heuristics
         protected Furniture furniture;
         public  Rectangle FurnitureOldData { get; set; }
         public  Rectangle FurnitureNewData { get; set; }
-        public Furniture Furniture { get; set; }
+        public Furniture Furniture { get { return furniture; } set { furniture = value; } }
 
         /// <summary>
         ///  Execute 
