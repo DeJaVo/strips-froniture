@@ -63,10 +63,37 @@ namespace Heuristics
             return true;
         }
 
+
+        public Rectangle CalculateRectDiff()
+        {
+            var destRect = CalculateNewdestRectangle();
+            var diffRect = new Rectangle();
+            
+
+            switch (Direction)
+            {
+                    case Direction.Up:
+                    {
+                        diffRect.X = destRect.X;
+                        diffRect.Y = destRect.Y;
+                        diffRect.Width = furniture.Description.Width;
+                        diffRect.Height = destRect.X - furniture.Description.X;
+                        break;                        
+                    }
+                    case Direction.Down:
+                    {
+                        diffRect.X = furniture.Description.X - furniture.Description.Height;
+                        diffRect.Y = furniture.Description.Y;
+                        diffRect.Height = destRect.Height - (destRect.X - diffRect.X);
+                        diffRect.Width = furniture.Description.Width;
+                    }
+            }
+        }
+
         /// <summary>
         /// Calculates new destination rectangle
         /// </summary>
-        /// <returns></returns>
+        /// <returns></returns>      
         public Rectangle CalculateNewdestRectangle()
         {
            var newdestRectangle = new Rectangle();
