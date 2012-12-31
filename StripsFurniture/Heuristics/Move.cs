@@ -44,36 +44,7 @@ namespace Heuristics
         public bool IsValidMove()
         {
             //calculate new rectangle
-            var newdestRectangle = new Rectangle
-                {
-                    Width = furniture.Description.Width,
-                    Height = furniture.Description.Height,
-                    X = furniture.Description.X,
-                    Y = furniture.Description.Y
-                };
-            switch (Direction)
-            {
-                case Direction.Down:
-                    {
-                        newdestRectangle.X = furniture.Description.X + HowManyStepsInDirection;
-                        break;
-                    }
-                case Direction.Up:
-                    {
-                        newdestRectangle.X = furniture.Description.X - HowManyStepsInDirection;
-                        break;
-                    }
-                case Direction.Left:
-                    {
-                        newdestRectangle.Y = furniture.Description.Y - HowManyStepsInDirection;
-                        break;
-                    }
-                case Direction.Right:
-                    {
-                        newdestRectangle.Y = furniture.Description.Y + HowManyStepsInDirection;
-                        break;
-                    }
-            }
+            Rectangle newdestRectangle = CalculateNewdestRectangle();                       
 
             //inbounds
             if (board.InBounds(newdestRectangle))
@@ -90,6 +61,39 @@ namespace Heuristics
             furniture.Description = newdestRectangle;
             //newFurniture = new Furniture(newdestRectangle, furniture.ID);
             return true;
+        }
+
+        Rectangle CalculateNewdestRectangle()
+        {
+           var newdestRectangle = new Rectangle();
+           var Width = furniture.Description.Width;
+           var Height = furniture.Description.Height;
+           var X = furniture.Description.X;
+           var Y = furniture.Description.Y;
+           switch (Direction)
+            {
+                case Direction.Down:
+                    {
+                        newdestRectangle.X = X + HowManyStepsInDirection;
+                        break;
+                    }
+                case Direction.Up:
+                    {
+                        newdestRectangle.X = X - HowManyStepsInDirection;
+                        break;
+                    }
+                case Direction.Left:
+                    {
+                        newdestRectangle.Y = Y - HowManyStepsInDirection;
+                        break;
+                    }
+                case Direction.Right:
+                    {
+                        newdestRectangle.Y = Y + HowManyStepsInDirection;
+                        break;
+                    }
+            }
+            return newdestRectangle;
         }
 
         /// <summary>
