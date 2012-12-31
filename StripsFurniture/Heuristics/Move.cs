@@ -19,6 +19,15 @@ namespace Heuristics
         private readonly Board board = Board.Instance;
 
         /// <summary>
+        /// C'tor
+        /// </summary>
+        /// <param name="currentFurniture"></param>
+        public Move(Furniture currentFurniture)
+        {
+            this.Furniture = currentFurniture;
+        }
+
+        /// <summary>
         /// returns direction
         /// </summary>
         public Direction Direction { get; set; }
@@ -31,10 +40,8 @@ namespace Heuristics
         /// <summary>
         /// Check if move is valid and if it does, create a new furniture in that location
         /// </summary>
-        /// <param name="furniture"></param>
-        /// <param name="newFurniture"></param>
         /// <returns></returns>
-        public bool IsValidMove(Furniture furniture)
+        public bool IsValidMove()
         {
             //calculate new rectangle
             var newdestRectangle = new Rectangle
@@ -88,14 +95,14 @@ namespace Heuristics
         /// <summary>
         /// Execute move
         /// </summary>
-        public override void Execute(Furniture furniture)
+        public override void Execute()
         {
             this.FurnitureOldData = 
                 new Rectangle(furniture.Description.X,
                               furniture.Description.Y,
                               furniture.Description.Width,
                               furniture.Description.Height);
-            if (IsValidMove(furniture))
+            if (IsValidMove())
             {
                 board.DeallocateFromBoard(furniture);
                 board.AllocateOnBoard(furniture);

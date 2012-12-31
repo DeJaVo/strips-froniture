@@ -275,8 +275,9 @@ namespace BoardDataModel
         }
 
         /// <summary>
-        /// Checks if given rectangle is an empty slot on Rooms board
+        /// Checks if rectangle is in furniture
         /// </summary>
+        /// <param name="furId"></param>
         /// <param name="rectangle"></param>
         /// <returns></returns>
         public bool IsFurnitureInRectangle(int furId,Rectangle rectangle)

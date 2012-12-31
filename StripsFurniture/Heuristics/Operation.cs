@@ -16,14 +16,16 @@ namespace Heuristics
 
     public abstract class Operation:StackItem
     {
+        protected Furniture furniture;
         public  OperationType OperationType { get; set; }
         public  int FurnitureId { get; set; }
         public  Rectangle FurnitureOldData { get; set; }
         public  Rectangle FurnitureNewData { get; set; }
+        public Furniture Furniture { get; set; }
 
         /// <summary>
         ///  Execute 
         ///  </summary>
-        public abstract void Execute(Furniture furniture);
+        public abstract void Execute();
     }
 }
