@@ -72,22 +72,40 @@ namespace Heuristics
 
             switch (Direction)
             {
-                    case Direction.Up:
+                case Direction.Up:
                     {
                         diffRect.X = destRect.X;
                         diffRect.Y = destRect.Y;
                         diffRect.Width = furniture.Description.Width;
                         diffRect.Height = destRect.X - furniture.Description.X;
-                        break;                        
+                        break;
                     }
-                    case Direction.Down:
+                case Direction.Down:
                     {
                         diffRect.X = furniture.Description.X - furniture.Description.Height;
                         diffRect.Y = furniture.Description.Y;
                         diffRect.Height = destRect.Height - (destRect.X - diffRect.X);
                         diffRect.Width = furniture.Description.Width;
+                        break;
+                    }
+                case Direction.Left:
+                    {
+                        diffRect.X = destRect.X;
+                        diffRect.Y = destRect.Y;
+                        diffRect.Width = furniture.Description.X - diffRect.X;
+                        diffRect.Height = furniture.Description.Height;
+                        break;
+                    }
+                case Direction.Right:
+                    {
+                        diffRect.X = furniture.Description.X + furniture.Description.Width;
+                        diffRect.Y = destRect.Y;
+                        diffRect.Height = furniture.Description.Height;
+                        diffRect.Width = destRect.Width -(diffRect.X - destRect.X);
+                        break;
                     }
             }
+            return diffRect;
         }
 
         /// <summary>
