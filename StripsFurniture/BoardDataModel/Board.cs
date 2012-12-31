@@ -219,11 +219,11 @@ namespace BoardDataModel
             int xl = rect.X;
             int yh = rect.Y;
             int xh = xl + rect.Width;
-            int yl = yh - rect.Height;
+            int yl = yh + rect.Height;
 
-            for (int i = yl; i <= yh; i++)
+            for (int i = yl; i < yh; i++)
             {
-                for (int j = xl; j <= xh; j++)
+                for (int j = xl; j < xh; j++)
                 {
                     Instance.Rooms[i, j] = CellType.Empty;
                 }
