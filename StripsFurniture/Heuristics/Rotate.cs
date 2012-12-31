@@ -100,14 +100,14 @@ namespace Heuristics
                     {
                         if (orientation == Orientation.Horizontal)
                         {
-                            rec1 = new Rectangle(x - (value) / 2, y + (value) / 2, value / 2,
+                            rec1 = new Rectangle(y - (value) / 2, x + (value) / 2, value / 2,
                                                       (int)Math.Ceiling((double)value / 2));
-                            rec2 = new Rectangle(x + 1, y + (int)Math.Ceiling((double)value / 2), value / 2, (int)Math.Ceiling((double)value / 2));
+                            rec2 = new Rectangle(y + 1, x + (int)Math.Ceiling((double)value / 2), value / 2, (int)Math.Ceiling((double)value / 2));
                         }
                         else if (orientation == Orientation.Vertical)
                         {
-                            rec1 = new Rectangle(x + 1, y - (value) / 2, (int)Math.Ceiling((double)value / 2), (value / 2));
-                            rec2 = new Rectangle(x + (int)Math.Ceiling((double)value / 2), y + width,
+                            rec1 = new Rectangle(y + 1, x - (value) / 2, (int)Math.Ceiling((double)value / 2), (value / 2));
+                            rec2 = new Rectangle(y + (int)Math.Ceiling((double)value / 2), x + width,
                                                       (int)Math.Ceiling((double)value / 2), (value) / 2);
                         }
                         break;
@@ -116,14 +116,14 @@ namespace Heuristics
                     {
                         if (orientation == Orientation.Horizontal)
                         {
-                            rec1 = new Rectangle(x - (value)/2, y + (value)/2, value/2,
+                            rec1 = new Rectangle(y - (value)/2, x + (value)/2, value/2,
                                                       (int) Math.Ceiling((double) value/2));
-                            rec2 = new Rectangle(x + 1, y, value/2, (int) Math.Ceiling((double) value/2));
+                            rec2 = new Rectangle(y + 1, x, value/2, (int) Math.Ceiling((double) value/2));
                         }
                         else if(orientation==Orientation.Vertical)
                         {
-                            rec1 = new Rectangle(x, y - (value)/2, (int) Math.Ceiling((double) value/2), (value/2));
-                            rec2 = new Rectangle(x + (int) Math.Ceiling((double) value/2), y + width,
+                            rec1 = new Rectangle(y, x - (value)/2, (int) Math.Ceiling((double) value/2), (value/2));
+                            rec2 = new Rectangle(y + (int) Math.Ceiling((double) value/2), x + width,
                                                       (int) Math.Ceiling((double) value/2), (value)/2);
                         }
                         break;
@@ -157,12 +157,12 @@ namespace Heuristics
                 {
                     case Orientation.Horizontal:
                         {
-                            rec1 = new Rectangle(x - (value) / 2, y + (value) / 2, width,height);
+                            rec1 = new Rectangle(y - (value) / 2, x + (value) / 2, width,height);
                             break;
                         }
                     case Orientation.Vertical:
                         {
-                            rec1 = new Rectangle(x + (value) / 2, y - (value) / 2, width, height);
+                            rec1 = new Rectangle(y + (value) / 2, x - (value) / 2, width, height);
                             break;
                         }
                         
