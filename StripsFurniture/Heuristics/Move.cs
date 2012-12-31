@@ -105,22 +105,22 @@ namespace Heuristics
             {
                 case Direction.Down:
                     {
-                        newdestRectangle.X = X + HowManyStepsInDirection;
+                        newdestRectangle.Y = Y + HowManyStepsInDirection;
                         break;
                     }
                 case Direction.Up:
                     {
-                        newdestRectangle.X = X - HowManyStepsInDirection;
+                        newdestRectangle.Y = Y - HowManyStepsInDirection;
                         break;
                     }
                 case Direction.Left:
                     {
-                        newdestRectangle.Y = Y - HowManyStepsInDirection;
+                        newdestRectangle.X = X - HowManyStepsInDirection;
                         break;
                     }
                 case Direction.Right:
                     {
-                        newdestRectangle.Y = Y + HowManyStepsInDirection;
+                        newdestRectangle.X = X + HowManyStepsInDirection;
                         break;
                     }
             }
