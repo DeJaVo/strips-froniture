@@ -58,6 +58,11 @@ namespace Heuristics
         /// </summary>
         public int Angle { get; set; }
 
+        public override string ToString()
+        {
+            return "Rotate Furniture " + this.Furniture.ID + " " + this.RotationDirection.ToString();
+        }
+
         /// <summary>
         /// Check if Rotation is valid
         /// </summary>
