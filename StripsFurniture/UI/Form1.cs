@@ -195,7 +195,7 @@ namespace UI
         {
             this.DeleteFurniture(currOp.FurnitureOldData,false);
             this.DrawFurniture(currOp.FurnitureNewData,currOp.Furniture.ID,false);
-            operationsStack.Items.Add(currOp.ToString());
+            operationsStack.Items.Insert(0,currOp.ToString());
         }
 
         private void resetButton_Click(object sender, EventArgs e)
@@ -205,6 +205,7 @@ namespace UI
             this.nextStepButton.Enabled = false;
             this.createFurnitureButton.Enabled = true;
             this.operationsStack.Items.Clear();
+            
             this.ClearCombos();
 
             board = Board.Instance;

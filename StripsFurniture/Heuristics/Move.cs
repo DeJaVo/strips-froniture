@@ -37,6 +37,11 @@ namespace Heuristics
         /// </summary>
         public int HowManyStepsInDirection { get; set; }
 
+        public override string ToString()
+        {
+            return "Move Furniture " + this.Furniture.ID + " In Direction : " + this.Direction.ToString();
+        }
+
         /// <summary>
         /// Check if move is valid and if it does, create a new furniture in that location
         /// </summary>
