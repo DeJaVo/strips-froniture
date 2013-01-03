@@ -556,7 +556,7 @@ namespace Heuristics
             //return move;
 
             Rotate rotate = new Rotate(((PLocation)predicateToSatisfy).furniture);
-            rotate.RotationDirection=RotationDirection.ClockWise;
+            rotate.RotationDirection=RotationDirection.CounterClockWise;
             return rotate;
         }
     }

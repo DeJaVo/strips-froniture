@@ -70,14 +70,14 @@ namespace Heuristics
         public bool IsValidRotate()
         {
 
-            Rectangle temp1, temp2;
+            Rectangle temp1;
             
-            CheckRotateByDirection(out temp1, out temp2);
-            if (!(board.InBounds(temp1) || board.InBounds(temp2)))
+            CheckRotateByDirection(out temp1);
+            if (!(board.InBounds(temp1)))
             {
                 return false;
             }
-            if(!(board.IsEmpty(temp1)||board.IsEmpty(temp2)))
+            if(!(board.IsEmpty(temp1)))
             {
                 return false;
             }
@@ -90,53 +90,43 @@ namespace Heuristics
         /// <param name="temp1"></param>
         /// <param name="temp2"></param>
         /// <returns></returns>
-        public void CheckRotateByDirection(out Rectangle temp1, out Rectangle temp2)
+        public void CheckRotateByDirection(out Rectangle temp1)
         {
             int width = furniture.Description.Width;
             int height = furniture.Description.Height;
             int x = furniture.Description.X;
             int y = furniture.Description.Y;
-            int value = orientation == Orientation.Horizontal ? width : height;
-            Rectangle rec1 = new Rectangle(), rec2 = new Rectangle();
+            var rec1 = new Rectangle();
 
             switch (RotationDirection)
             {
                     case RotationDirection.ClockWise:
                     {
-                        if (orientation == Orientation.Horizontal)
+                        if (orientation == Orientation.Vertical)
                         {
-                            rec1 = new Rectangle(x - (value) / 2, y + (value) / 2, value / 2,
-                                                      (int)Math.Ceiling((double)value / 2));
-                            rec2 = new Rectangle(x + 1, y + (int)Math.Ceiling((double)value / 2), value / 2, (int)Math.Ceiling((double)value / 2));
+                            rec1 = new Rectangle(x - height + 1, y, height - width, height);
                         }
-                        else if (orientation == Orientation.Vertical)
+                        else if (orientation == Orientation.Horizontal)
                         {
-                            rec1 = new Rectangle(x + 1, y - (value) / 2, (int)Math.Ceiling((double)value / 2), (value / 2));
-                            rec2 = new Rectangle(x + (int)Math.Ceiling((double)value / 2), y + width,
-                                                      (int)Math.Ceiling((double)value / 2), (value) / 2);
+                            rec1 = new Rectangle(x, y + width, width, width - height);
                         }
                         break;
                     }
                     case RotationDirection.CounterClockWise:
                     {
-                        if (orientation == Orientation.Horizontal)
+                        if (orientation == Orientation.Vertical)
                         {
-                            rec1 = new Rectangle(x - (value)/2, y + (value)/2, value/2,
-                                                      (int) Math.Ceiling((double) value/2));
-                            rec2 = new Rectangle(x + 1, y, value/2, (int) Math.Ceiling((double) value/2));
+                            rec1 = new Rectangle(x + width, y, height - width, height);
                         }
-                        else if(orientation==Orientation.Vertical)
+                        else if(orientation==Orientation.Horizontal)
                         {
-                            rec1 = new Rectangle(x, y - (value)/2, (int) Math.Ceiling((double) value/2), (value/2));
-                            rec2 = new Rectangle(x + (int) Math.Ceiling((double) value/2), y + width,
-                                                      (int) Math.Ceiling((double) value/2), (value)/2);
+                            rec1 = new Rectangle(x, y - width + 1, width, width - height);
                         }
                         break;
                     }
             }
 
             temp1 = rec1;
-            temp2 = rec2;
         }
 
         /// <summary>
@@ -154,7 +144,6 @@ namespace Heuristics
             int height = furniture.Description.Height;
             int x = furniture.Description.X;
             int y = furniture.Description.Y;
-            int value = orientation == Orientation.Horizontal ? width : height;
             var rec1 = new Rectangle();
             if (IsValidRotate())
             {
@@ -162,12 +151,26 @@ namespace Heuristics
                 {
                     case Orientation.Horizontal:
                         {
-                            rec1 = new Rectangle(x + (int) Math.Floor((double) (value) / 2), y - (int) Math.Floor((double) (value) / 2),height,width);
+                            if (RotationDirection == RotationDirection.ClockWise)
+                            {
+                                rec1 = new Rectangle(x, y, height, width);
+                            }
+                            else if (RotationDirection == RotationDirection.CounterClockWise)
+                            {
+                                rec1 = new Rectangle(x, y - width + 1, height, width);
+                            }
                             break;
                         }
                     case Orientation.Vertical:
                         {
-                            rec1 = new Rectangle(x -  (int) Math.Floor((double)(value) / 2), y +(int) Math.Floor((double) (value) / 2), height,width);
+                            if (RotationDirection == RotationDirection.ClockWise)
+                            {
+                                rec1 = new Rectangle(x - height + 1, y, height, width);
+                            }
+                            else if (RotationDirection == RotationDirection.CounterClockWise)
+                            {
+                                rec1 = new Rectangle(x, y,height, width);
+                            }
                             break;
                         }
                         

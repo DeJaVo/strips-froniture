@@ -78,9 +78,9 @@ namespace BusinessLogic
                     // Rotate
                 else
                 {
-                    Rectangle temp1, temp2;
-                    ((Rotate)operation).CheckRotateByDirection(out temp1,out temp2);
-                    stack.Push(new List<StackItem> { new PClean(temp1), new PClean(temp2) });
+                    Rectangle temp1;
+                    ((Rotate)operation).CheckRotateByDirection(out temp1);
+                    stack.Push(new List<StackItem> { new PClean(temp1) });
                 }
                 return null;
             }
