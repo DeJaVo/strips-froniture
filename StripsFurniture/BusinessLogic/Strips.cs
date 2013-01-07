@@ -54,11 +54,15 @@ namespace BusinessLogic
             //case 2- goals is unsatisfied and conjunctive- order goals by heuristic and add each one to stack 
             if (allArePredicateKind && item.Count > 1 && !satisfied)
             {
+                // the list is ordered in the order of the execution
                 IList<StackItem> ordered = heuristics.OrderPredicates(item);
-                foreach (var pred in ordered)
+
+                // push the items in the list in reverse order so we will get in the top of the stack
+                // the first item to execute
+                for (int i = ordered.Count - 1; i >= 0; i--)
                 {
                     var tempList = new List<StackItem>();
-                    tempList.Add(pred);
+                    tempList.Add(ordered[i]);
                     stack.Push(tempList);
                 }
                 return null;
@@ -102,13 +106,20 @@ namespace BusinessLogic
         /// <returns></returns>
         public Operation GetNextOperation()
         {
+            pause = false;
             Operation opToPerform = null;
-            while ((stack.Count > 0) && (opToPerform == null))
+            while ((stack.Count > 0) && (opToPerform == null) && !pause)
             {
                 opToPerform = StripsStep();
             }
 
             return opToPerform;
+        }
+
+        private bool pause = false;
+        public void Pause()
+        {
+            pause = true;
         }
 
         /// <summary>

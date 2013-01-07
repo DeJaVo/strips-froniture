@@ -172,6 +172,12 @@ namespace UI
 
             while (!board.IsBoardSolved())
             {
+                if (pause)
+                {
+                    pause = false;
+                    return;
+                }
+
                 Operation currOp = stripsLogic.GetNextOperation();
                 this.ExecuteOperation(currOp);
                 this.InteractivePause(new TimeSpan(0, 0, 0, 0, 500));
@@ -190,6 +196,7 @@ namespace UI
             MessageBox.Show("Solved!!!");
             this.runButton.Enabled = false;
             this.nextStepButton.Enabled = false;
+            this.pauseButton.Enabled = false;
         }
 
         private void ExecuteOperation(Operation currOp)
@@ -231,6 +238,7 @@ namespace UI
         private void pauseButton_Click(object sender, EventArgs e)
         {
             pause = true;
+            stripsLogic.Pause();
             this.pauseButton.Enabled = false;
         }
 
