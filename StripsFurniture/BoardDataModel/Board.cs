@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace BoardDataModel
@@ -60,7 +61,7 @@ namespace BoardDataModel
             for (int i = 0; i < 13; i++)
             {
                 if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10))) continue;
-                Rooms[i, 10] = CellType.Wall;
+                Rooms[i, 11] = CellType.Wall;
             }
 
             //Horizontal Separted wall
@@ -74,7 +75,7 @@ namespace BoardDataModel
             {
                 if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10)))
                 {
-                    Rooms[i, 10] = CellType.Empty;// Door;
+                    Rooms[i, 11] = CellType.Empty;// Door;
                 }
             }
 
@@ -174,13 +175,13 @@ namespace BoardDataModel
             }
 
             if ((needToPassUpperDoor) &&
-                ((furStart.Width > 2) || (furStart.Height > 2)))
+                ((furStart.Width > 2) && (furStart.Height > 2)))
             {
                 return false;
             }
 
             if ((needToPassLowerDoor) &&
-                ((furStart.Width > 4) || (furStart.Height > 4)))
+                ((furStart.Width > 4) && (furStart.Height > 4)))
             {
                 return false;
             }
@@ -274,6 +275,46 @@ namespace BoardDataModel
             return true;
         }
 
+        public bool IsNotWall(Rectangle rectangle)
+        {
+            int x = rectangle.X;
+            int y = rectangle.Y;
+            int width = rectangle.Width;
+            int height = rectangle.Height;
+            for (; x < rectangle.X + width; x++)
+            {
+                for (; y < rectangle.Y + height; y++)
+                {
+                    if (Rooms[y, x] == CellType.Wall)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+
+
+        }
+
+
+
+        /// <summary>
+        /// returns a list of furniture located in the rectangle
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <returns></returns>
+        public List<Furniture> FindFurnitureInRect(Rectangle rect)
+        {
+            var result = new List<Furniture>();
+            foreach (Furniture furniture in furnitureDestination.Keys)
+            {
+                if(rect.IntersectsWith(furniture.Description))
+                    result.Add(furniture);
+            }
+            return result;
+        }
+
+
         /// <summary>
         /// Checks if rectangle is in furniture
         /// </summary>
@@ -305,6 +346,26 @@ namespace BoardDataModel
                 return false;
             }
             return true;
+        }
+
+        public double RectanglesEuclideanDistance(Rectangle rectSrc, Rectangle rectDest)
+        {
+            int deltaX = (rectDest.X - rectSrc.X);
+            int deltaY = (rectDest.Y - rectSrc.Y);
+            double distance = Math.Sqrt(Math.Pow(deltaX,2) + Math.Pow(deltaY,2));
+            return distance;
+        }
+
+        public int FindRoomPerRect(Rectangle rectangle)
+        {   //room1
+            if (rectangle.X < 11)
+                return 1;
+            //room2
+            if (rectangle.Y < 5)
+                return 2;
+                //room 3
+            else
+                return 3;
         }
     }
 }

@@ -20,11 +20,11 @@ namespace Heuristics
     // derived classes
         public class PClean : Predicate
         {
-            public Rectangle cleanRect;
+            public Rectangle CleanRect { get; set; }
 
             public PClean(Rectangle predRect)
             {
-                cleanRect = predRect;
+                CleanRect = predRect;
             }
         }
 

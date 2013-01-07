@@ -32,10 +32,11 @@ namespace Heuristics
     /// <summary>
     /// Rotate class
     /// </summary>
-    public class Rotate :Operation
+    public class Rotate : Operation
     {
-        private readonly Board board = Board.Instance;
-        private readonly Orientation orientation;
+        public readonly Board board = Board.Instance;
+        public readonly Orientation orientation;
+
         /// <summary>
         /// C'tor
         /// </summary>
@@ -70,14 +71,12 @@ namespace Heuristics
         public bool IsValidRotate()
         {
 
-            Rectangle temp1;
-            
-            CheckRotateByDirection(out temp1);
+            Rectangle temp1 = CalculateRectToBeCleanByDirection();
             if (!(board.InBounds(temp1)))
             {
                 return false;
             }
-            if(!(board.IsEmpty(temp1)))
+            if (!(board.IsEmpty(temp1)))
             {
                 return false;
             }
@@ -90,7 +89,7 @@ namespace Heuristics
         /// <param name="temp1"></param>
         /// <param name="temp2"></param>
         /// <returns></returns>
-        public void CheckRotateByDirection(out Rectangle temp1)
+        public Rectangle CalculateRectToBeCleanByDirection()
         {
             int width = furniture.Description.Width;
             int height = furniture.Description.Height;
@@ -100,33 +99,33 @@ namespace Heuristics
 
             switch (RotationDirection)
             {
-                    case RotationDirection.ClockWise:
+                case RotationDirection.ClockWise:
                     {
                         if (orientation == Orientation.Vertical)
                         {
-                            rec1 = new Rectangle(x - height + 1, y, height - width, height);
+                            rec1 = new Rectangle(x - height + width, y, height - width, height);
                         }
                         else if (orientation == Orientation.Horizontal)
                         {
-                            rec1 = new Rectangle(x, y + width, width, width - height);
+                            rec1 = new Rectangle(x, y + height, width, width - height);
                         }
                         break;
                     }
-                    case RotationDirection.CounterClockWise:
+                case RotationDirection.CounterClockWise:
                     {
                         if (orientation == Orientation.Vertical)
                         {
                             rec1 = new Rectangle(x + width, y, height - width, height);
                         }
-                        else if(orientation==Orientation.Horizontal)
+                        else if (orientation == Orientation.Horizontal)
                         {
-                            rec1 = new Rectangle(x, y - width + 1, width, width - height);
+                            rec1 = new Rectangle(x, y - width + height, width, width - height);
                         }
                         break;
                     }
             }
 
-            temp1 = rec1;
+            return rec1;
         }
 
         /// <summary>
@@ -138,49 +137,55 @@ namespace Heuristics
                 new Rectangle(furniture.Description.X,
                               furniture.Description.Y,
                               furniture.Description.Width,
-                              furniture.Description.Height);
+                              furniture.Description.Height);                      
+            if (IsValidRotate())
+            {
+                Rectangle rect1 = NewDestRect();
+                board.DeallocateFromBoard(furniture);
+                furniture.Description = rect1;
+                board.AllocateOnBoard(furniture);
+                this.FurnitureNewData = rect1;
+            }
+
+        }
+
+        public Rectangle NewDestRect()
+        {
+            var rect1 = new Rectangle();
 
             int width = furniture.Description.Width;
             int height = furniture.Description.Height;
             int x = furniture.Description.X;
             int y = furniture.Description.Y;
-            var rec1 = new Rectangle();
-            if (IsValidRotate())
-            {
-                switch (orientation)
-                {
-                    case Orientation.Horizontal:
-                        {
-                            if (RotationDirection == RotationDirection.ClockWise)
-                            {
-                                rec1 = new Rectangle(x, y, height, width);
-                            }
-                            else if (RotationDirection == RotationDirection.CounterClockWise)
-                            {
-                                rec1 = new Rectangle(x, y - width + 1, height, width);
-                            }
-                            break;
-                        }
-                    case Orientation.Vertical:
-                        {
-                            if (RotationDirection == RotationDirection.ClockWise)
-                            {
-                                rec1 = new Rectangle(x - height + 1, y, height, width);
-                            }
-                            else if (RotationDirection == RotationDirection.CounterClockWise)
-                            {
-                                rec1 = new Rectangle(x, y,height, width);
-                            }
-                            break;
-                        }
-                        
-                }
-                board.DeallocateFromBoard(furniture);
-                furniture.Description = rec1;
-                board.AllocateOnBoard(furniture);
 
-                this.FurnitureNewData = rec1;
+            switch (orientation)
+            {
+                case Orientation.Horizontal:
+                    {
+                        if (RotationDirection == RotationDirection.ClockWise)
+                        {
+                            rect1 = new Rectangle(x, y, height, width);
+                        }
+                        else if (RotationDirection == RotationDirection.CounterClockWise)
+                        {
+                            rect1 = new Rectangle(x, y - width + 1, height, width);
+                        }
+                        break;
+                    }
+                case Orientation.Vertical:
+                    {
+                        if (RotationDirection == RotationDirection.ClockWise)
+                        {
+                            rect1 = new Rectangle(x - height + 1, y, height, width);
+                        }
+                        else if (RotationDirection == RotationDirection.CounterClockWise)
+                        {
+                            rect1 = new Rectangle(x, y, height, width);
+                        }
+                        break;
+                    }
             }
+            return rect1;
         }
     }
 }

@@ -73,14 +73,14 @@ namespace BusinessLogic
                 if (operation is Move)
                 {
                     Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();
-                    stack.Push(new List<StackItem>{new PClean(rectToBeClean)});
+                    stack.Push(new List<StackItem>{new PClean(rectToBeClean)});                   
                 }
                     // Rotate
                 else
                 {
-                    Rectangle temp1;
-                    ((Rotate)operation).CheckRotateByDirection(out temp1);
-                    stack.Push(new List<StackItem> { new PClean(temp1) });
+                    Rectangle rect =((Rotate)operation).CalculateRectToBeCleanByDirection();
+                    stack.Push(new List<StackItem> { new PClean(rect) });
+                   
                 }
                 return null;
             }
@@ -152,7 +152,7 @@ namespace BusinessLogic
 
         private bool CheckClean(PClean cleanPredicate)
         {
-            return this.board.IsEmpty(cleanPredicate.cleanRect);
+            return this.board.IsEmpty(cleanPredicate.CleanRect);
         }
 
         private bool CheckLocation(PLocation locationPredicate)

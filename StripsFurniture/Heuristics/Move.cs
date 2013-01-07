@@ -60,11 +60,7 @@ namespace Heuristics
             if (!board.IsEmpty(newdestRectangle))
             {
                 return false;
-            }
-
-            // update the furniture
-            furniture.Description = newdestRectangle;
-            //newFurniture = new Furniture(newdestRectangle, furniture.ID);
+            }          
             return true;
         }
 
@@ -82,14 +78,16 @@ namespace Heuristics
                         diffRect.X = destRect.X;
                         diffRect.Y = destRect.Y;
                         diffRect.Width = furniture.Description.Width;
-                        diffRect.Height = destRect.Y - furniture.Description.Y;
+                       //diffRect.Height = destRect.Y - furniture.Description.Y;
+                        diffRect.Height = 1;
                         break;
                     }
                 case Direction.Down:
                     {
                         diffRect.X = furniture.Description.X;
                         diffRect.Y = furniture.Description.Y + destRect.Height;
-                        diffRect.Height = destRect.Y - diffRect.Y;
+                       //diffRect.Height = destRect.Y - diffRect.Y;
+                        diffRect.Height = 1;
                         diffRect.Width = furniture.Description.Width;
                         break;
                     }
@@ -97,8 +95,9 @@ namespace Heuristics
                     {
                         diffRect.X = destRect.X;
                         diffRect.Y = destRect.Y;
-                        diffRect.Width = furniture.Description.X - diffRect.X;
-                        diffRect.Height = furniture.Description.Height;
+                        //diffRect.Width = furniture.Description.X - diffRect.X;
+                        diffRect.Width = 1;
+                        diffRect.Height = furniture.Description.Height;                       
                         break;
                     }
                 case Direction.Right:
@@ -106,7 +105,8 @@ namespace Heuristics
                         diffRect.X = furniture.Description.X + furniture.Description.Width;
                         diffRect.Y = destRect.Y;
                         diffRect.Height = furniture.Description.Height;
-                        diffRect.Width = destRect.Width -(diffRect.X - destRect.X);
+                        //diffRect.Width = destRect.Width -(diffRect.X - destRect.X);
+                        diffRect.Width = 1;
                         break;
                     }
             }
@@ -163,6 +163,9 @@ namespace Heuristics
             if (IsValidMove())
             {
                 board.DeallocateFromBoard(furniture);
+                // update the furniture
+                furniture.Description = CalculateNewdestRectangle();                
+                
                 board.AllocateOnBoard(furniture);
 
                 this.FurnitureNewData = furniture.Description;
