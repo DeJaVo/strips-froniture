@@ -203,7 +203,7 @@ namespace UI
         {
             this.DeleteFurniture(currOp.FurnitureOldData,false);
             this.DrawFurniture(currOp.FurnitureNewData,currOp.Furniture.ID,false);
-            operationsStack.Items.Insert(0,currOp.ToString());
+            operationsStack.Items.Add(currOp.ToString());
         }
 
         private void resetButton_Click(object sender, EventArgs e)
