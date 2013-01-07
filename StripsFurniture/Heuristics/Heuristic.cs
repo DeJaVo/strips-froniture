@@ -779,8 +779,8 @@ namespace Heuristics
             if (currRoom == 2 ||endRoom==2)
             {
                 int doorX = 11;
-                int doorYL = 5;
-                int doorYH = 3;
+                int doorYL = 3;
+                int doorYH = 2;
                 if ((doorYH - rectYL) > 0 || ((doorYH - rectYL >0) && (doorYH- rectYH)<=0))
                 {
                     result.Add(Direction.Down);
@@ -801,8 +801,8 @@ namespace Heuristics
             if(currRoom== 3|| endRoom==3)
             {
                 int doorX = 11;
-                int doorYL = 8;
-                int doorYH = 12;
+                int doorYL = 10;
+                int doorYH = 7;
                  if ((doorYH - rectYL) >= 0)
                 {
                     result.Add(Direction.Down);
