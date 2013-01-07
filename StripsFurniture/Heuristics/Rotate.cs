@@ -70,6 +70,10 @@ namespace Heuristics
         /// <returns></returns>
         public bool IsValidRotate()
         {
+            if (furniture.Description.Width == furniture.Description.Height)
+            {
+                return true;
+            }
 
             Rectangle temp1 = CalculateRectToBeCleanByDirection();
             if (!(board.InBounds(temp1)))
@@ -157,6 +161,10 @@ namespace Heuristics
 
         public Rectangle NewDestRect()
         {
+            if (furniture.Description.Width == furniture.Description.Height)
+            {
+                return furniture.Description;
+            }
             var rect1 = new Rectangle();
 
             int width = furniture.Description.Width;
