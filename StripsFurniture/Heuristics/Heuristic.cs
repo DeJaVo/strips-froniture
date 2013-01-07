@@ -1090,6 +1090,7 @@ namespace Heuristics
                 path.AddRange(Group.FindPathBetweenPoints(startRect, endRect)); 
 
             }
+            return path;
         }
 
     }
