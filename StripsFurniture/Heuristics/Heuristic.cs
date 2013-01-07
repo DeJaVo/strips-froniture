@@ -867,51 +867,167 @@ namespace Heuristics
             int rectXL= rect.X;
             int rectYH = rect.Y;
             int rectXH = rect.X + rect.Width-1;
-            int rectYL = rect.Y + rect.Height-1;          
-            if (currRoom == 2 ||endRoom==2)
+            int rectYL = rect.Y + rect.Height-1;
+
+            // 1->2 or 1->3
+            if (currRoom == 1)
             {
-                int doorX = 11;
-                int doorYL = 3;
-                int doorYH = 2;
-                if ((doorYL - rectYL) > 0 )
+                if (endRoom == 2)
                 {
-                    result.Add(Direction.Down);
+                    // the furniture is below the door
+                    if (rectYL >= 4)
+                    {
+                        // the furniture is on the lower door
+                        if (rectXH >= 11)
+                        {
+                            result.Add(Direction.Left);
+                            return result;
+                        }
+
+                        result.Add(Direction.Right);
+                        result.Add(Direction.Up);
+                        return result;
+                    }
+                    // the furniture is above the door
+                    else if (rectYH <= 1)
+                    {
+                        result.Add(Direction.Right);
+                        result.Add(Direction.Down);
+                        return result;
+                    }
+                    // the furnite is right in front of the door
+                    else
+                    {
+                        result.Add(Direction.Right);
+                        return result;
+                    }
+
                 }
-                if ((doorYH -rectYH) < 0)
+                // end room = 3
+                else
                 {
-                    result.Add(Direction.Up);
-                }
-                if ((rectXL-doorX) >0)
-                {
-                    result.Add(Direction.Left);
-                }
-                if ((doorX - rectXH) > 0)
-                {
-                    result.Add(Direction.Right);
+                    // the furniture is above the door
+                    if (rectYH <= 6)
+                    {
+                        // the furniture is on the upper door
+                        if (rectXH >= 11)
+                        {
+                            result.Add(Direction.Left);
+                            return result;
+                        }
+
+                        result.Add(Direction.Right);
+                        result.Add(Direction.Down);
+                        return result;
+                    }
+                    // the furniture is below the door
+                    else if (rectYL >= 11)
+                    {
+                        result.Add(Direction.Right);
+                        result.Add(Direction.Up);
+                        return result;
+                    }
+                    // the furnite is right in front of the door
+                    else
+                    {
+                        result.Add(Direction.Right);
+                        return result;
+                    }
                 }
             }
-            if(currRoom== 3|| endRoom==3)
+                // 2->1 or 2->3
+            else if ((currRoom == 2) && ((endRoom == 1) || (endRoom == 3)))
             {
-                int doorX = 11;
-                int doorYL = 10;
-                int doorYH = 7;
-                 if ((doorYH - rectYL) >= 0)
+                // the furniture is above the door
+                if (rectYH <= 1)
                 {
                     result.Add(Direction.Down);
+                    result.Add(Direction.Left);
+                    return result;
                 }
-                if ((rectYH - doorYL) >= 0)
+                // the furniture is below the door
+                else if (rectYL >= 4)
                 {
                     result.Add(Direction.Up);
+                    result.Add(Direction.Left);
+                    return result;
                 }
-                if ((rectXL-doorX) >=0)
+                // the furnite is right in front of the door
+                else
                 {
                     result.Add(Direction.Left);
-                }
-                if ((doorX - rectXH) >= 0)
-                {
-                    result.Add(Direction.Right);
+                    return result;
                 }
             }
+            // 3->1 or 3->2
+            else
+            {
+                // the furniture is above the door
+                if (rectYH <= 6)
+                {
+                    result.Add(Direction.Down);
+                    result.Add(Direction.Left);
+                    return result;
+                }
+                // the furniture is below the door
+                else if (rectYL >= 11)
+                {
+                    result.Add(Direction.Up);
+                    result.Add(Direction.Left);
+                    return result;
+                }
+                // the furnite is right in front of the door
+                else
+                {
+                    result.Add(Direction.Left);
+                    return result;
+                }
+            }
+            //if (currRoom == 2 || endRoom==2)
+            //{
+            //    int doorX = 11;
+            //    int doorYL = 3;
+            //    int doorYH = 2;
+            //    if ((doorYL - rectYL) > 0 )
+            //    {
+            //        result.Add(Direction.Down);
+            //    }
+            //    if ((doorYH -rectYH) < 0)
+            //    {
+            //        result.Add(Direction.Up);
+            //    }
+            //    if ((rectXL-doorX) >0)
+            //    {
+            //        result.Add(Direction.Left);
+            //    }
+            //    if ((doorX - rectXH) > 0)
+            //    {
+            //        result.Add(Direction.Right);
+            //    }
+            //}
+            //if (currRoom== 3|| endRoom==3)
+            //{
+            //    int doorX = 11;
+            //    int doorYL = 10;
+            //    int doorYH = 7;
+
+            //    if ((doorYH - rectYL) >= 0)
+            //    {
+            //        result.Add(Direction.Down);
+            //    }
+            //    if ((rectYH - doorYL) >= 0)
+            //    {
+            //        result.Add(Direction.Up);
+            //    }
+            //    if ((rectXL-doorX) >=0)
+            //    {
+            //        result.Add(Direction.Left);
+            //    }
+            //    if ((doorX - rectXH) >= 0)
+            //    {
+            //        result.Add(Direction.Right);
+            //    }
+            //}
             return result;
         }
 
