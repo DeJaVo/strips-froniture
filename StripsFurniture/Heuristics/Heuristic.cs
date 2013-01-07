@@ -745,7 +745,7 @@ namespace Heuristics
 
             rotate.RotationDirection = directions.Last();
             var newRect2 = rotate.NewDestRect();
-            var temp2 = Group.CalcRepresentativePath(newRect1, board.furnitureDestination[furniture]);
+            var temp2 = CalculatePathByRect(newRect2, board.furnitureDestination[furniture]);
             var distance2 = temp2.Count;           
 
             if (distance1 < distance2)
