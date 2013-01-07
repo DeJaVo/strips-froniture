@@ -155,7 +155,7 @@ namespace Heuristics
                 path = Group.CalcRepresentativePath(startState, destState, this.DoorsPath);
             }
 
-            private static List<Rectangle> CalcRepresentativePath(Rectangle startState, Rectangle destState)
+            public static List<Rectangle> CalcRepresentativePath(Rectangle startState, Rectangle destState)
             {
                 List<int> doorsPath = new List<int>();
                 int startRoom = Board.Instance.FindRoomPerRect(startState);
@@ -200,7 +200,7 @@ namespace Heuristics
                     path = new List<Rectangle>();
                     if (doorsPath.Count == 1)
                     {
-                        Rectangle roomDoor = GetRoomDoor(doorsPath[0]);
+                        Rectangle roomDoor = GetRoomDoor(doorsPath[0]);                      
                         path.AddRange(FindPathBetweenPoints(startState, roomDoor));
                         path.AddRange(FindPathBetweenPoints(roomDoor, destState));
                     }
@@ -233,6 +233,7 @@ namespace Heuristics
 
             public static List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end)
             {
+                
                 List<Rectangle> subPath = new List<Rectangle>();
 
                 int deltaY = Math.Sign(end.Y - start.Y);
@@ -250,7 +251,7 @@ namespace Heuristics
                 return subPath;
             }
 
-            private static Rectangle GetRoomDoor(int roomId)
+            public static Rectangle GetRoomDoor(int roomId)
             {
                 if (roomId == 2)
                 {
@@ -716,7 +717,9 @@ namespace Heuristics
                 if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect))
                     continue;
                 var newRect = move.CalculateNewdestRectangle();
-                var distance = board.RectanglesEuclideanDistance(newRect, board.furnitureDestination[furniture]);
+                var temp = Group.CalcRepresentativePath(newRect, board.furnitureDestination[furniture]);
+                var distance = temp.Count;
+                //var distance = board.RectanglesEuclideanDistance(newRect, board.furnitureDestination[furniture]);
                 distPerDir[distance] = direction;
             }
             var distPerDirSorted=distPerDir.OrderBy(i => i.Key).ToDictionary(i=>i.Key,i=>i.Value);
@@ -737,11 +740,13 @@ namespace Heuristics
             Rotate rotate= new Rotate(furniture); 
             rotate.RotationDirection = directions.First();
             var newRect1 = rotate.NewDestRect();
-            var distance1 = board.RectanglesEuclideanDistance(newRect1, board.furnitureDestination[furniture]);
+            var temp1 = Group.CalcRepresentativePath(newRect1, board.furnitureDestination[furniture]);
+            var distance1 = temp1.Count;
 
             rotate.RotationDirection = directions.Last();
             var newRect2 = rotate.NewDestRect();
-            var distance2 = board.RectanglesEuclideanDistance(newRect2, board.furnitureDestination[furniture]);
+            var temp2 = Group.CalcRepresentativePath(newRect1, board.furnitureDestination[furniture]);
+            var distance2 = temp2.Count;           
 
             if (distance1 < distance2)
             {
@@ -1045,5 +1050,47 @@ namespace Heuristics
             }
             return result;
         }
+
+        public static  List<Rectangle> CalculatePathByRect(Rectangle startRect, Rectangle endRect)
+        {
+            List<Rectangle> path = new List<Rectangle>();
+           var startRoom= Board.Instance.FindRoomPerRect(startRect);
+           var endRoom = Board.Instance.FindRoomPerRect(endRect);
+           //moving from room 2 to room 3 or vice a versa
+            if (startRoom != 1 && endRoom!=1)
+           {                             
+                   var doorRect=Group.GetRoomDoor(startRoom);
+                   path.AddRange(Group.FindPathBetweenPoints(startRect, doorRect));   
+                   
+                //move rect width time left
+               for (int i = 1; i <= startRect.Width; i++)
+               {
+                   path.Add(new Rectangle(doorRect.X - i,doorRect.Y,1,1));
+               }
+
+               Rectangle currLoc = path.Last();
+               var secDoorRect = Group.GetRoomDoor(startRoom);
+               path.AddRange(Group.FindPathBetweenPoints(currLoc, secDoorRect));
+               path.AddRange(Group.FindPathBetweenPoints(secDoorRect,endRect));    
+           }
+            else
+            {
+                if (!(((endRoom == 2) && (startRoom == 1) && (startRect.Y >= 2) && (startRect.Y <= 3)) ||
+                      ((endRoom == 3) && (startRoom == 1) && (startRect.Y >= 7) && (startRect.Y <= 10))))
+                {
+                    Rectangle currLoc = new Rectangle(startRect.X,startRect.Y,1,1);
+                    while (currLoc.X + startRect.Width - 1 >= 11)
+                    {
+                        path.Add(currLoc);
+                        currLoc = new Rectangle(currLoc.X - 1, currLoc.Y,1,1);
+                    }
+                    startRect = currLoc;
+                }
+
+                path.AddRange(Group.FindPathBetweenPoints(startRect, endRect)); 
+
+            }
+        }
+
     }
 }
