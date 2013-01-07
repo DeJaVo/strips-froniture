@@ -92,8 +92,7 @@ namespace BoardDataModel
         /// <returns>if given params are valid ->creates new furnitre at start position and returns id of the furniture, else -> -1</returns>
         public int CreateFurniture(Rectangle furStart, Rectangle furDest)
         {
-            if (Instance.InBounds(furStart) && Instance.InBounds(furDest) && Instance.IsEmpty(furStart) &&
-                Instance.IsDestNotOverlapps(furDest) && Instance.IsDestFurValid(furStart, furDest) && Instance.WillPassDoor(furStart, furDest))
+            if (Instance.InBounds(furStart) && Instance.InBounds(furDest) && Instance.IsEmpty(furStart) && Instance.IsEmpty(furDest) && Instance.IsDestFurValid(furStart, furDest) && Instance.WillPassDoor(furStart, furDest))
             {
                 //create new furniture
                 var newFurniture = new Furniture(furStart, furnitureDestination.Count+1);
@@ -197,9 +196,9 @@ namespace BoardDataModel
         {            
             var rect = furniture.Description;
             int xl = rect.X;
-            int yh = rect.Y;
+            int yl = rect.Y;
             int xh = xl + rect.Width;
-            int yl = yh + rect.Height;
+            int yh = yl + rect.Height;
 
             for (int i = yl; i < yh; i++)
             {
@@ -218,9 +217,9 @@ namespace BoardDataModel
         {
             var rect = furniture.Description;
             int xl = rect.X;
-            int yh = rect.Y;
+            int yl = rect.Y;
             int xh = xl + rect.Width;
-            int yl = yh + rect.Height;
+            int yh = yl + rect.Height;
 
             for (int i = yl; i < yh; i++)
             {
