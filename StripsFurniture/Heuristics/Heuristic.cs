@@ -677,6 +677,7 @@ namespace Heuristics
                     return operation;
             }
             //cant pass door
+            if (!CanPassDoor(furniture, currRoom, endRoom))
             {
                 //check if can rotate
                 Rotate rotate = new Rotate(furniture);
@@ -826,19 +827,19 @@ namespace Heuristics
                 int doorX = 11;
                 int doorYL = 3;
                 int doorYH = 2;
-                if ((doorYH - rectYL) > 0 || ((doorYH - rectYL >0) && (doorYH- rectYH)<=0))
+                if ((doorYL - rectYL) > 0 )
                 {
                     result.Add(Direction.Down);
                 }
-                if ((rectYH - doorYL) >= 0)
+                if ((doorYH -rectYH) < 0)
                 {
                     result.Add(Direction.Up);
                 }
-                if ((rectXL-doorX) >=0)
+                if ((rectXL-doorX) >0)
                 {
                     result.Add(Direction.Left);
                 }
-                if ((doorX - rectXH) >= 0)
+                if ((doorX - rectXH) > 0)
                 {
                     result.Add(Direction.Right);
                 }
