@@ -717,7 +717,7 @@ namespace Heuristics
                 if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect))
                     continue;
                 var newRect = move.CalculateNewdestRectangle();
-                var temp = Group.CalcRepresentativePath(newRect, board.furnitureDestination[furniture]);
+                var temp = CalculatePathByRect(newRect, board.furnitureDestination[furniture]);
                 var distance = temp.Count;
                 //var distance = board.RectanglesEuclideanDistance(newRect, board.furnitureDestination[furniture]);
                 distPerDir[distance] = direction;
@@ -740,7 +740,7 @@ namespace Heuristics
             Rotate rotate= new Rotate(furniture); 
             rotate.RotationDirection = directions.First();
             var newRect1 = rotate.NewDestRect();
-            var temp1 = Group.CalcRepresentativePath(newRect1, board.furnitureDestination[furniture]);
+            var temp1 = CalculatePathByRect(newRect1, board.furnitureDestination[furniture]);
             var distance1 = temp1.Count;
 
             rotate.RotationDirection = directions.Last();
