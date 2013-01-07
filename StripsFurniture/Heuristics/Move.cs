@@ -163,10 +163,16 @@ namespace Heuristics
             if (IsValidMove())
             {
                 board.DeallocateFromBoard(furniture);
+
+                Rectangle dest = board.furnitureDestination[furniture];
+                board.furnitureDestination.Remove(furniture);
+
                 // update the furniture
-                furniture.Description = CalculateNewdestRectangle();                
-                
+                furniture.Description = CalculateNewdestRectangle();
+                board.furnitureDestination.Add(furniture, dest);
+
                 board.AllocateOnBoard(furniture);
+                
 
                 this.FurnitureNewData = furniture.Description;
                 
