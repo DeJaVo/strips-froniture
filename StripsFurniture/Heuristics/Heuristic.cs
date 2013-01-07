@@ -776,15 +776,16 @@ namespace Heuristics
             //TODO: need to decide in what direction to rotate
             List<RotationDirection> RDL =new List<RotationDirection>();
             RDL.Add(RotationDirection.ClockWise);
-            RDL.Add(RotationDirection.CounterClockWise);
-
+            RDL.Add(RotationDirection.CounterClockWise);            
             var sortedRD = SortRotateDirectionsByDistance(rotate.Furniture, RDL, board);
-            var RD = sortedRD.First();
-            rotate.RotationDirection = RD;
-            if (rotate.IsValidRotate())
-               return (Operation)rotate;
-            //do we nned to initialzie rest of the paramters?
-                   
+            foreach (var SRD in sortedRD)
+            {
+                var RD = SRD;
+                rotate.RotationDirection = RD;
+                if (rotate.IsValidRotate())
+                    return (Operation)rotate;
+                //do we nned to initialzie rest of the paramters?
+            }                               
             return null;
         }
 
