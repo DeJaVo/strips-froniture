@@ -34,8 +34,8 @@ namespace Heuristics
     /// </summary>
     public class Rotate : Operation
     {
-        public readonly Board board = Board.Instance;
-        public readonly Orientation orientation;
+        private readonly Board board = Board.Instance;
+        private readonly Orientation orientation;
 
         /// <summary>
         /// C'tor
