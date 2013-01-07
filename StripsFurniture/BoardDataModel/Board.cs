@@ -257,13 +257,11 @@ namespace BoardDataModel
         /// <returns></returns>
         public bool IsEmpty(Rectangle rectangle)
         {
-            int x = rectangle.X;
-            int y = rectangle.Y;
             int width = rectangle.Width;
             int height = rectangle.Height;
-            for (; x < rectangle.X + width; x++)
+            for (int x = rectangle.X; x < rectangle.X + width; x++)
             {
-                for (; y < rectangle.Y + height; y++)
+                for (int y = rectangle.Y; y < rectangle.Y + height; y++)
                 {
                     if (Rooms[ y,x] != CellType.Empty)
                     {
@@ -276,13 +274,11 @@ namespace BoardDataModel
 
         public bool IsNotWall(Rectangle rectangle)
         {
-            int x = rectangle.X;
-            int y = rectangle.Y;
             int width = rectangle.Width;
             int height = rectangle.Height;
-            for (; x < rectangle.X + width; x++)
+            for (int x = rectangle.X; x < rectangle.X + width; x++)
             {
-                for (; y < rectangle.Y + height; y++)
+                for (int y = rectangle.Y; y < rectangle.Y + height; y++)
                 {
                     if (Rooms[y, x] == CellType.Wall)
                     {
