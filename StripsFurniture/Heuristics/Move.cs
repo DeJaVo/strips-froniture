@@ -49,7 +49,7 @@ namespace Heuristics
         public bool IsValidMove()
         {
             //calculate new rectangle
-            Rectangle newdestRectangle = CalculateNewdestRectangle();                       
+            Rectangle newdestRectangle = CalculateRectDiff();                     
 
             //inbounds
             if (!board.InBounds(newdestRectangle))
