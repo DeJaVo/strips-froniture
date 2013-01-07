@@ -152,34 +152,72 @@ namespace Heuristics
                 Rectangle startState = this.Furnitures[this.Furnitures.Count - 1].furniture.Description;
                 Rectangle destState = this.Furnitures[this.Furnitures.Count - 1].rect;
 
+                path = Group.CalcRepresentativePath(startState, destState, this.DoorsPath);
+            }
+
+            private static List<Rectangle> CalcRepresentativePath(Rectangle startState, Rectangle destState)
+            {
+                List<int> doorsPath = new List<int>();
+                int startRoom = Board.Instance.FindRoomPerRect(startState);
+                int endRoom = Board.Instance.FindRoomPerRect(destState);
+
+                if (startRoom != endRoom)
+                {
+                    if ((startRoom == 1) || (endRoom == 1))
+                    {
+                        if (startRoom != 1)
+                        {
+                            doorsPath.Add(startRoom);
+                        }
+                        else
+                        {
+                            doorsPath.Add(endRoom);
+                        }
+                    }
+                    else
+                    {
+                        doorsPath.Add(startRoom);
+                        doorsPath.Add(endRoom);
+                    }
+                }
+                return Group.CalcRepresentativePath(startState, destState, doorsPath);
+            }
+
+            private static List<Rectangle> CalcRepresentativePath(Rectangle startState, Rectangle destState, List<int> doorsPath)
+            {
+                List<Rectangle> path = new List<Rectangle>();
+
                 // the representative is the last in the list of furnitures
                 // (assuming that is sorted)
 
-                if (this.GroupType == Heuristic.GroupType.SameRoom)
+                //if (this.GroupType == Heuristic.GroupType.SameRoom)
+                if (doorsPath.Count == 0)
                 {
-                    path = this.FindPathBetweenPoints(startState, destState);
+                    path = FindPathBetweenPoints(startState, destState);
                 }
                 else
                 {
                     path = new List<Rectangle>();
-                    if (DoorsPath.Count == 1)
+                    if (doorsPath.Count == 1)
                     {
-                        Rectangle roomDoor = this.GetRoomDoor(this.DoorsPath[0]);
-                        path.AddRange(this.FindPathBetweenPoints(startState, roomDoor));
-                        path.AddRange(this.FindPathBetweenPoints(roomDoor, destState));
+                        Rectangle roomDoor = GetRoomDoor(doorsPath[0]);
+                        path.AddRange(FindPathBetweenPoints(startState, roomDoor));
+                        path.AddRange(FindPathBetweenPoints(roomDoor, destState));
                     }
                     else
                     {
-                        Rectangle firstRoomDoor = this.GetRoomDoor(this.DoorsPath[0]);
-                        Rectangle lastRoomDoor = this.GetRoomDoor(this.DoorsPath[1]);
-                        path.AddRange(this.FindPathBetweenPoints(startState,firstRoomDoor));
-                        path.AddRange(this.FindPathBetweenDoors(firstRoomDoor, lastRoomDoor));
-                        path.AddRange(this.FindPathBetweenPoints(lastRoomDoor, destState));
+                        Rectangle firstRoomDoor = GetRoomDoor(doorsPath[0]);
+                        Rectangle lastRoomDoor = GetRoomDoor(doorsPath[1]);
+                        path.AddRange(FindPathBetweenPoints(startState,firstRoomDoor));
+                        path.AddRange(FindPathBetweenDoors(firstRoomDoor, lastRoomDoor));
+                        path.AddRange(FindPathBetweenPoints(lastRoomDoor, destState));
                     }
                 }
+
+                return path;
             }
 
-            private List<Rectangle> FindPathBetweenDoors(Rectangle start, Rectangle end)
+            private static List<Rectangle> FindPathBetweenDoors(Rectangle start, Rectangle end)
             {
                 // building for door room 2 to door room 3
                 List<Rectangle> subPath = new List<Rectangle>();
@@ -193,7 +231,7 @@ namespace Heuristics
                 return subPath;
             }
 
-            public List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end)
+            public static List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end)
             {
                 List<Rectangle> subPath = new List<Rectangle>();
 
@@ -212,7 +250,7 @@ namespace Heuristics
                 return subPath;
             }
 
-            private Rectangle GetRoomDoor(int roomId)
+            private static Rectangle GetRoomDoor(int roomId)
             {
                 if (roomId == 2)
                 {
@@ -425,6 +463,7 @@ namespace Heuristics
             {
                 return null;
             }
+            sameRoomGroup.DoorsPath = new List<int>();
             return sameRoomGroup;
         }
 
