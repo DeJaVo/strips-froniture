@@ -142,7 +142,13 @@ namespace Heuristics
             {
                 Rectangle rect1 = NewDestRect();
                 board.DeallocateFromBoard(furniture);
+
+                Rectangle dest = board.furnitureDestination[furniture];
+                board.furnitureDestination.Remove(furniture);
+
                 furniture.Description = rect1;
+                board.furnitureDestination.Add(furniture, dest);
+
                 board.AllocateOnBoard(furniture);
                 this.FurnitureNewData = rect1;
             }

@@ -25,5 +25,17 @@ namespace BoardDataModel
                 furnitureDescription = value;
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            Furniture fur = (Furniture)obj;
+
+            return fur.ID == this.ID && (fur.furnitureDescription.Equals(this.Description));
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ID;
+        } 
     }
 }
