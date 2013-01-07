@@ -93,8 +93,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1471, 607);
-            this.splitContainer1.SplitterDistance = 278;
+            this.splitContainer1.Size = new System.Drawing.Size(1362, 607);
+            this.splitContainer1.SplitterDistance = 257;
             this.splitContainer1.TabIndex = 0;
             // 
             // drawFurnituresDestCheckBox
@@ -445,8 +445,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.operationsStack);
-            this.splitContainer2.Size = new System.Drawing.Size(1189, 607);
-            this.splitContainer2.SplitterDistance = 859;
+            this.splitContainer2.Size = new System.Drawing.Size(1101, 607);
+            this.splitContainer2.SplitterDistance = 795;
             this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer3
@@ -461,7 +461,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.pauseButton);
             this.splitContainer3.Panel2.Controls.Add(this.nextStepButton);
             this.splitContainer3.Panel2.Controls.Add(this.runButton);
-            this.splitContainer3.Size = new System.Drawing.Size(859, 607);
+            this.splitContainer3.Size = new System.Drawing.Size(795, 607);
             this.splitContainer3.SplitterDistance = 556;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -504,14 +504,14 @@
             this.operationsStack.FormattingEnabled = true;
             this.operationsStack.Location = new System.Drawing.Point(0, 0);
             this.operationsStack.Name = "operationsStack";
-            this.operationsStack.Size = new System.Drawing.Size(326, 607);
+            this.operationsStack.Size = new System.Drawing.Size(302, 607);
             this.operationsStack.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1471, 607);
+            this.ClientSize = new System.Drawing.Size(1362, 607);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";

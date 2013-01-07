@@ -149,6 +149,7 @@ namespace UI
         private void runButton_Click(object sender, EventArgs e)
         {
             this.createFurnitureButton.Enabled = false;
+            this.pauseButton.Enabled = true;
             this.PerformOperation(true);
         }
 
