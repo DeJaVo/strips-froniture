@@ -22,6 +22,8 @@ namespace Heuristics
         {
             public Rectangle CleanRect { get; set; }
 
+            public Direction Forbbiden { get; set; }
+
             public PClean(Rectangle predRect)
             {
                 CleanRect = predRect;

@@ -159,6 +159,42 @@ namespace Heuristics
 
         }
 
+        /// <summary>
+        /// return the source direction
+        /// </summary>
+        /// <returns></returns>
+        public override Direction ForbbideneDirection()
+        {
+            switch (orientation)
+            {
+                case Orientation.Horizontal:
+                    {
+                        if (RotationDirection == RotationDirection.ClockWise)
+                        {
+                            return Direction.Down;
+                        }
+                        if (RotationDirection == RotationDirection.CounterClockWise)
+                        {
+                            return Direction.Up;
+                        }
+                        break;
+                    }
+                case Orientation.Vertical:
+                    {
+                        if (RotationDirection == RotationDirection.ClockWise)
+                        {
+                            return Direction.Right;
+                        }
+                        if (RotationDirection == RotationDirection.CounterClockWise)
+                        {
+                            return Direction.Right;
+                        }
+                        break;
+                    }
+            }
+            return Direction.Up;
+        }
+
         public Rectangle NewDestRect()
         {
             if (furniture.Description.Width == furniture.Description.Height)

@@ -77,14 +77,16 @@ namespace BusinessLogic
                 if (operation is Move)
                 {
                     Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();
-                    stack.Push(new List<StackItem>{new PClean(rectToBeClean)});                   
+                    var clean = new PClean(rectToBeClean) {Forbbiden = operation.ForbbideneDirection()};
+                    stack.Push(new List<StackItem>{clean});
+                    
                 }
-                    // Rotate
+                // Rotate
                 else
                 {
                     Rectangle rect =((Rotate)operation).CalculateRectToBeCleanByDirection();
-                    stack.Push(new List<StackItem> { new PClean(rect) });
-                   
+                    var clean = new PClean(rect) {Forbbiden = operation.ForbbideneDirection()};
+                    stack.Push(new List<StackItem> { clean });
                 }
                 return null;
             }
