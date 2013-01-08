@@ -178,5 +178,26 @@ namespace Heuristics
                 
             }
         }
+
+        /// <summary>
+        /// Retruns the source direction
+        /// </summary>
+        /// <returns></returns>
+        public override Direction ForbbideneDirection()
+        {
+            switch (Direction)
+            {
+                case Direction.Down:
+                    return Direction.Up;
+                case Direction.Up:
+                    return Direction.Down;
+                case Direction.Left:
+                    return Direction.Right;
+                case Direction.Right:
+                    return Direction.Left;
+            }
+
+            return Direction.Up;
+        }
     }
 }

@@ -25,5 +25,11 @@ namespace Heuristics
         ///  Execute 
         ///  </summary>
         public abstract void Execute();
+
+        /// <summary>
+        /// Retrun the source direction
+        /// </summary>
+        /// <returns></returns>
+        public abstract Direction ForbbideneDirection();
     }
 }
