@@ -87,6 +87,7 @@ namespace Heuristics
             return true;
         }
 
+
         /// <summary>
         ///  Check rotation rectangles for bounds and empty.
         /// </summary>
