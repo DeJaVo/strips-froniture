@@ -272,6 +272,31 @@ namespace BoardDataModel
             return true;
         }
 
+        public bool IsEmpty(Rectangle rectangle, out Furniture furniture)
+        {
+            int width = rectangle.Width;
+            int height = rectangle.Height;
+            for (int x = rectangle.X; x < rectangle.X + width; x++)
+            {
+                for (int y = rectangle.Y; y < rectangle.Y + height; y++)
+                {
+                    if (Rooms[y, x] != CellType.Empty)
+                    {
+                        if (Rooms[y, x] == CellType.Allocated)
+                        {
+                            furniture = FindFurnitureInRect(new Rectangle(x, y, 1, 1))[0];
+                            return false;
+                        }
+                        furniture = null;
+                        return false;
+                    }
+                }
+            }
+            furniture = null;
+            return true;
+
+        }
+
         public bool IsNotWall(Rectangle rectangle)
         {
             int width = rectangle.Width;
@@ -321,7 +346,7 @@ namespace BoardDataModel
             foreach (Furniture currFur in furnitureDestination.Keys)
             {
                 if ((furId == currFur.ID) &&
-                    (rectangle.Equals(currFur.Description)))
+                    (currFur.Description.Contains(rectangle)))
                 {
                     return true;
                 }

@@ -646,97 +646,130 @@ namespace Heuristics
         /// <param name="predicateToSatisfy"></param>
         /// <returns></returns>
         public Operation ChooseOperation(Board board, Predicate predicateToSatisfy)
-        {            
+        {
+            Dictionary<Operation, List<Furniture>> blockingfurPerOperation = new Dictionary<Operation, List<Furniture>>();
+            Furniture furniture;
+            Rectangle furDest;
+            Rectangle furCurrPos;
+            int currRoom;
+            int endRoom;
+            List<Direction> directions;
+            List<Direction> directionsSorted = null;
+            List<Direction> directionsToDoor = null;
+            List<Direction> directionToDoorSorted = null;
+
             if (predicateToSatisfy is PClean)
             {
-                //find the furniture located in the rect.
-                // choose an operation for moving this furniture- move or rotate
-                // choose base on 2 parameters: 1. the less new interruptions , 2.the more progress in the furniture's track to his goal                                         
-                // for now we implement that opertaion will be chosen according to one interrupting furniture,
-                    //although there maybe situations in which 2 furnitures will be found in the rectangle                
-                IList<Furniture> interruptingFurniture = this.InterruptingFurniture(board, predicateToSatisfy);    
-                Furniture problematicFur = interruptingFurniture.First();               
-                var directions = FindPossibleDirections(problematicFur, board);
-                foreach (var direction in directions)
+                IList<Furniture> interruptingFurniture = this.InterruptingFurniture(board, predicateToSatisfy);
+                furniture = interruptingFurniture.First();
+                furDest = Board.Instance.furnitureDestination[furniture];
+                furCurrPos = furniture.Description;
+                currRoom = board.FindRoomPerRect(furniture.Description);
+                endRoom = board.FindRoomPerRect(furDest);                
+                if (currRoom == endRoom)
                 {
-                    if (CanMoveInDir(problematicFur, direction, board))
-                    {   //warning: we dont sort moves if we have more than one  
-                        //build move and return it
-                        Move move= new Move(problematicFur);
-                        move.Direction = direction;
-                        move.HowManyStepsInDirection = 1;
-                        //QUESTION: do we need to initialize the rest of the parameters?
-                        return (Operation) move;
-                    }                
+                    directions = FindPossibleDirections(furniture, board);
+                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);
+                    List<Direction> forbbiden = new List<Direction>();
+                    forbbiden.Add((predicateToSatisfy as PClean).Forbbiden);
+                    directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
                 }
-                // we get here only if fur' can't move in direction
-                //foreach move find the number of interruption it creates and select the optimal
-                Operation op = FindOptimalOperation(board, problematicFur ,predicateToSatisfy);
-                return op;
-            }   
+                else
+                {
+                    directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
+                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);
+                    List<Direction> forbbiden = new List<Direction>();
+                    forbbiden.Add((predicateToSatisfy as PClean).Forbbiden);
+                    directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
+                }
+            }
             //predicate is a location kind
-            Furniture furniture = (predicateToSatisfy as PLocation).furniture;
-            Rectangle furDest = (predicateToSatisfy as PLocation).rect;
-            Rectangle furCurrPos = furniture.Description;
-            int currRoom = board.FindRoomPerRect(furniture.Description);
-            int endRoom = board.FindRoomPerRect(furDest);
+            else
+            {                          
+                furniture = (predicateToSatisfy as PLocation).furniture;
+                furDest = (predicateToSatisfy as PLocation).rect;
+                furCurrPos = furniture.Description;
+                currRoom = board.FindRoomPerRect(furniture.Description);
+                endRoom = board.FindRoomPerRect(furDest);
+                 if (currRoom == endRoom)
+                {
+                    directions = FindPossibleDirections(furniture, board);
+                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);                   
+                }
+                else
+                {
+                    directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
+                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);         
+                }
+            }                           
             // in case sart & end positions are in the same room
             if (currRoom == endRoom)
-            {
-                var directions = FindPossibleDirections(furniture, board);
-                var directionsSorted = SortDirectionsByDistance(furniture, directions, board);
+            {               
                 //check if both positions are in the same orientaion.
                 if (IsSameOrientaion(furCurrPos, furDest))
                 {   
                     //check if can move             
-                    var operation = CheckIfCanMove(directionsSorted, furniture, board);
+                    var operation = CheckIfCanMove(directionsSorted, furniture, blockingfurPerOperation);
                     if (operation != null)
-                        return operation;                   
+                        return operation;
+                    //can't move                   
+                        return ReturnOptimalOperation(blockingfurPerOperation);                                           
                 }
                 //if not the same orientation- check if can rotate
                 {
                     Rotate rotate= new Rotate(furniture);
-                    var operation = CheckIfCanRotate(directionsSorted, rotate, board);
+                    var operation = CheckIfCanRotate(directionsSorted, rotate, blockingfurPerOperation);
                     if (operation != null)
                         return operation;
+                    //cant rotate
+                    operation = CheckIfCanMove(directionsSorted, furniture, blockingfurPerOperation);
+                    if (operation != null)
+                        return operation;
+                    //cant move or rotate
+                    return ReturnOptimalOperation(blockingfurPerOperation);  
 
-                }
-                // need to choose an operation that will create min inturrpts;
-                {
-                    Operation op = FindOptimalOperation(board, furniture, predicateToSatisfy);
-                    return op;
-                }
+                }               
             }
-            //else: star& end positions are not in the same room
-            //find dir to door
-            var directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
+            //else: star& end positions are not in the same room                     
             //if furniture is passing rooms:
             if (directionsToDoor.Count() == 0)
             {
                 directionsToDoor = FindPossibleDirections(furniture, board);
-            }
-            var directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);
+                directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);
+            }           
             if (CanPassDoor(furniture, currRoom, endRoom))
             {
-                var operation = CheckIfCanMove(directionToDoorSorted, furniture, board);
+                var operation = CheckIfCanMove(directionToDoorSorted, furniture, blockingfurPerOperation);
                 if (operation != null)
                     return operation;
+                //cant move
+                return ReturnOptimalOperation(blockingfurPerOperation);           
             }
             //cant pass door
             if (!CanPassDoor(furniture, currRoom, endRoom))
             {
                 //check if can rotate
                 Rotate rotate = new Rotate(furniture);
-                var operation = CheckIfCanRotate(directionToDoorSorted, rotate, board);
+                var operation = CheckIfCanRotate(directionToDoorSorted, rotate, blockingfurPerOperation);
                 if (operation != null)
-                    return operation;           
+                    return operation;
+                //cant rotate
+                 operation = CheckIfCanMove(directionToDoorSorted, furniture, blockingfurPerOperation);
+                if (operation != null)
+                    return operation;
+                //cant move or rotate
+                return ReturnOptimalOperation(blockingfurPerOperation);      
             }
-            //cant rotate niether move without intterupting- choose the minimum
-            {
-                Operation op = FindOptimalOperation(board, furniture, predicateToSatisfy);
-                return op;
-            }
+            return null;
         }
+
+        private Operation ReturnOptimalOperation(Dictionary<Operation, List<Furniture>> blockingfurPerOperation)
+        {
+            var operationSortedByMinNumOfBlockingFur = blockingfurPerOperation.OrderBy(i => i.Value.Count());
+            blockingfurPerOperation = operationSortedByMinNumOfBlockingFur.ToDictionary(i => i.Key, i => i.Value);
+            return blockingfurPerOperation.Keys.First();
+        }
+
         /// <summary>
         /// returns a sorted list of directions
         /// it calculates the euclidean ditstance after moving in each direction and sorts ascending order
@@ -806,37 +839,54 @@ namespace Heuristics
             return sortedDir;
             
         }
-        private Operation CheckIfCanMove(List<Direction> directions, Furniture furniture, Board board)
+        private Operation CheckIfCanMove(List<Direction> directions, Furniture furniture, Dictionary<Operation, List<Furniture>>blockingfurPerOperation)
         {
+            Move move = new Move(furniture);
             foreach (var direction in directions)
             {
-                if (CanMoveInDir(furniture, direction, board))
-                {   //warning: we dont sort moves if we have more than one  
-                    //build move and return it
-                    Move move= new Move(furniture);
-                    move.Direction = direction;
-                    move.HowManyStepsInDirection = 1;
-                    //QUESTION: do we need to initialize the rest of the parameters?
-                    return (Operation)move;
-                }
+                move.Direction = direction;
+                move.HowManyStepsInDirection = 1;
+                Rectangle diffRect = move.CalculateRectDiff();
+                if (Board.Instance.InBounds(diffRect))
+                {
+                    if (Board.Instance.IsNotWall(diffRect))
+                    {
+                        if(Board.Instance.IsEmpty(diffRect))
+                            return (Operation)move;
+                        else //is blocked by other fur'
+                        {
+                            var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
+                            blockingfurPerOperation.Add((Operation)move, problematicFur);
+                        }
+                    }
+                }                       
             }
             return null;
         }
 
-        private Operation CheckIfCanRotate(List<Direction> directions, Rotate rotate, Board board)
+        private Operation CheckIfCanRotate(List<Direction> directions, Rotate rotate, Dictionary<Operation, List<Furniture>> blockingfurPerOperation )
         {
             //TODO: need to decide in what direction to rotate
             List<RotationDirection> RDL =new List<RotationDirection>();
             RDL.Add(RotationDirection.ClockWise);
             RDL.Add(RotationDirection.CounterClockWise);            
-            var sortedRD = SortRotateDirectionsByDistance(rotate.Furniture, RDL, board);
+            var sortedRD = SortRotateDirectionsByDistance(rotate.Furniture, RDL, Board.Instance);
             foreach (var SRD in sortedRD)
-            {
-                var RD = SRD;
-                rotate.RotationDirection = RD;
-                if (rotate.IsValidRotate())
-                    return (Operation)rotate;
-                //do we nned to initialzie rest of the paramters?
+            {             
+                rotate.RotationDirection = SRD;
+                var diffRect = rotate.CalculateRectToBeCleanByDirection();
+                if (Board.Instance.InBounds(diffRect))
+                {
+                    if (Board.Instance.IsNotWall(diffRect))
+                    {
+                        if (Board.Instance.IsEmpty(diffRect))
+                        {
+                            return (Operation) rotate;
+                        }
+                         var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
+                         blockingfurPerOperation.Add((Operation)rotate, problematicFur);
+                    }
+                }
             }                               
             return null;
         }
