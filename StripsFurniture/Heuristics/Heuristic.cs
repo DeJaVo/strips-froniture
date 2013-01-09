@@ -743,21 +743,21 @@ namespace Heuristics
                 furCurrPos = furniture.Description;
                 currRoom = board.FindRoomPerRect(furniture.Description);
                 endRoom = board.FindRoomPerRect(furDest);   
-                List<Direction> forbbiden = new List<Direction>();
+                Direction forbbiden = new Direction();
                 Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {
                     directions = FindPossibleDirections(furniture, board);
                     directionsSorted = SortDirectionsByDistance(furniture, directions, board);                  
-                    forbbiden.Add((predicateToSatisfy as PClean).Forbbiden);
-                    directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
+                    forbbiden =((predicateToSatisfy as PClean).Forbbiden);
+                    directionsSorted = directionsSorted.Except(new List<Direction>{forbbiden}).ToList(); 
                 }
                 else
                 {
                     directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
                     directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);                    
-                    forbbiden.Add((predicateToSatisfy as PClean).Forbbiden);
-                    directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
+                    forbbiden = ((predicateToSatisfy as PClean).Forbbiden);
+                    directionToDoorSorted = directionToDoorSorted.Except(new List<Direction> { forbbiden }).ToList();
                 }
                 if ((directionsSorted==null && directionToDoorSorted.Count==0) || (directionToDoorSorted==null && directionsSorted.Count==0))
                 {
@@ -765,7 +765,9 @@ namespace Heuristics
                     //sort list according to: first ortogonal to the forbbiden and internali the direction with min steps in clearing the rect
                     //try moving 
                     var remainingDirections = FindRemainingDirections(forbbiden);
-                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden,remainingDirections);
+
+                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description);
+
                     var operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
                     if (operation == null)
                     {
@@ -852,6 +854,16 @@ namespace Heuristics
                 return ReturnOptimalOperation(blockingfurPerOperation);      
             }
             return null;
+        }
+
+        private List<Direction> FindRemainingDirections(Direction forbbiden)
+        {
+            List<Direction> result= new List<Direction>();
+            result.Add(Direction.Down);
+            result.Add(Direction.Up);
+            result.Add(Direction.Left);
+            result.Add(Direction.Right);
+            return result.Except(new List<Direction> {forbbiden}).ToList();
         }
 
         private Operation ReturnOptimalOperation(Dictionary<Operation, List<Furniture>> blockingfurPerOperation)
