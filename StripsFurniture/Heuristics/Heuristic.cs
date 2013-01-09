@@ -818,7 +818,7 @@ namespace Heuristics
                 move.Direction = direction;
                 move.HowManyStepsInDirection = 1;
                 var diffRect = move.CalculateRectDiff();
-                if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect))
+                if (!board.InBounds(diffRect) || !board.IsEmpty(diffRect))
                     continue;
                 var newRect = move.CalculateNewdestRectangle();
                 var temp = CalculatePathByRect(newRect, board.furnitureDestination[furniture]);
@@ -1280,7 +1280,7 @@ namespace Heuristics
             Rectangle problematicRect = (predicate as PClean).CleanRect;
             foreach (var furniture in board.furnitureDestination.Keys)
             {
-                if (board.IsFurnitureInRectangle(furniture.ID, problematicRect))
+                if (problematicRect.IntersectsWith(furniture.Description))
                 {
                     result.Add(furniture);
                 }
