@@ -689,23 +689,37 @@ namespace Heuristics
                 furDest = Board.Instance.furnitureDestination[furniture];
                 furCurrPos = furniture.Description;
                 currRoom = board.FindRoomPerRect(furniture.Description);
-                endRoom = board.FindRoomPerRect(furDest);                
+                endRoom = board.FindRoomPerRect(furDest);   
+                List<Direction> forbbiden = new List<Direction>();
+                Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {
                     directions = FindPossibleDirections(furniture, board);
-                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);
-                    List<Direction> forbbiden = new List<Direction>();
+                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);                  
                     forbbiden.Add((predicateToSatisfy as PClean).Forbbiden);
                     directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
                 }
                 else
                 {
                     directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
-                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);
-                    List<Direction> forbbiden = new List<Direction>();
+                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);                    
                     forbbiden.Add((predicateToSatisfy as PClean).Forbbiden);
                     directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
                 }
+                if ((directionsSorted==null && directionToDoorSorted.Count==0) || (directionToDoorSorted==null && directionsSorted.Count==0))
+                {
+                    //create a list directions except for the forbidden
+                    //sort list according to: first ortogonal to the forbbiden and internali the direction with min steps in clearing the rect
+                    //try moving 
+                    var remainingDirections = FindRemainingDirections(forbbiden);
+                    var remainingDirectionsSorted = SortRemainingDirections(remainingDirections);
+                    var operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
+                    if (operation == null)
+                    {
+                        return ReturnOptimalOperation(blocking);
+                    }
+                }
+
             }
             //predicate is a location kind
             else
