@@ -663,6 +663,59 @@ namespace Heuristics
         #endregion
         #endregion
 
+        private List<Direction> SortRemainingDirections(Direction forbidenDir, List<Direction> remainingDirections,
+                                                        Rectangle rectToClean,Rectangle rectToMove)
+        {
+            List<Direction> sortRemainingDirections = new List<Direction>();
+
+            // last is the opposite to the forbiden direction
+            Direction oppToForbiden;
+            if (forbidenDir == Direction.Down)
+            {
+                oppToForbiden = Direction.Up;
+            }
+            else if (forbidenDir == Direction.Up)
+            {
+                oppToForbiden = Direction.Down;
+            }
+            else if (forbidenDir == Direction.Right)
+            {
+                oppToForbiden = Direction.Left;
+            }
+            else
+            {
+                oppToForbiden = Direction.Right;
+            }
+
+            remainingDirections.Remove(oppToForbiden);
+            Dictionary<Direction, int> dictDists = new Dictionary<Direction, int>();
+            foreach (Direction currDir in remainingDirections)
+            {
+                int dirDist;
+                if (currDir == Direction.Up)
+                {
+                    dirDist = rectToMove.Bottom - rectToClean.Y;
+                }
+                else if (currDir == Direction.Down)
+                {
+                    dirDist = rectToClean.Bottom - rectToMove.Y;
+                }
+                else if (currDir == Direction.Right)
+                {
+                    dirDist = rectToMove.Right - rectToMove.X;
+                }
+                else
+                {
+                    dirDist = rectToMove.Right - rectToClean.X;
+                }
+                dictDists.Add(currDir, dirDist);
+            }
+
+            dictDists.OrderBy(i => i.Value);
+
+            return sortRemainingDirections;
+        }
+
         /// <summary>
         /// choose an optimal operation which satisfied the given predicate
         /// </summary>
@@ -712,7 +765,7 @@ namespace Heuristics
                     //sort list according to: first ortogonal to the forbbiden and internali the direction with min steps in clearing the rect
                     //try moving 
                     var remainingDirections = FindRemainingDirections(forbbiden);
-                    var remainingDirectionsSorted = SortRemainingDirections(remainingDirections);
+                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden,remainingDirections);
                     var operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
                     if (operation == null)
                     {
