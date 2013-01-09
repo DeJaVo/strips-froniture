@@ -423,19 +423,43 @@ namespace Heuristics
                 Rectangle destRect = ((PLocation)currLocation).rect;
                 Rectangle startRect = ((PLocation)currLocation).furniture.Description;
 
-                this.UpdateRooms(startRect, ((PLocation)currLocation).furniture.ID,
+                this.UpdateRoomsStart(((PLocation)currLocation).furniture,
                                 ref room1StartStateFurnitures,
                                 ref room2StartStateFurnitures,
                                 ref room3StartStateFurnitures);
 
-                this.UpdateRooms(destRect, ((PLocation)currLocation).furniture.ID,
+                this.UpdateRoomsDest(destRect, ((PLocation)currLocation).furniture.ID,
                                 ref room1DestStateFurnitures,
                                 ref room2DestStateFurnitures,
                                 ref room3DestStateFurnitures);
             }
         }
 
-        private void UpdateRooms(Rectangle rect,int id,
+        private void UpdateRoomsStart(Furniture fur,
+                                    ref List<Furniture> room1Furnitures,
+                                    ref List<Furniture> room2Furnitures,
+                                    ref List<Furniture> room3Furnitures)
+        {
+            Rectangle rect = fur.Description;
+
+            // room 1
+            if (rect.X <= 11)
+            {
+                room1Furnitures.Add(fur);
+            }
+            // room 2
+            else if (rect.Y <= 5)
+            {
+                room2Furnitures.Add(fur);
+            }
+            // room 3
+            else
+            {
+                room3Furnitures.Add(fur);
+            }
+        }
+
+        private void UpdateRoomsDest(Rectangle rect, int id,
                                     ref List<Furniture> room1Furnitures,
                                     ref List<Furniture> room2Furnitures,
                                     ref List<Furniture> room3Furnitures)

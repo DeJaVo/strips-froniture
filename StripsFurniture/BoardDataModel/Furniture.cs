@@ -26,16 +26,16 @@ namespace BoardDataModel
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            Furniture fur = (Furniture)obj;
+        //public override bool Equals(object obj)
+        //{
+        //    Furniture fur = (Furniture)obj;
 
-            return fur.ID == this.ID && (fur.furnitureDescription.Equals(this.Description));
-        }
+        //    return fur.ID == this.ID;// && (fur.furnitureDescription.Equals(this.Description));
+        //}
 
-        public override int GetHashCode()
-        {
-            return this.ID;
-        } 
+        //public override int GetHashCode()
+        //{
+        //    return this.ID;
+        //} 
     }
 }
