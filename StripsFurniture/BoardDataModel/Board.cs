@@ -22,7 +22,7 @@ namespace BoardDataModel
         /// <summary>
         /// List of furnitures
         /// </summary>
-        public IDictionary<Furniture, Rectangle> furnitureDestination;
+        public IDictionary<Furniture, Rectangle> furnitureDestination;        
         
         /// <summary>
         /// Board constructor

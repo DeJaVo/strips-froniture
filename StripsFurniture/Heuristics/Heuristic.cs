@@ -663,22 +663,22 @@ namespace Heuristics
         #endregion
         #endregion
 
-        private List<Direction> SortRemainingDirections(Direction forbidenDir, List<Direction> remainingDirections,
+        private List<Direction> SortRemainingDirections(List<Direction> forbidenDir, List<Direction> remainingDirections,
                                                         Rectangle rectToClean,Rectangle rectToMove)
         {
             List<Direction> sortRemainingDirections = new List<Direction>();
 
             // last is the opposite to the forbiden direction
             Direction oppToForbiden;
-            if (forbidenDir == Direction.Down)
+            if (forbidenDir.Contains(Direction.Down))
             {
                 oppToForbiden = Direction.Up;
             }
-            else if (forbidenDir == Direction.Up)
+            else if (forbidenDir.Contains(Direction.Up))
             {
                 oppToForbiden = Direction.Down;
             }
-            else if (forbidenDir == Direction.Right)
+            else if (forbidenDir.Contains(Direction.Right))
             {
                 oppToForbiden = Direction.Left;
             }
@@ -711,8 +711,8 @@ namespace Heuristics
                 dictDists.Add(currDir, dirDist);
             }
 
-            dictDists.OrderBy(i => i.Value);
-            sortRemainingDirections.AddRange(dictDists.Keys.ToList());
+            var dictDistsSorted=dictDists.OrderBy(i => i.Value).ToDictionary(i=> i.Key, i=>i.Value);
+            sortRemainingDirections.AddRange(dictDistsSorted.Keys.ToList());
             sortRemainingDirections.Add(oppToForbiden);
 
             return sortRemainingDirections;
@@ -745,21 +745,22 @@ namespace Heuristics
                 furCurrPos = furniture.Description;
                 currRoom = board.FindRoomPerRect(furniture.Description);
                 endRoom = board.FindRoomPerRect(furDest);   
-                Direction forbbiden = new Direction();
+                List<Direction> forbbiden = new List<Direction>();
+                forbbiden=FindFurbbidenDirections(furniture, (predicateToSatisfy as PClean).CleanRect);
                 Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {
                     directions = FindPossibleDirections(furniture, board);
                     directionsSorted = SortDirectionsByDistance(furniture, directions, board);                  
-                    forbbiden =((predicateToSatisfy as PClean).Forbbiden);
-                    directionsSorted = directionsSorted.Except(new List<Direction>{forbbiden}).ToList(); 
+                   //forbbiden =((predicateToSatisfy as PClean).Forbbiden);
+                    directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
                 }
                 else
                 {
                     directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
                     directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);                    
-                    forbbiden = ((predicateToSatisfy as PClean).Forbbiden);
-                    directionToDoorSorted = directionToDoorSorted.Except(new List<Direction> { forbbiden }).ToList();
+                    //forbbiden = ((predicateToSatisfy as PClean).Forbbiden);
+                    directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
                 }
                 if ((directionsSorted==null && directionToDoorSorted.Count==0) || (directionToDoorSorted==null && directionsSorted.Count==0))
                 {
@@ -767,6 +768,8 @@ namespace Heuristics
                     //sort list according to: first ortogonal to the forbbiden and internali the direction with min steps in clearing the rect
                     //try moving 
                     var remainingDirections = FindRemainingDirections(forbbiden);
+                    if (remainingDirections.Count == 0)
+                        remainingDirections = allDirection;
 
                     var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description);
 
@@ -863,16 +866,38 @@ namespace Heuristics
             return null;
         }
 
-        private List<Direction> FindRemainingDirections(Direction forbbiden)
+        private List<Direction> FindFurbbidenDirections(Furniture furniture, Rectangle cleanRect)
+        {
+            List<Direction> result = new List<Direction>();
+            foreach (Direction dir in this.allDirection)
+            {
+                var move = new Move(furniture);
+                move.Direction = dir;
+                move.HowManyStepsInDirection = 1;
+                var newDest = move.CalculateNewdestRectangle();
+                if (cleanRect.IntersectsWith(newDest))
+                    result.Add(dir);
+            }
+            return result;
+        }
+
+        private List<Direction> FindRemainingDirections(List<Direction> forbbiden)
         {
             List<Direction> result= new List<Direction>();
             result.Add(Direction.Down);
             result.Add(Direction.Up);
             result.Add(Direction.Left);
             result.Add(Direction.Right);
-            return result.Except(new List<Direction> {forbbiden}).ToList();
+            return result.Except(forbbiden).ToList();
         }
 
+        public List<Direction> allDirection = new List<Direction>
+            {
+                Direction.Up,
+                Direction.Down,
+                Direction.Left,
+                Direction.Right
+            };
         private Operation ReturnOptimalOperation(Dictionary<Operation, List<Furniture>> blockingfurPerOperation)
         {
             var operationSortedByMinNumOfBlockingFur = blockingfurPerOperation.OrderBy(i => i.Value.Count());
