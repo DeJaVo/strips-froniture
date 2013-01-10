@@ -76,8 +76,9 @@ namespace BusinessLogic
                 // push it's pre condition into stack - need to implement a function that calculates precondition per move
                 if (operation is Move)
                 {
-                    Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();
-                    var clean = new PClean(rectToBeClean) {Forbbiden = operation.ForbbideneDirection()};
+                    Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();                    
+                    var clean = new PClean(rectToBeClean);
+                   // clean.Forbbiden.add(FindForbiddenDirections(rectToBeClean));
                     stack.Push(new List<StackItem>{clean});
                     
                 }
@@ -85,7 +86,8 @@ namespace BusinessLogic
                 else
                 {
                     Rectangle rect =((Rotate)operation).CalculateRectToBeCleanByDirection();
-                    var clean = new PClean(rect) {Forbbiden = operation.ForbbideneDirection()};
+                    var clean = new PClean(rect);
+                   // clean.Forbbiden.add(FindForbiddenDirections(rectToBeClean));
                     stack.Push(new List<StackItem> { clean });
                 }
                 return null;
