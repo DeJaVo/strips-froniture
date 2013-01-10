@@ -702,7 +702,7 @@ namespace Heuristics
                 }
                 else if (currDir == Direction.Right)
                 {
-                    dirDist = rectToMove.Right - rectToMove.X;
+                    dirDist = rectToClean.Right - rectToMove.X;
                 }
                 else
                 {
@@ -712,6 +712,8 @@ namespace Heuristics
             }
 
             dictDists.OrderBy(i => i.Value);
+            sortRemainingDirections.AddRange(dictDists.Keys.ToList());
+            sortRemainingDirections.Add(oppToForbiden);
 
             return sortRemainingDirections;
         }
@@ -769,10 +771,15 @@ namespace Heuristics
                     var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description);
 
                     var operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
-                    if (operation == null)
+                    if (operation != null)
+                    {
+                        return operation;
+                    }
+                    else
                     {
                         return ReturnOptimalOperation(blocking);
                     }
+
                 }
 
             }
