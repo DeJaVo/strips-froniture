@@ -669,27 +669,27 @@ namespace Heuristics
             List<Direction> sortRemainingDirections = new List<Direction>();
 
             // last is the opposite to the forbiden direction
-            Direction oppToForbiden;
+            List<Direction> oppToForbiden = new List<Direction>();
             if (forbidenDir.Contains(Direction.Down))
             {
-                oppToForbiden = Direction.Up;
+                oppToForbiden.Add(Direction.Up);
             }
-            else if (forbidenDir.Contains(Direction.Up))
+            if (forbidenDir.Contains(Direction.Up))
             {
-                oppToForbiden = Direction.Down;
+                oppToForbiden.Add(Direction.Down);
             }
-            else if (forbidenDir.Contains(Direction.Right))
+            if (forbidenDir.Contains(Direction.Right))
             {
-                oppToForbiden = Direction.Left;
+                oppToForbiden.Add(Direction.Left);
             }
-            else
+            if (forbidenDir.Contains(Direction.Left))
             {
-                oppToForbiden = Direction.Right;
+                oppToForbiden.Add(Direction.Right);
             }
 
-            remainingDirections.Remove(oppToForbiden);
+            var remainingDirectionsSorted=remainingDirections.Except(oppToForbiden);
             Dictionary<Direction, int> dictDists = new Dictionary<Direction, int>();
-            foreach (Direction currDir in remainingDirections)
+            foreach (Direction currDir in remainingDirectionsSorted)
             {
                 int dirDist;
                 if (currDir == Direction.Up)
@@ -713,7 +713,7 @@ namespace Heuristics
 
             var dictDistsSorted=dictDists.OrderBy(i => i.Value).ToDictionary(i=> i.Key, i=>i.Value);
             sortRemainingDirections.AddRange(dictDistsSorted.Keys.ToList());
-            sortRemainingDirections.Add(oppToForbiden);
+            sortRemainingDirections.AddRange(oppToForbiden);
 
             return sortRemainingDirections;
         }
@@ -929,7 +929,7 @@ namespace Heuristics
                 move.Direction = direction;
                 move.HowManyStepsInDirection = 1;
                 var diffRect = move.CalculateRectDiff();
-                if (!board.InBounds(diffRect) || !board.IsEmpty(diffRect))
+                if (!board.InBounds(diffRect))
                     continue;
                 var newRect = move.CalculateNewdestRectangle();
                 var temp = CalculatePathByRect(newRect, board.furnitureDestination[furniture]);
