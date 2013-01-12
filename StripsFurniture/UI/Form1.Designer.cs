@@ -59,6 +59,7 @@
             this.nextStepButton = new System.Windows.Forms.Button();
             this.runButton = new System.Windows.Forms.Button();
             this.operationsStack = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -84,6 +85,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.drawFurnituresDestCheckBox);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
@@ -509,6 +511,16 @@
             this.operationsStack.Size = new System.Drawing.Size(302, 607);
             this.operationsStack.TabIndex = 0;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(72, 565);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(119, 23);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Load";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Load_button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -574,6 +586,7 @@
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.Button createFurnitureButton;
         private System.Windows.Forms.CheckBox drawFurnituresDestCheckBox;
+        private System.Windows.Forms.Button button1;
     }
 }
 
