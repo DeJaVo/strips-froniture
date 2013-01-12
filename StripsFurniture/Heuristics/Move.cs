@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using BoardDataModel;
 
 namespace Heuristics
@@ -183,21 +184,26 @@ namespace Heuristics
         /// Retruns the source direction
         /// </summary>
         /// <returns></returns>
-        public override Direction ForbbideneDirection()
+        public override List<Direction> ForbbidenDirections()
         {
+            List<Direction> result = new List<Direction>();           
             switch (Direction)
             {
                 case Direction.Down:
-                    return Direction.Up;
+                    result.Add(Direction.Up);
+                    break;                    
                 case Direction.Up:
-                    return Direction.Down;
+                    result.Add(Direction.Down);
+                    break;
                 case Direction.Left:
-                    return Direction.Right;
+                    result.Add(Direction.Right);
+                    break;
                 case Direction.Right:
-                    return Direction.Left;
+                    result.Add(Direction.Left);
+                    break;
             }
 
-            return Direction.Up;
+            return result;
         }
     }
 }

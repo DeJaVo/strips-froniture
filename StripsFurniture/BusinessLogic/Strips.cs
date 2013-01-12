@@ -78,7 +78,7 @@ namespace BusinessLogic
                 {
                     Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();                    
                     var clean = new PClean(rectToBeClean);
-                   // clean.Forbbiden.add(FindForbiddenDirections(rectToBeClean));
+                    clean.Forbbiden= operation.ForbbidenDirections();
                     stack.Push(new List<StackItem>{clean});
                     
                 }
@@ -87,7 +87,7 @@ namespace BusinessLogic
                 {
                     Rectangle rect =((Rotate)operation).CalculateRectToBeCleanByDirection();
                     var clean = new PClean(rect);
-                   // clean.Forbbiden.add(FindForbiddenDirections(rectToBeClean));
+                    clean.Forbbiden= operation.ForbbidenDirections();
                     stack.Push(new List<StackItem> { clean });
                 }
                 return null;

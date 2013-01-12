@@ -30,6 +30,6 @@ namespace Heuristics
         /// Retrun the source direction
         /// </summary>
         /// <returns></returns>
-        public abstract Direction ForbbideneDirection();
+        public abstract List<Direction> ForbbidenDirections();
     }
 }

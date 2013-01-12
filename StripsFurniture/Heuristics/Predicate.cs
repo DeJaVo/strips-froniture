@@ -22,7 +22,7 @@ namespace Heuristics
         {
             public Rectangle CleanRect { get; set; }
 
-           // public List<Direction> Forbbiden { get; set; }
+           public List<Direction> Forbbiden { get; set; }
 
             public PClean(Rectangle predRect)
             {
