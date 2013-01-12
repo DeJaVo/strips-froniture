@@ -687,8 +687,10 @@ namespace Heuristics
                 oppToForbiden.Add(Direction.Right);
             }
 
-            var remainingDirectionsSorted=remainingDirections.Except(oppToForbiden);
+            var remainingDirectionsSorted=remainingDirections.Except(oppToForbiden).ToList();
             Dictionary<Direction, int> dictDists = new Dictionary<Direction, int>();
+            if (remainingDirectionsSorted.Count == 0)
+                remainingDirectionsSorted = oppToForbiden;
             foreach (Direction currDir in remainingDirectionsSorted)
             {
                 int dirDist;
@@ -714,6 +716,7 @@ namespace Heuristics
             var dictDistsSorted=dictDists.OrderBy(i => i.Value).ToDictionary(i=> i.Key, i=>i.Value);
             sortRemainingDirections.AddRange(dictDistsSorted.Keys.ToList());
             sortRemainingDirections.AddRange(oppToForbiden);
+            sortRemainingDirections = sortRemainingDirections.Distinct().ToList();
 
             return sortRemainingDirections;
         }
@@ -745,8 +748,9 @@ namespace Heuristics
                 furCurrPos = furniture.Description;
                 currRoom = board.FindRoomPerRect(furniture.Description);
                 endRoom = board.FindRoomPerRect(furDest);   
-                List<Direction> forbbiden = new List<Direction>();
-                forbbiden=FindFurbbidenDirections(furniture, (predicateToSatisfy as PClean).CleanRect);
+                List<Direction> forbbiden =(predicateToSatisfy as PClean).Forbbiden;
+                forbbiden.AddRange(FindFurbbidenDirections(furniture, (predicateToSatisfy as PClean).CleanRect));
+                forbbiden=forbbiden.Distinct().ToList();
                 Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using BoardDataModel;
 
@@ -164,19 +165,20 @@ namespace Heuristics
         /// return the source direction
         /// </summary>
         /// <returns></returns>
-        public override Direction ForbbideneDirection()
+        public override List<Direction> ForbbidenDirections()
         {
+            List<Direction> result = new List<Direction>();
             switch (orientation)
             {
                 case Orientation.Horizontal:
                     {
                         if (RotationDirection == RotationDirection.ClockWise)
                         {
-                            return Direction.Down;
+                            result.Add(Direction.Up);
                         }
                         if (RotationDirection == RotationDirection.CounterClockWise)
                         {
-                            return Direction.Up;
+                            result.Add(Direction.Down);
                         }
                         break;
                     }
@@ -184,16 +186,16 @@ namespace Heuristics
                     {
                         if (RotationDirection == RotationDirection.ClockWise)
                         {
-                            return Direction.Right;
+                            result.Add(Direction.Right);
                         }
                         if (RotationDirection == RotationDirection.CounterClockWise)
                         {
-                            return Direction.Right;
+                            result.Add(Direction.Left);
                         }
                         break;
                     }
             }
-            return Direction.Up;
+            return result;
         }
 
         public Rectangle NewDestRect()
