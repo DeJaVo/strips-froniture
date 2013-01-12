@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -362,6 +363,33 @@ namespace UI
                     DeleteFurniture(currDest, true);
                 }
             }
+        }
+
+
+        //For debug
+        private void Load_button_Click(object sender, EventArgs e)
+        {
+            const string filePath = "file.txt";
+            int i = 0;
+            const char delimiterChar = ' ';
+            string text;
+            using (var streamReader = new StreamReader(filePath))
+            {
+                text = streamReader.ReadToEnd();
+            }
+            string[] word = text.Split(delimiterChar);
+            while (i < word.Length)
+            {
+                furStartWidthCombo.Text = word[i++];
+                furStartHeightCombo.Text = word[i++];
+                furStartYCombo.Text = word[i++];
+                furStartXCombo.Text = word[i++];
+                furDestWidthCombo.Text = word[i++];
+                furDestHeightCombo.Text = word[i++];
+                furDestYCombo.Text = word[i++];
+                furDestXCombo.Text = word[i++];
+            }
+
         }
 
 
