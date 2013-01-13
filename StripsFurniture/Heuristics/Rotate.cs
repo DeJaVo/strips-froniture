@@ -221,7 +221,7 @@ namespace Heuristics
                         }
                         else if (RotationDirection == RotationDirection.CounterClockWise)
                         {
-                            rect1 = new Rectangle(x, y - width + 1, height, width);
+                            rect1 = new Rectangle(x, y - width + height, height, width);
                         }
                         break;
                     }
@@ -229,7 +229,7 @@ namespace Heuristics
                     {
                         if (RotationDirection == RotationDirection.ClockWise)
                         {
-                            rect1 = new Rectangle(x - height + 1, y, height, width);
+                            rect1 = new Rectangle(x - height + width, y, height, width);
                         }
                         else if (RotationDirection == RotationDirection.CounterClockWise)
                         {
