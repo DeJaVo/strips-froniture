@@ -7,10 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using BoardDataModel;
 using BusinessLogic;
 using Heuristics;
+
 namespace UI
 {
     public partial class Form1 : Form
@@ -20,20 +20,21 @@ namespace UI
 
         private Strips stripsLogic;
         private bool pause;
+
         public Form1()
         {
             InitializeComponent();
 
-            this.resetButton_Click(null,null);
+            this.resetButton_Click(null, null);
         }
 
         private void BuildBoard()
         {
             splitContainer3.Panel1.Controls.Clear();
 
-            int squreWidth = (int)(splitContainer3.Panel1.Width / 22);
-            int squreHeight = (int)(splitContainer3.Panel1.Height / 13);
-            squares = new Label[13, 22];
+            int squreWidth = (int) (splitContainer3.Panel1.Width/22);
+            int squreHeight = (int) (splitContainer3.Panel1.Height/13);
+            squares = new Label[13,22];
 
             for (int j = 0; j < 22; j++)
             {
@@ -56,9 +57,9 @@ namespace UI
                 squares[i, 21] = new Label();
                 squares[i, 21].Size = new Size(squreWidth, squreHeight);
 
-                squares[i,21].BackColor = Color.Black;
+                squares[i, 21].BackColor = Color.Black;
             }
-            
+
             for (int j = 0; j < 22; j++)
             {
                 squares[12, j] = new Label();
@@ -95,44 +96,43 @@ namespace UI
                         squares[i, j].BorderStyle = BorderStyle.FixedSingle;
                         squares[i, j].BackColor = Color.Gray;
                     }
-                    squares[i, j].Location = new Point(j * squreWidth, i * squreHeight);
+                    squares[i, j].Location = new Point(j*squreWidth, i*squreHeight);
                     splitContainer3.Panel1.Controls.Add(squares[i, j]);
                 }
             }
-
         }
 
 
         private void createFurnitureButton_Click(object sender, EventArgs e)
         {
             // collect the forniture parameters
-            int furStartX,furStartY,furStartWidth,furStartHeight;
+            int furStartX, furStartY, furStartWidth, furStartHeight;
             int furDestX, furDestY, furDestWidth, furDestHeight;
             bool res = int.TryParse(furStartXCombo.Text, out furStartX);
-            res &= int.TryParse(furStartYCombo.Text,out furStartY);
-            res &= int.TryParse(furStartWidthCombo.Text,out furStartWidth);
-            res &= int.TryParse(furStartHeightCombo.Text,out furStartHeight);
-            res &= int.TryParse(furDestXCombo.Text,out furDestX);
-            res &= int.TryParse(furDestYCombo.Text,out furDestY);
-            res &= int.TryParse(furDestWidthCombo.Text,out furDestWidth);
-            res &= int.TryParse(furDestHeightCombo.Text,out furDestHeight);
-            
+            res &= int.TryParse(furStartYCombo.Text, out furStartY);
+            res &= int.TryParse(furStartWidthCombo.Text, out furStartWidth);
+            res &= int.TryParse(furStartHeightCombo.Text, out furStartHeight);
+            res &= int.TryParse(furDestXCombo.Text, out furDestX);
+            res &= int.TryParse(furDestYCombo.Text, out furDestY);
+            res &= int.TryParse(furDestWidthCombo.Text, out furDestWidth);
+            res &= int.TryParse(furDestHeightCombo.Text, out furDestHeight);
+
             if (!res)
             {
                 MessageBox.Show("Error invalid input");
                 return;
             }
 
-            Rectangle furStart = new Rectangle(furStartX,furStartY,furStartWidth,furStartHeight);
+            Rectangle furStart = new Rectangle(furStartX, furStartY, furStartWidth, furStartHeight);
             Rectangle furDest = new Rectangle(furDestX, furDestY, furDestWidth, furDestHeight);
 
-            int furId = board.CreateFurniture(furStart,furDest);
+            int furId = board.CreateFurniture(furStart, furDest);
 
             if (furId != -1)
             {
                 // draw the furniture start position
                 this.DrawFurniture(furDest, furId, true);
-                this.DrawFurniture(furStart, furId,false);
+                this.DrawFurniture(furStart, furId, false);
 
                 // enable actions
                 this.runButton.Enabled = true;
@@ -202,8 +202,8 @@ namespace UI
 
         private void ExecuteOperation(Operation currOp)
         {
-            this.DeleteFurniture(currOp.FurnitureOldData,false);
-            this.DrawFurniture(currOp.FurnitureNewData,currOp.Furniture.ID,false);
+            this.DeleteFurniture(currOp.FurnitureOldData, false);
+            this.DrawFurniture(currOp.FurnitureNewData, currOp.Furniture.ID, false);
             operationsStack.Items.Add(currOp.ToString());
         }
 
@@ -214,7 +214,7 @@ namespace UI
             this.nextStepButton.Enabled = false;
             this.createFurnitureButton.Enabled = true;
             this.operationsStack.Items.Clear();
-            
+
             this.ClearCombos();
 
             board = Board.Instance;
@@ -236,6 +236,7 @@ namespace UI
             this.furDestHeightCombo.Text = "";
             this.furDestWidthCombo.Text = "";
         }
+
         private void pauseButton_Click(object sender, EventArgs e)
         {
             pause = true;
@@ -244,7 +245,8 @@ namespace UI
         }
 
         #region UI utils
-        private void DrawFurniture(Rectangle rec,int id,bool isDest)
+
+        private void DrawFurniture(Rectangle rec, int id, bool isDest)
         {
             for (int i = rec.Top; i < rec.Top + rec.Height; i++)
             {
@@ -257,7 +259,8 @@ namespace UI
 
         private void DrawCell(int i, int j, int id, bool isDest)
         {
-            if (isDest && ((!drawFurnituresDestCheckBox.Checked) || (squares[i, j].BorderStyle != BorderStyle.FixedSingle)))
+            if (isDest &&
+                ((!drawFurnituresDestCheckBox.Checked) || (squares[i, j].BorderStyle != BorderStyle.FixedSingle)))
                 return;
 
             using (Font myFont = new Font("Arial", 20))
@@ -276,7 +279,7 @@ namespace UI
             }
         }
 
-        private void DeleteFurniture(Rectangle rec,bool isDest)
+        private void DeleteFurniture(Rectangle rec, bool isDest)
         {
             for (int i = rec.Top; i < rec.Top + rec.Height; i++)
             {
@@ -293,7 +296,7 @@ namespace UI
 
                     if ((squares[i, j].Tag != null) && (!isDest))
                     {
-                        this.DrawCell(i, j, (int)squares[i, j].Tag, true);
+                        this.DrawCell(i, j, (int) squares[i, j].Tag, true);
                     }
                     else
                     {
@@ -327,6 +330,7 @@ namespace UI
                 }
             }
         }
+
         #endregion
 
         private void furStartWidthCombo_TextUpdate(object sender, EventArgs e)
@@ -372,13 +376,30 @@ namespace UI
             const string filePath = "file.txt";
             int i = 0;
             const char delimiterChar = ' ';
-            string text;
+            var text = new string[20];
             using (var streamReader = new StreamReader(filePath))
             {
-                text = streamReader.ReadToEnd();
+                while (!streamReader.EndOfStream)
+                {
+                    text[i] = streamReader.ReadLine();
+                    i++;
+                }
             }
-            string[] word = text.Split(delimiterChar);
-            while (i < word.Length)
+            i = 0;
+            int j = 0;
+            var word = new string[100];
+            while (text[i] != null)
+            {
+                var temp = text[i].Split(delimiterChar);
+                foreach (var s in temp)
+                {
+                    word[j] = s;
+                    j++;
+                }
+                i++;
+            }
+            i = 0;
+            while (word[i] != null)
             {
                 furStartWidthCombo.Text = word[i++];
                 furStartHeightCombo.Text = word[i++];
@@ -388,10 +409,9 @@ namespace UI
                 furDestHeightCombo.Text = word[i++];
                 furDestYCombo.Text = word[i++];
                 furDestXCombo.Text = word[i++];
+                createFurnitureButton_Click(null, null);
             }
-
         }
-
-
     }
 }
+
