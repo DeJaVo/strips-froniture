@@ -933,8 +933,10 @@ namespace Heuristics
                 move.Direction = direction;
                 move.HowManyStepsInDirection = 1;
                 var diffRect = move.CalculateRectDiff();
-                if (!board.InBounds(diffRect))
+                if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect))
+                {
                     continue;
+                }
                 var newRect = move.CalculateNewdestRectangle();
                 var temp = CalculatePathByRect(newRect, board.furnitureDestination[furniture]);
                 var distance = temp.Count;
