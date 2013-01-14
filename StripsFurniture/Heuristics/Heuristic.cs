@@ -766,7 +766,7 @@ namespace Heuristics
                     remainingDirectionsSorted = FilterUnVaildDirection(remainingDirectionsSorted, furniture);
                     if (remainingDirectionsSorted.Count != 0)
                     {
-                        if (IsOpposite(remainingDirectionsSorted.First(), forbbidenSaved))
+                        if (IsOpposite(remainingDirectionsSorted.First(), forbbidenSaved) && currRoom!=endRoom && !CanPassDoor(furniture, currRoom, endRoom))
                         {
                             operation = CheckIfCanRotate(new List<Direction>(), new Rotate(furniture), blocking);
                             if (operation != null)
