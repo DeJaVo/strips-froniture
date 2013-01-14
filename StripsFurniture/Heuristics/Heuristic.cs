@@ -1076,9 +1076,9 @@ namespace Heuristics
         }
         private Operation CheckIfCanMove(List<Direction> directions, Furniture furniture, Dictionary<Operation, List<Furniture>>blockingfurPerOperation)
         {
-            Move move = new Move(furniture);
             foreach (var direction in directions)
             {
+                Move move = new Move(furniture);
                 move.Direction = direction;
                 move.HowManyStepsInDirection = 1;
                 Rectangle diffRect = move.CalculateRectDiff();
