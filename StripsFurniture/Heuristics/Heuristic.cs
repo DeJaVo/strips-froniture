@@ -780,10 +780,20 @@ namespace Heuristics
                 Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {
+                    var RemainigDirections = FindRemainingDirections(new List<Direction> { forbbidenSaved });
+                    var SortedRemainingDirections = SortRemainingDirections(new List<Direction> { forbbidenSaved },
+                                                                            RemainigDirections,
+                                                                            (predicateToSatisfy as PClean).CleanRect,
+                                                                            furniture.Description, furniture, forbbidenSaved);
+
+                    directionsSorted = SortedRemainingDirections;
+                    directionsSorted = FilterUnVaildDirection(directionsSorted, furniture);
                     directions = FindPossibleDirections(furniture, board);
-                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);                  
-                   //forbbiden =((predicateToSatisfy as PClean).Forbbiden);
-                    directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
+
+                    // directions = FindPossibleDirections(furniture, board);
+                    // directionsSorted = SortDirectionsByDistance(furniture, directions, board);                  
+                    ////forbbiden =((predicateToSatisfy as PClean).Forbbiden);
+                    // directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
                 }
                 else
                 {
