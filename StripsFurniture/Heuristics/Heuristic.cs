@@ -319,7 +319,36 @@ namespace Heuristics
                 {
                     return -1;
                 }
+
+                // select the group that is in the small room and the destination of the other group is in the same room of the group
+                Rectangle testedStart = testedPath.First();
+                Rectangle testedDest = testedPath.Last();
+                Rectangle otherStart = otherPath.First();
+                Rectangle otherDest = otherPath.Last();
+                if (IsDestAndSourceInSameSmallRoom(testedDest, otherStart))
+                {
+                    return 1;
+                }
+                else if (IsDestAndSourceInSameSmallRoom(otherDest, testedStart))
+                {
+                    return -1;
+                }
+
                 return 0;
+            }
+
+            private static bool IsDestAndSourceInSameSmallRoom(Rectangle testedDest, Rectangle otherStart)
+            {
+                int testedDestRoom = Board.Instance.FindRoomPerRect(testedDest);
+                int otherStartRoom = Board.Instance.FindRoomPerRect(otherStart);
+
+                if ((testedDestRoom == otherStartRoom) &&
+                    (testedDestRoom == 2 || testedDestRoom == 3))
+                {
+                    return true;
+                }
+
+                return false;
             }
 
             private static bool IsOnPath(List<Rectangle> path,List<Rectangle> furnitures)
