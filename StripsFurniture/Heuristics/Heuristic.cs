@@ -1023,7 +1023,8 @@ namespace Heuristics
                             return (Operation) rotate;
                         }
                          var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
-                         blockingfurPerOperation.Add((Operation)rotate, problematicFur);
+                         var newRotate = new Rotate(rotate.Furniture) { RotationDirection = SRD };
+                         blockingfurPerOperation.Add(newRotate, problematicFur);
                     }
                 }
             }                               
