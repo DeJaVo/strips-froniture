@@ -235,36 +235,15 @@ namespace Heuristics
         {
             public int Compare(Group g1, Group g2)
             {
-                int res = this.InternalCompare(g1, g2);
-                if (res != 0)
-                {
-                    return res;
-                }
+                List<Rectangle> otherGroupFurnituresInStart = g2.GetFurnituresInStart();
+                List<Rectangle> otherGroupFurnituresInDest = g2.GetFurnituresInDest();
 
-                // perform the same checks when g2 is g1 
-                res = this.InternalCompare(g2, g1);
-                if (res != 0)
-                {
-                    return res == 1? -1 : 1;
-                }
-
-                if (res == 0)
-                {
-                    res = this.InternalCompareBasedOnRooms(g1, g2);
-                    if (res != 0)
-                    {
-                        return res;
-                    }
-
-                    // perform the same checks when g2 is g1 
-                    res = this.InternalCompareBasedOnRooms(g2, g1);
-                    if (res != 0)
-                    {
-                        return res == 1 ? -1 : 1;
-                    }
-                }
-
-                // else g1 and g2 are equal
+                List<Rectangle> testedGroupFurnituresInStart = g1.GetFurnituresInStart();
+                List<Rectangle> testedGroupFurnituresInDest = g1.GetFurnituresInDest();
+                int res = GroupsComparer.InternalCompare(g1.Path, g2.Path,
+                                               testedGroupFurnituresInStart, testedGroupFurnituresInDest,
+                                                otherGroupFurnituresInStart, otherGroupFurnituresInDest);
+                
                 return 0;
             }
 
@@ -293,59 +272,57 @@ namespace Heuristics
                 return 0;
             }
 
-            private int InternalCompare(Group tested, Group other)
+            public static int InternalCompare(List<Rectangle> testedPath,List<Rectangle> otherPath,
+                                        List<Rectangle> testedGroupFurnituresInStart, List<Rectangle> testedGroupFurnituresInDest,
+                                        List<Rectangle> otherGroupFurnituresInStart, List<Rectangle> otherGroupFurnituresInDest)
             {
-                List<Rectangle> otherGroupFurnituresInStart = other.GetFurnituresInStart();
-                List<Rectangle> otherGroupFurnituresInDest = other.GetFurnituresInDest();
-
-                List<Rectangle> testedGroupFurnituresInStart = tested.GetFurnituresInStart();
-                List<Rectangle> testedGroupFurnituresInDest = tested.GetFurnituresInDest();
-                //bool otherBeforeTested = false;
-                //bool testedBeforeOther = false;
-
+                bool otherStartOnTestedPath = false;
+                bool otherDestOnTestedPath = false;
+                bool testedStartOnOtherPath = false;
+                bool testedDestOnOtherPath = false;
+                
                 // if a furniture from g2 in start state is on the path of g1 than g1 is smaller than g2
-                if (IsOnPath(tested.Path, otherGroupFurnituresInStart))
+                if (IsOnPath(testedPath, otherGroupFurnituresInStart))
                 {
-                    //testedBeforeOther = false;
-                    return 1;
+                    otherStartOnTestedPath = true;
+                    //return 1;
                 }
 
                 // else if a furniture from g2 in dest state is on the path of g1 than g1 is bigger than g2
-                if (IsOnPath(tested.Path, otherGroupFurnituresInDest))
+                if (IsOnPath(testedPath, otherGroupFurnituresInDest))
                 {
-                    //testedBeforeOther = true;
-                    return -1;
+                    otherDestOnTestedPath = true;
+                    //return -1;
                 }
 
                 // if a furniture from g1 in start state is on the path of g2 than g2 is smaller than g1
-                if (IsOnPath(other.Path, testedGroupFurnituresInStart))
+                if (IsOnPath(otherPath, testedGroupFurnituresInStart))
                 {
-                    //otherBeforeTested = false;
-                    return -1;
+                    testedStartOnOtherPath = true;
+                    //return -1;
                 }
 
                 // else if a furniture from g1 in dest state is on the path of g2 than g2 is bigger than g1
-                if (IsOnPath(other.Path, testedGroupFurnituresInDest))
+                if (IsOnPath(otherPath, testedGroupFurnituresInDest))
                 {
-                    //otherBeforeTested = true;
-                    return 1;
+                    testedDestOnOtherPath = true;
+                    //return 1;
                 }
 
-                //if (otherBeforeTested != testedBeforeOther)
-                //{
-                //    if (testedBeforeOther)
-                //    {
-                //        return -1;
-                //    }
-                //    else
-                //    {
-                //        return 1;
-                //    }
-                //}
+                if ((otherStartOnTestedPath || testedDestOnOtherPath) &&
+                    (!testedStartOnOtherPath) && (!otherDestOnTestedPath))
+                {
+                    return 1;
+                }
+                else if ((testedStartOnOtherPath || otherDestOnTestedPath) &&
+                         (!otherStartOnTestedPath) && (!testedDestOnOtherPath))
+                {
+                    return -1;
+                }
                 return 0;
             }
 
-            public static bool IsOnPath(List<Rectangle> path,List<Rectangle> furnitures)
+            private static bool IsOnPath(List<Rectangle> path,List<Rectangle> furnitures)
             {
                 foreach (Rectangle currPathPart in path)
                 {
@@ -597,47 +574,14 @@ namespace Heuristics
         {
             public int Compare(PLocation ploc1, PLocation ploc2)
             {
-                //double dist1 = Math.Pow(ploc1.furniture.Description.X - ploc1.rect.X, 2) +
-                //               Math.Pow(ploc1.furniture.Description.Y - ploc1.rect.Y, 2);
-
-                //double dist2 = Math.Pow(ploc2.furniture.Description.X - ploc2.rect.X, 2) +
-                //               Math.Pow(ploc2.furniture.Description.Y - ploc2.rect.Y, 2);
-
-                //if (dist1 == dist2)
-                //{
-                //    return 0;
-                //}
-                //return dist1 > dist2 ? 1 : -1;
-
                 List<Rectangle> ploc1Path = Heuristic.CalculatePathByRect(ploc1.furniture.Description, ploc1.rect);
                 List<Rectangle> ploc2Path = Heuristic.CalculatePathByRect(ploc2.furniture.Description, ploc2.rect);
 
-                // if a furniture from g2 in start state is on the path of g1 than g1 is smaller than g2
-                if (GroupsComparer.IsOnPath(ploc1Path, new List<Rectangle> {ploc2.furniture.Description}))
-                {
-                    return 1;
-                }
-
-                // else if a furniture from g2 in dest state is on the path of g1 than g1 is bigger than g2
-                if (GroupsComparer.IsOnPath(ploc1Path, new List<Rectangle> { ploc2.rect }))
-                {
-                    return -1;
-                }
-
-                // if a furniture from g1 in start state is on the path of g2 than g2 is smaller than g1
-                if (GroupsComparer.IsOnPath(ploc2Path, new List<Rectangle> { ploc1.furniture.Description }))
-                {
-                    return -1;
-                }
-
-                // else if a furniture from g1 in dest state is on the path of g2 than g2 is bigger than g1
-                if (GroupsComparer.IsOnPath(ploc2Path, new List<Rectangle> { ploc1.rect }))
-                {
-                    return 1;
-                }
-
-                return 0;
-
+                return GroupsComparer.InternalCompare(ploc1Path, ploc2Path,
+                                                      new List<Rectangle> { ploc1.furniture.Description },
+                                                      new List<Rectangle> { ploc1.rect },
+                                                      new List<Rectangle> { ploc2.furniture.Description },
+                                                       new List<Rectangle> { ploc2.rect });
             }
         }
         #endregion
