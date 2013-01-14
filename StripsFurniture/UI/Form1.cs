@@ -377,6 +377,7 @@ namespace UI
             int i = 0;
             const char delimiterChar = ' ';
             var text = new string[20];
+            resetButton_Click(null, null);
             using (var streamReader = new StreamReader(filePath))
             {
                 while (!streamReader.EndOfStream)
