@@ -412,6 +412,36 @@ namespace UI
                 createFurnitureButton_Click(null, null);
             }
         }
+
+        private void OnSaveButtonClick(object sender, EventArgs e)
+        {
+            const string filePath = "file.txt";
+            var ourBoards = Board.Instance;
+            const char delimiterChar = ' ';
+            using (var streamWriter = new StreamWriter(filePath))
+            {
+                foreach (var pair in ourBoards.furnitureDestination )
+                {
+                    streamWriter.Write(pair.Key.Description.Width);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Key.Description.Height);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Key.Description.Y);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Key.Description.X);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Value.Width);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Value.Height);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Value.Y);
+                    streamWriter.Write(delimiterChar);
+                    streamWriter.Write(pair.Value.X);
+                    streamWriter.Write(streamWriter.NewLine);
+                }
+                
+            }
+        }
     }
 }
 
