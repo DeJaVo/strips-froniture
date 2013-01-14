@@ -967,8 +967,9 @@ namespace Heuristics
 
                 Rectangle furnitureAfterMove = move.CalculateNewdestRectangle();
                 Rectangle furnitureDest = Board.Instance.furnitureDestination[furniture]; 
-                bool isOnDoor = (Board.Instance.FindRoomPerRect(furnitureAfterMove) == 1 &&
-                             Board.Instance.FindRoomPerRect(furnitureDest) == 1) &&
+                int destRoom = Board.Instance.FindRoomPerRect(furnitureDest);
+                bool isOnDoor = (Board.Instance.FindRoomPerRect(furnitureAfterMove) == 1) &&
+                             ((destRoom == 1) || (destRoom == 3)) &&
                             (furnitureAfterMove.X + furnitureAfterMove.Width - 1 >= 11 && direction==Direction.Right);
 
                 if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect) || isOnDoor)
