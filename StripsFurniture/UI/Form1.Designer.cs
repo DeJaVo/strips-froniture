@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button1 = new System.Windows.Forms.Button();
             this.drawFurnituresDestCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.furDestHeightCombo = new System.Windows.Forms.ComboBox();
@@ -59,7 +60,7 @@
             this.nextStepButton = new System.Windows.Forms.Button();
             this.runButton = new System.Windows.Forms.Button();
             this.operationsStack = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -85,6 +86,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.button2);
             this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.drawFurnituresDestCheckBox);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
@@ -98,6 +100,16 @@
             this.splitContainer1.Size = new System.Drawing.Size(1362, 607);
             this.splitContainer1.SplitterDistance = 257;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(72, 546);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(119, 23);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Load";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Load_button_Click);
             // 
             // drawFurnituresDestCheckBox
             // 
@@ -511,15 +523,15 @@
             this.operationsStack.Size = new System.Drawing.Size(302, 607);
             this.operationsStack.TabIndex = 0;
             // 
-            // button1
+            // button2
             // 
-            this.button1.Location = new System.Drawing.Point(72, 565);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(119, 23);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "Load";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Load_button_Click);
+            this.button2.Location = new System.Drawing.Point(72, 577);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(119, 23);
+            this.button2.TabIndex = 26;
+            this.button2.Text = "Save";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.OnSaveButtonClick);
             // 
             // Form1
             // 
@@ -587,6 +599,7 @@
         private System.Windows.Forms.Button createFurnitureButton;
         private System.Windows.Forms.CheckBox drawFurnituresDestCheckBox;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 
