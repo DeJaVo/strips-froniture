@@ -26,6 +26,7 @@ namespace Heuristics
         public Move(Furniture currentFurniture)
         {
             this.Furniture = currentFurniture;
+            HowManyStepsInDirection = 1;
         }
 
         /// <summary>

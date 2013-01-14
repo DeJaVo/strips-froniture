@@ -664,7 +664,7 @@ namespace Heuristics
         #endregion
 
         private List<Direction> SortRemainingDirections(List<Direction> forbidenDir, List<Direction> remainingDirections,
-                                                        Rectangle rectToClean,Rectangle rectToMove)
+                                                        Rectangle rectToClean,Rectangle rectToMove, Furniture furniture)
         {
             List<Direction> sortRemainingDirections = new List<Direction>();
 
@@ -697,18 +697,50 @@ namespace Heuristics
                 if (currDir == Direction.Up)
                 {
                     dirDist = rectToMove.Bottom - rectToClean.Y;
+                    Move move= new Move(furniture);
+                    move.Direction = currDir;
+                    move.HowManyStepsInDirection = dirDist;
+                    var dest = move.CalculateRectDiff();
+                    if (!Board.Instance.InBounds(dest))
+                        continue;
+                    if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue;
                 }
                 else if (currDir == Direction.Down)
                 {
                     dirDist = rectToClean.Bottom - rectToMove.Y;
+                    Move move = new Move(furniture);
+                    move.Direction = currDir;
+                    move.HowManyStepsInDirection = dirDist;
+                    var dest = move.CalculateRectDiff();
+                    if(!Board.Instance.InBounds(dest))
+                        continue;                    
+                    if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue;
                 }
                 else if (currDir == Direction.Right)
                 {
                     dirDist = rectToClean.Right - rectToMove.X;
+                    Move move = new Move(furniture);
+                    move.Direction = currDir;
+                    move.HowManyStepsInDirection = dirDist;
+                    var dest = move.CalculateRectDiff();
+                    if (!Board.Instance.InBounds(dest))
+                        continue;
+                    if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue;
                 }
                 else
                 {
                     dirDist = rectToMove.Right - rectToClean.X;
+                    Move move = new Move(furniture);
+                    move.Direction = currDir;
+                    move.HowManyStepsInDirection = dirDist;
+                    var dest = move.CalculateRectDiff();
+                    if (!Board.Instance.InBounds(dest))
+                        continue;
+                    if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue;
                 }
                 dictDists.Add(currDir, dirDist);
             }
@@ -793,7 +825,7 @@ namespace Heuristics
                     if (remainingDirections.Count == 0)
                         remainingDirections = allDirection;
 
-                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description);
+                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description, furniture);
                     //filter out un valid directions                   
                     remainingDirectionsSorted = FilterUnVaildDirection(remainingDirectionsSorted, furniture);
                     if (remainingDirectionsSorted.Count != 0)
@@ -987,7 +1019,7 @@ namespace Heuristics
                 return directions;
             }
 
-            var distPerDir = new Dictionary<double, Direction>();
+            var distPerDir = new Dictionary<Direction, double>();
            // var sortedDir = new List<Direction>();          
 
             foreach (var direction in directions)
@@ -996,7 +1028,14 @@ namespace Heuristics
                 move.Direction = direction;
                 move.HowManyStepsInDirection = 1;
                 var diffRect = move.CalculateRectDiff();
-                if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect))
+
+                Rectangle furnitureAfterMove = move.CalculateNewdestRectangle();
+                Rectangle furnitureDest = Board.Instance.furnitureDestination[furniture]; 
+                bool isOnDoor = (Board.Instance.FindRoomPerRect(furnitureAfterMove) == 1 &&
+                             Board.Instance.FindRoomPerRect(furnitureDest) == 1) &&
+                            (furnitureAfterMove.X + furnitureAfterMove.Width - 1 >= 11 && direction==Direction.Right);
+
+                if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect) || isOnDoor)
                 {
                     continue;
                 }
@@ -1004,11 +1043,11 @@ namespace Heuristics
                 var temp = CalculatePathByRect(newRect, board.furnitureDestination[furniture]);
                 var distance = temp.Count;
                 //var distance = board.RectanglesEuclideanDistance(newRect, board.furnitureDestination[furniture]);
-                distPerDir[distance] = direction;
+                distPerDir[direction] = distance;
             }
-            var distPerDirSorted=distPerDir.OrderBy(i => i.Key).ToDictionary(i=>i.Key,i=>i.Value);
+            var distPerDirSorted=distPerDir.OrderBy(i => i.Value).ToDictionary(i=>i.Key,i=>i.Value);
 
-            return new List<Direction>(distPerDirSorted.Values);
+            return new List<Direction>(distPerDirSorted.Keys);
 
            
         }
@@ -1443,22 +1482,23 @@ namespace Heuristics
             int currPosX = currPos.X;
             int currPosY = currPos.Y;
 
+            bool isOnDoor = (Board.Instance.FindRoomPerRect(furniture.Description) == 1 &&
+                             Board.Instance.FindRoomPerRect(dest) == 1) &&
+                            (furniture.Description.X + furniture.Description.Width - 1 >= 11);
+
             if((destY-currPosY) > 0)
                 directions.Add(Direction.Down);
             if ((destY-currPosY) < 0)
                 directions.Add(Direction.Up);
-            if((destX-currPosX)> 0)
+            if ((destX - currPosX) > 0)
                 directions.Add(Direction.Right);
             if((destX-currPosX)< 0)
                 directions.Add(Direction.Left);
 
             //support cases in which curr room & end room are 1, and block is in the passage
-            if (Board.Instance.FindRoomPerRect(furniture.Description) == 1 && Board.Instance.FindRoomPerRect(dest) == 1)
+            if (isOnDoor)
             {
-                if (furniture.Description.X + furniture.Description.Width - 1 >= 11)
-                {
-                    directions.Add(Direction.Left);
-                }
+                directions.Add(Direction.Left);
             }
             return directions;
         }
