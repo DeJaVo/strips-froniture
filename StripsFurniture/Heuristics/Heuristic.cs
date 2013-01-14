@@ -107,12 +107,6 @@ namespace Heuristics
             private List<PLocation> furnitures;
             private List<Rectangle> path;
 
-            //public Group()
-            //{
-            //    this.groupType = groupType;
-            //    furnitures = new List<PLocation>();
-            //}
-
             public Group(GroupType groupType)
             {
                 this.groupType = groupType;
@@ -155,69 +149,7 @@ namespace Heuristics
                 //path = Group.CalcRepresentativePath(startState, destState, this.DoorsPath);
                 path = Heuristic.CalculatePathByRect(startState, destState);
             }
-
-            //public static List<Rectangle> CalcRepresentativePath(Rectangle startState, Rectangle destState)
-            //{
-            //    List<int> doorsPath = new List<int>();
-            //    int startRoom = Board.Instance.FindRoomPerRect(startState);
-            //    int endRoom = Board.Instance.FindRoomPerRect(destState);
-
-            //    if (startRoom != endRoom)
-            //    {
-            //        if ((startRoom == 1) || (endRoom == 1))
-            //        {
-            //            if (startRoom != 1)
-            //            {
-            //                doorsPath.Add(startRoom);
-            //            }
-            //            else
-            //            {
-            //                doorsPath.Add(endRoom);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            doorsPath.Add(startRoom);
-            //            doorsPath.Add(endRoom);
-            //        }
-            //    }
-            //    return Group.CalcRepresentativePath(startState, destState, doorsPath);
-            //}
-
-            //private static List<Rectangle> CalcRepresentativePath(Rectangle startState, Rectangle destState, List<int> doorsPath)
-            //{
-            //    List<Rectangle> path = new List<Rectangle>();
-
-            //    // the representative is the last in the list of furnitures
-            //    // (assuming that is sorted)
-
-            //    //if (this.GroupType == Heuristic.GroupType.SameRoom)
-            //    if (doorsPath.Count == 0)
-            //    {
-            //        path = FindPathBetweenPoints(startState, destState);
-            //    }
-            //    else
-            //    {
-            //        path = new List<Rectangle>();
-            //        if (doorsPath.Count == 1)
-            //        {
-            //            Rectangle roomDoor = GetRoomDoor(doorsPath[0]);                      
-            //            path.AddRange(FindPathBetweenPoints(startState, roomDoor));
-            //            path.AddRange(FindPathBetweenPoints(roomDoor, destState));
-            //        }
-            //        else
-            //        {
-            //            Rectangle firstRoomDoor = GetRoomDoor(doorsPath[0]);
-            //            Rectangle lastRoomDoor = GetRoomDoor(doorsPath[1]);
-            //            path.AddRange(FindPathBetweenPoints(startState,firstRoomDoor));
-            //            path.AddRange(FindPathBetweenDoors(firstRoomDoor, lastRoomDoor));
-            //            path.AddRange(FindPathBetweenPoints(lastRoomDoor, destState));
-            //        }
-            //    }
-
-            //    return path;
-            //}
-
+            
             private static List<Rectangle> FindPathBetweenDoors(Rectangle start, Rectangle end)
             {
                 // building for door room 2 to door room 3
@@ -245,10 +177,11 @@ namespace Heuristics
                     subPath.Add(new Rectangle(start.X, i, 1, 1));
                 }
 
-                for (int i = start.X; i != end.X; i += deltaX)
+                for (int i = start.X + deltaX; i != end.X; i += deltaX)
                 {
                     subPath.Add(new Rectangle(i, end.Y, 1, 1));
                 }
+                subPath.Add(new Rectangle(end.X, end.Y, 1, 1));
 
                 return subPath;
             }
@@ -315,7 +248,48 @@ namespace Heuristics
                     return res == 1? -1 : 1;
                 }
 
+                if (res == 0)
+                {
+                    res = this.InternalCompareBasedOnRooms(g1, g2);
+                    if (res != 0)
+                    {
+                        return res;
+                    }
+
+                    // perform the same checks when g2 is g1 
+                    res = this.InternalCompareBasedOnRooms(g2, g1);
+                    if (res != 0)
+                    {
+                        return res == 1 ? -1 : 1;
+                    }
+                }
+
                 // else g1 and g2 are equal
+                return 0;
+            }
+
+            private int InternalCompareBasedOnRooms(Group tested, Group other)
+            {
+                if ((tested.DoorsPath.Count > 0) &&
+                    (other.DoorsPath.Count > 0))
+                {
+                    Rectangle testedStartPos = tested.Path.First();
+                    Rectangle testedEndPos = tested.Path.Last();
+
+                    Rectangle otherStartPos = other.Path.First();
+                    Rectangle otherEndPos = other.Path.Last();
+
+                    int testedStartRoom = Board.Instance.FindRoomPerRect(testedStartPos);
+                    int testedEndRoom = Board.Instance.FindRoomPerRect(testedEndPos);
+                    int otherStartRoom = Board.Instance.FindRoomPerRect(otherStartPos);
+                    int otherEndRoom = Board.Instance.FindRoomPerRect(otherEndPos);
+
+                    if ((testedStartRoom == otherEndRoom) && ((testedStartRoom == 2) || (testedStartRoom == 3)))
+                    {
+                        return 1;
+                    }
+                }
+
                 return 0;
             }
 
@@ -326,30 +300,48 @@ namespace Heuristics
 
                 List<Rectangle> testedGroupFurnituresInStart = tested.GetFurnituresInStart();
                 List<Rectangle> testedGroupFurnituresInDest = tested.GetFurnituresInDest();
+                //bool otherBeforeTested = false;
+                //bool testedBeforeOther = false;
 
                 // if a furniture from g2 in start state is on the path of g1 than g1 is smaller than g2
                 if (IsOnPath(tested.Path, otherGroupFurnituresInStart))
                 {
+                    //testedBeforeOther = false;
                     return 1;
                 }
 
                 // else if a furniture from g2 in dest state is on the path of g1 than g1 is bigger than g2
                 if (IsOnPath(tested.Path, otherGroupFurnituresInDest))
                 {
+                    //testedBeforeOther = true;
                     return -1;
                 }
 
                 // if a furniture from g1 in start state is on the path of g2 than g2 is smaller than g1
                 if (IsOnPath(other.Path, testedGroupFurnituresInStart))
                 {
+                    //otherBeforeTested = false;
                     return -1;
                 }
 
                 // else if a furniture from g1 in dest state is on the path of g2 than g2 is bigger than g1
                 if (IsOnPath(other.Path, testedGroupFurnituresInDest))
                 {
+                    //otherBeforeTested = true;
                     return 1;
                 }
+
+                //if (otherBeforeTested != testedBeforeOther)
+                //{
+                //    if (testedBeforeOther)
+                //    {
+                //        return -1;
+                //    }
+                //    else
+                //    {
+                //        return 1;
+                //    }
+                //}
                 return 0;
             }
 
