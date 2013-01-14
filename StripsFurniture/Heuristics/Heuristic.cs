@@ -164,7 +164,7 @@ namespace Heuristics
                 return subPath;
             }
 
-            public static List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end)
+            public static List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end,int width,int height)
             {
                 
                 List<Rectangle> subPath = new List<Rectangle>();
@@ -174,14 +174,14 @@ namespace Heuristics
                 
                 for (int i = start.Y; i != end.Y; i += deltaY)
                 {
-                    subPath.Add(new Rectangle(start.X, i, 1, 1));
+                    subPath.Add(new Rectangle(start.X, i, width, height));
                 }
 
                 for (int i = start.X + deltaX; i != end.X; i += deltaX)
                 {
-                    subPath.Add(new Rectangle(i, end.Y, 1, 1));
+                    subPath.Add(new Rectangle(i, end.Y, width, height));
                 }
-                subPath.Add(new Rectangle(end.X, end.Y, 1, 1));
+                subPath.Add(new Rectangle(end.X, end.Y, width, height));
 
                 return subPath;
             }
@@ -1490,36 +1490,53 @@ namespace Heuristics
            var endRoom = Board.Instance.FindRoomPerRect(endRect);
            //moving from room 2 to room 3 or vice a versa
             if (startRoom != 1 && endRoom!=1)
-           {                             
-                   var doorRect=Group.GetRoomDoor(startRoom);
-                   path.AddRange(Group.FindPathBetweenPoints(startRect, doorRect));   
+           {
+               // moving to the door
+                var doorRect = Group.GetRoomDoor(startRoom);
+                int width = startRect.Width;
+                int height = startRect.Height;
+                if (startRect.Height > doorRect.Height)
+                {
+                    width = startRect.Height;
+                    height = startRect.Width;
+                }
+                path.AddRange(Group.FindPathBetweenPoints(startRect, doorRect,width,height));   
                    
                 //move rect width time left
                for (int i = 1; i <= startRect.Width; i++)
                {
-                   path.Add(new Rectangle(doorRect.X - i,doorRect.Y,1,1));
+                   path.Add(new Rectangle(doorRect.X - i, doorRect.Y, width, height));
                }
 
                Rectangle currLoc = path.Last();
                var secDoorRect = Group.GetRoomDoor(startRoom);
-               path.AddRange(Group.FindPathBetweenPoints(currLoc, secDoorRect));
-               path.AddRange(Group.FindPathBetweenPoints(secDoorRect,endRect));    
+               if (height > secDoorRect.Height)
+               {
+                   int temp = width;
+                   width = height;
+                   height = temp;
+               }
+               path.AddRange(Group.FindPathBetweenPoints(currLoc, secDoorRect, width,height));
+               path.AddRange(Group.FindPathBetweenPoints(secDoorRect, endRect, endRect.Width, endRect.Height));    
            }
             else
             {
+                // furniture on the middle of the door
                 if (!(((endRoom == 2) && (startRoom == 1) && (startRect.Y >= 2) && (startRect.Y <= 3)) ||
-                      ((endRoom == 3) && (startRoom == 1) && (startRect.Y >= 7) && (startRect.Y <= 10))))
+                        ((endRoom == 3) && (startRoom == 1) && (startRect.Y >= 7) && (startRect.Y <= 10))))
                 {
-                    Rectangle currLoc = new Rectangle(startRect.X,startRect.Y,1,1);
+                    int width = Math.Max(startRect.Width, startRect.Height);
+                    int height = Math.Min(startRect.Width, startRect.Height);
+                    Rectangle currLoc = new Rectangle(startRect.X, startRect.Y, width,height);
                     while (currLoc.X + startRect.Width >= 11)
                     {
                         path.Add(currLoc);
-                        currLoc = new Rectangle(currLoc.X - 1, currLoc.Y,1,1);
+                        currLoc = new Rectangle(currLoc.X - 1, currLoc.Y, width, height);
                     }
-                    startRect = new Rectangle(currLoc.X + 1, currLoc.Y, 1, 1);
+                    startRect = new Rectangle(currLoc.X + 1, currLoc.Y, width, height);
                 }
 
-                path.AddRange(Group.FindPathBetweenPoints(startRect, endRect)); 
+                path.AddRange(Group.FindPathBetweenPoints(startRect, endRect, endRect.Width, endRect.Height)); 
 
             }
             return path;
