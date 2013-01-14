@@ -1452,6 +1452,14 @@ namespace Heuristics
             if((destX-currPosX)< 0)
                 directions.Add(Direction.Left);
 
+            //support cases in which curr room & end room are 1, and block is in the passage
+            if (Board.Instance.FindRoomPerRect(furniture.Description) == 1 && Board.Instance.FindRoomPerRect(dest) == 1)
+            {
+                if (furniture.Description.X + furniture.Description.Width - 1 >= 11)
+                {
+                    directions.Add(Direction.Left);
+                }
+            }
             return directions;
         }
 
