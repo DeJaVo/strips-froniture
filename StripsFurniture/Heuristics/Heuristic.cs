@@ -244,7 +244,7 @@ namespace Heuristics
                                                testedGroupFurnituresInStart, testedGroupFurnituresInDest,
                                                 otherGroupFurnituresInStart, otherGroupFurnituresInDest);
                 
-                return 0;
+                return res;
             }
 
             private int InternalCompareBasedOnRooms(Group tested, Group other)
