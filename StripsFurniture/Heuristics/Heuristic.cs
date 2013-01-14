@@ -718,7 +718,23 @@ namespace Heuristics
             sortRemainingDirections.AddRange(oppToForbiden);
             sortRemainingDirections = sortRemainingDirections.Distinct().ToList();
 
+            
             return sortRemainingDirections;
+        }
+
+        private List<Direction> FilterUnVaildDirection(List<Direction> directions, Furniture furniture)
+        {
+            var result = new List<Direction>(directions);
+            foreach (var direction in directions)
+            {
+                Move move = new Move(furniture);
+                move.Direction = direction;
+                move.HowManyStepsInDirection = 1;
+                var diffRect = move.CalculateRectDiff();
+                if (!Board.Instance.InBounds(diffRect) || !Board.Instance.IsNotWall(diffRect))
+                    result.Remove(direction);                
+            }
+            return result;
         }
 
         /// <summary>
@@ -749,8 +765,10 @@ namespace Heuristics
                 currRoom = board.FindRoomPerRect(furniture.Description);
                 endRoom = board.FindRoomPerRect(furDest);   
                 List<Direction> forbbiden =(predicateToSatisfy as PClean).Forbbiden;
+                var forbbidenSaved = forbbiden.First();
                 forbbiden.AddRange(FindFurbbidenDirections(furniture, (predicateToSatisfy as PClean).CleanRect));
                 forbbiden=forbbiden.Distinct().ToList();
+                Operation operation;
                 Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {
@@ -776,8 +794,21 @@ namespace Heuristics
                         remainingDirections = allDirection;
 
                     var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description);
+                    //filter out un valid directions                   
+                    remainingDirectionsSorted = FilterUnVaildDirection(remainingDirectionsSorted, furniture);
+                    if (remainingDirectionsSorted.Count != 0)
+                    {
+                        if (IsOpposite(remainingDirectionsSorted.First(), forbbidenSaved))
+                        {
+                            operation = CheckIfCanRotate(new List<Direction>(), new Rotate(furniture), blocking);
+                            if (operation != null)
+                                return operation;
 
-                    var operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
+                        }
+                    }
+                    if (remainingDirectionsSorted.Count==0)
+                        remainingDirectionsSorted = allDirection;
+                    operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
                     if (operation != null)
                     {
                         return operation;
@@ -868,6 +899,38 @@ namespace Heuristics
                 return ReturnOptimalOperation(blockingfurPerOperation);      
             }
             return null;
+        }
+
+        private bool IsOpposite(Direction direction, Direction forbbiden)
+        {
+            switch (forbbiden)
+            {
+                case Direction.Up:
+                    {
+                        if (direction == Direction.Down)
+                            return true;
+                        break;  
+                    }
+                case Direction.Down:
+                    {
+                        if (direction == Direction.Up)
+                            return true;
+                        break;                        
+                    }
+                    case Direction.Left:
+                    {
+                        if (direction == Direction.Right)
+                            return true;
+                        break;
+                    }
+                    case Direction.Right:
+                    {
+                        if(direction== Direction.Left)
+                            return true;
+                        break;
+                    }
+            }
+            return false;
         }
 
         private List<Direction> FindFurbbidenDirections(Furniture furniture, Rectangle cleanRect)
@@ -1022,7 +1085,7 @@ namespace Heuristics
                     {
                         if (Board.Instance.IsEmpty(diffRect))
                         {
-                            return (Operation) rotate;
+                            return rotate;
                         }
                          var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
                          var newRotate = new Rotate(rotate.Furniture) { RotationDirection = SRD };
