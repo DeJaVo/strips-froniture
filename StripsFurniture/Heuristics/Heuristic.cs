@@ -629,7 +629,7 @@ namespace Heuristics
         #endregion
 
         private List<Direction> SortRemainingDirections(List<Direction> forbidenDir, List<Direction> remainingDirections,
-                                                        Rectangle rectToClean,Rectangle rectToMove, Furniture furniture)
+                                                        Rectangle rectToClean,Rectangle rectToMove, Furniture furniture, Direction originalForbbiden)
         {
             List<Direction> sortRemainingDirections = new List<Direction>();
 
@@ -659,6 +659,8 @@ namespace Heuristics
             foreach (Direction currDir in remainingDirectionsSorted)
             {
                 int dirDist;
+                if(currDir==originalForbbiden)
+                    continue;
                 if (currDir == Direction.Up)
                 {
                     dirDist = rectToMove.Bottom - rectToClean.Y;
@@ -669,6 +671,8 @@ namespace Heuristics
                     if (!Board.Instance.InBounds(dest))
                         continue;
                     if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue-1;
+                    if (currDir == originalForbbiden)
                         dirDist = int.MaxValue;
                 }
                 else if (currDir == Direction.Down)
@@ -679,8 +683,10 @@ namespace Heuristics
                     move.HowManyStepsInDirection = dirDist;
                     var dest = move.CalculateRectDiff();
                     if(!Board.Instance.InBounds(dest))
-                        continue;                    
+                        continue;
                     if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue - 1;
+                    if (currDir == originalForbbiden)
                         dirDist = int.MaxValue;
                 }
                 else if (currDir == Direction.Right)
@@ -693,6 +699,8 @@ namespace Heuristics
                     if (!Board.Instance.InBounds(dest))
                         continue;
                     if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue - 1;
+                    if (currDir == originalForbbiden)
                         dirDist = int.MaxValue;
                 }
                 else
@@ -705,7 +713,10 @@ namespace Heuristics
                     if (!Board.Instance.InBounds(dest))
                         continue;
                     if (!Board.Instance.IsEmpty(dest))
+                        dirDist = int.MaxValue-1;
+                    if (currDir == originalForbbiden)
                         dirDist = int.MaxValue;
+
                 }
                 dictDists.Add(currDir, dirDist);
             }
@@ -776,10 +787,24 @@ namespace Heuristics
                 }
                 else
                 {
+                    var RemainigDirections = FindRemainingDirections(new List<Direction> {forbbidenSaved});
+                    var SortedRemainingDirections = SortRemainingDirections(new List<Direction> {forbbidenSaved},
+                                                                            RemainigDirections,
+                                                                            (predicateToSatisfy as PClean).CleanRect,
+                                                                            furniture.Description,furniture, forbbidenSaved);
+                    
+                    directionToDoorSorted = SortedRemainingDirections;
                     directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
-                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);                    
-                    //forbbiden = ((predicateToSatisfy as PClean).Forbbiden);
-                    directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
+                    //directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
+                    //directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);                    
+                    ////forbbiden = ((predicateToSatisfy as PClean).Forbbiden);
+                    //directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
+                    //if (currRoom == 1 && directionToDoorSorted.Count != 0 && ((11-(furniture.Description.X+furniture.Description.Width))<= 1) )
+                    //{
+                    //    var temp = new List<Direction> { directionToDoorSorted.First() };
+                    //    directionToDoorSorted = FindRemainingDirections(temp);
+                    //    directionToDoorSorted= SortRemainingDirections(forbbiden, directionToDoorSorted,(predicateToSatisfy as PClean).CleanRect, furniture.Description, furniture, forbbidenSaved);
+                    //}
                 }
                 if ((directionsSorted==null && directionToDoorSorted.Count==0) || (directionToDoorSorted==null && directionsSorted.Count==0))
                 {
@@ -790,7 +815,7 @@ namespace Heuristics
                     if (remainingDirections.Count == 0)
                         remainingDirections = allDirection;
 
-                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description, furniture);
+                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description, furniture, forbbidenSaved);
                     //filter out un valid directions                   
                     remainingDirectionsSorted = FilterUnVaildDirection(remainingDirectionsSorted, furniture);
                     if (remainingDirectionsSorted.Count != 0)
