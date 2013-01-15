@@ -109,7 +109,7 @@
             this.button1.TabIndex = 25;
             this.button1.Text = "Load";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Load_button_Click);
+            this.button1.Click += new System.EventHandler(this.LoadButtonClick);
             // 
             // drawFurnituresDestCheckBox
             // 
@@ -122,7 +122,7 @@
             this.drawFurnituresDestCheckBox.TabIndex = 24;
             this.drawFurnituresDestCheckBox.Text = "Draw Furnitures Destinations";
             this.drawFurnituresDestCheckBox.UseVisualStyleBackColor = true;
-            this.drawFurnituresDestCheckBox.CheckedChanged += new System.EventHandler(this.drawFurnituresDestCheckBox_CheckedChanged);
+            this.drawFurnituresDestCheckBox.CheckedChanged += new System.EventHandler(this.DrawFurnituresDestCheckBoxCheckedChanged);
             // 
             // groupBox2
             // 
@@ -308,7 +308,7 @@
             this.furStartHeightCombo.Name = "furStartHeightCombo";
             this.furStartHeightCombo.Size = new System.Drawing.Size(121, 21);
             this.furStartHeightCombo.TabIndex = 1;
-            this.furStartHeightCombo.TextUpdate += new System.EventHandler(this.furStartHeightCombo_TextUpdate);
+            this.furStartHeightCombo.TextUpdate += new System.EventHandler(this.FurStartHeightComboTextUpdate);
             // 
             // furStartWidthCombo
             // 
@@ -328,7 +328,7 @@
             this.furStartWidthCombo.Name = "furStartWidthCombo";
             this.furStartWidthCombo.Size = new System.Drawing.Size(121, 21);
             this.furStartWidthCombo.TabIndex = 0;
-            this.furStartWidthCombo.TextUpdate += new System.EventHandler(this.furStartWidthCombo_TextUpdate);
+            this.furStartWidthCombo.TextUpdate += new System.EventHandler(this.FurStartWidthComboTextUpdate);
             // 
             // groupBox1
             // 
@@ -436,7 +436,7 @@
             this.resetButton.TabIndex = 23;
             this.resetButton.Text = "Reset";
             this.resetButton.UseVisualStyleBackColor = true;
-            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            this.resetButton.Click += new System.EventHandler(this.ResetButtonClick);
             // 
             // createFurnitureButton
             // 
@@ -446,7 +446,7 @@
             this.createFurnitureButton.TabIndex = 20;
             this.createFurnitureButton.Text = "Create Furniture";
             this.createFurnitureButton.UseVisualStyleBackColor = true;
-            this.createFurnitureButton.Click += new System.EventHandler(this.createFurnitureButton_Click);
+            this.createFurnitureButton.Click += new System.EventHandler(this.CreateFurnitureButtonClick);
             // 
             // splitContainer2
             // 
@@ -490,7 +490,7 @@
             this.pauseButton.Size = new System.Drawing.Size(35, 35);
             this.pauseButton.TabIndex = 5;
             this.pauseButton.UseVisualStyleBackColor = true;
-            this.pauseButton.Click += new System.EventHandler(this.pauseButton_Click);
+            this.pauseButton.Click += new System.EventHandler(this.PauseButtonClick);
             // 
             // nextStepButton
             // 
@@ -501,7 +501,7 @@
             this.nextStepButton.Size = new System.Drawing.Size(35, 35);
             this.nextStepButton.TabIndex = 4;
             this.nextStepButton.UseVisualStyleBackColor = true;
-            this.nextStepButton.Click += new System.EventHandler(this.nextStepButton_Click);
+            this.nextStepButton.Click += new System.EventHandler(this.NextStepButtonClick);
             // 
             // runButton
             // 
@@ -512,7 +512,7 @@
             this.runButton.Size = new System.Drawing.Size(35, 35);
             this.runButton.TabIndex = 3;
             this.runButton.UseVisualStyleBackColor = true;
-            this.runButton.Click += new System.EventHandler(this.runButton_Click);
+            this.runButton.Click += new System.EventHandler(this.RunButtonClick);
             // 
             // operationsStack
             // 

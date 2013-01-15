@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using BoardDataModel;
 using BusinessLogic;
@@ -25,7 +20,7 @@ namespace UI
         {
             InitializeComponent();
 
-            this.resetButton_Click(null, null);
+            this.ResetButtonClick(null, null);
         }
 
         private void BuildBoard()
@@ -103,7 +98,7 @@ namespace UI
         }
 
 
-        private void createFurnitureButton_Click(object sender, EventArgs e)
+        private void CreateFurnitureButtonClick(object sender, EventArgs e)
         {
             // collect the forniture parameters
             int furStartX, furStartY, furStartWidth, furStartHeight;
@@ -147,14 +142,14 @@ namespace UI
             }
         }
 
-        private void runButton_Click(object sender, EventArgs e)
+        private void RunButtonClick(object sender, EventArgs e)
         {
             this.createFurnitureButton.Enabled = false;
             this.pauseButton.Enabled = true;
             this.PerformOperation(true);
         }
 
-        private void nextStepButton_Click(object sender, EventArgs e)
+        private void NextStepButtonClick(object sender, EventArgs e)
         {
             this.createFurnitureButton.Enabled = false;
             this.PerformOperation(false);
@@ -207,7 +202,7 @@ namespace UI
             operationsStack.Items.Add(currOp.ToString());
         }
 
-        private void resetButton_Click(object sender, EventArgs e)
+        private void ResetButtonClick(object sender, EventArgs e)
         {
             this.pauseButton.Enabled = false;
             this.runButton.Enabled = false;
@@ -237,7 +232,7 @@ namespace UI
             this.furDestWidthCombo.Text = "";
         }
 
-        private void pauseButton_Click(object sender, EventArgs e)
+        private void PauseButtonClick(object sender, EventArgs e)
         {
             pause = true;
             stripsLogic.Pause();
@@ -333,7 +328,7 @@ namespace UI
 
         #endregion
 
-        private void furStartWidthCombo_TextUpdate(object sender, EventArgs e)
+        private void FurStartWidthComboTextUpdate(object sender, EventArgs e)
         {
             if (furStartHeightCombo.Text != "")
             {
@@ -342,7 +337,7 @@ namespace UI
             }
         }
 
-        private void furStartHeightCombo_TextUpdate(object sender, EventArgs e)
+        private void FurStartHeightComboTextUpdate(object sender, EventArgs e)
         {
             if (furStartWidthCombo.Text != "")
             {
@@ -351,7 +346,7 @@ namespace UI
             }
         }
 
-        private void drawFurnituresDestCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void DrawFurnituresDestCheckBoxCheckedChanged(object sender, EventArgs e)
         {
             if (drawFurnituresDestCheckBox.Checked)
             {
@@ -370,14 +365,18 @@ namespace UI
         }
 
 
-        //For debug
-        private void Load_button_Click(object sender, EventArgs e)
+        /// <summary>
+        /// For debug
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LoadButtonClick(object sender, EventArgs e)
         {
             const string filePath = "file.txt";
             int i = 0;
             const char delimiterChar = ' ';
             var text = new string[20];
-            resetButton_Click(null, null);
+            ResetButtonClick(null, null);
             using (var streamReader = new StreamReader(filePath))
             {
                 while (!streamReader.EndOfStream)
@@ -410,10 +409,15 @@ namespace UI
                 furDestHeightCombo.Text = word[i++];
                 furDestYCombo.Text = word[i++];
                 furDestXCombo.Text = word[i++];
-                createFurnitureButton_Click(null, null);
+                CreateFurnitureButtonClick(null, null);
             }
         }
 
+        /// <summary>
+        /// For debug
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSaveButtonClick(object sender, EventArgs e)
         {
             const string filePath = "file.txt";
@@ -421,7 +425,7 @@ namespace UI
             const char delimiterChar = ' ';
             using (var streamWriter = new StreamWriter(filePath))
             {
-                foreach (var pair in ourBoards.furnitureDestination )
+                foreach (var pair in ourBoards.furnitureDestination)
                 {
                     streamWriter.Write(pair.Key.Description.Width);
                     streamWriter.Write(delimiterChar);
@@ -440,9 +444,7 @@ namespace UI
                     streamWriter.Write(pair.Value.X);
                     streamWriter.Write(streamWriter.NewLine);
                 }
-                
             }
         }
     }
 }
-
