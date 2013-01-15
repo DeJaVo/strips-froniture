@@ -146,6 +146,8 @@ namespace UI
         {
             this.createFurnitureButton.Enabled = false;
             this.pauseButton.Enabled = true;
+            this.runButton.Enabled = false;
+            this.nextStepButton.Enabled = false;
             this.PerformOperation(true);
         }
 
@@ -176,7 +178,7 @@ namespace UI
 
                 Operation currOp = stripsLogic.GetNextOperation();
                 this.ExecuteOperation(currOp);
-                this.InteractivePause(new TimeSpan(0, 0, 0, 0, 500));
+                this.Invoke(new InteractivePauseDelegate(this.InteractivePause),new object[1]{new TimeSpan(0, 0, 0, 0, 500)});
 
                 // perform one step
                 if ((!runAutomatically) && (!pause))
@@ -237,6 +239,8 @@ namespace UI
             pause = true;
             stripsLogic.Pause();
             this.pauseButton.Enabled = false;
+            this.runButton.Enabled = true;
+            this.nextStepButton.Enabled = true;
         }
 
         #region UI utils
@@ -254,9 +258,18 @@ namespace UI
 
         private void DrawCell(int i, int j, int id, bool isDest)
         {
-            if (isDest &&
-                ((!drawFurnituresDestCheckBox.Checked) || (squares[i, j].BorderStyle != BorderStyle.FixedSingle)))
-                return;
+            if (isDest)
+            {
+                if (!drawFurnituresDestCheckBox.Checked)
+                {
+                    return;
+                }
+                else if (squares[i, j].BorderStyle != BorderStyle.FixedSingle)
+                {
+                    squares[i, j].Tag = id;
+                    return;
+                }
+            }
 
             using (Font myFont = new Font("Arial", 20))
             {
@@ -301,29 +314,44 @@ namespace UI
             }
         }
 
+        private delegate void InteractivePauseDelegate(TimeSpan length);
         private void InteractivePause(TimeSpan length)
         {
             DateTime start = DateTime.Now;
-            TimeSpan restTime = new TimeSpan(200000); // 20 milliseconds
+            DateTime timeToFinish = start.Add(length);
+            TimeSpan restTime = new TimeSpan(1000000); // 20 milliseconds
             while (true)
             {
-                System.Windows.Forms.Application.DoEvents();
-                TimeSpan remainingTime = start.Add(length).Subtract(DateTime.Now);
+                //System.Diagnostics.Trace.WriteLine("run");
+
+                //System.Windows.Forms.Application.DoEvents();
+                if (pause)
+                {
+                    break;
+                }
+                //System.Windows.Forms.Application.DoEvents();
+                TimeSpan remainingTime = timeToFinish.Subtract(DateTime.Now);
+                //System.Windows.Forms.Application.DoEvents();
                 if (remainingTime > restTime)
                 {
+                    System.Windows.Forms.Application.DoEvents();
                     //System.Diagnostics.Debug.WriteLine(string.Format("1: {0}", remainingTime));
                     // Wait an insignificant amount of time so that the
                     // CPU usage doesn't hit the roof while we wait.
                     System.Threading.Thread.Sleep(restTime);
+                   // System.Windows.Forms.Application.DoEvents();
                 }
                 else
                 {
                     //System.Diagnostics.Debug.WriteLine(string.Format("2: {0}", remainingTime));
                     if (remainingTime.Ticks > 0)
                         System.Threading.Thread.Sleep(remainingTime);
+
                     break;
                 }
             }
+            
+            //System.Windows.Forms.Application.DoEvents();
         }
 
         #endregion

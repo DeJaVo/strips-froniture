@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.drawFurnituresDestCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -60,7 +61,6 @@
             this.nextStepButton = new System.Windows.Forms.Button();
             this.runButton = new System.Windows.Forms.Button();
             this.operationsStack = new System.Windows.Forms.ListBox();
-            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -100,6 +100,16 @@
             this.splitContainer1.Size = new System.Drawing.Size(1362, 607);
             this.splitContainer1.SplitterDistance = 257;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(72, 577);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(119, 23);
+            this.button2.TabIndex = 26;
+            this.button2.Text = "Save";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.OnSaveButtonClick);
             // 
             // button1
             // 
@@ -522,16 +532,6 @@
             this.operationsStack.Name = "operationsStack";
             this.operationsStack.Size = new System.Drawing.Size(302, 607);
             this.operationsStack.TabIndex = 0;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(72, 577);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(119, 23);
-            this.button2.TabIndex = 26;
-            this.button2.Text = "Save";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.OnSaveButtonClick);
             // 
             // Form1
             // 
