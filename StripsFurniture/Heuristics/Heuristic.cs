@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Drawing;
-
 using BoardDataModel;
+
 namespace Heuristics
 {
     public class Heuristic : IHeuristic
     {
         #region OrderPredicates
+
         /// <summary>
         /// function that orders a predicates list        
         /// </summary>
@@ -35,20 +35,17 @@ namespace Heuristics
                 IList<StackItem> orderedPLocation = new List<StackItem>();
                 orderedPLocation = OrderLocationPredicate(pLocation);
                 //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
-                result = (IList<StackItem>)result.Concat(pClean).ToList();
-                result = (IList<StackItem>)result.Concat(orderedPLocation).ToList();
+                result = (IList<StackItem>) result.Concat(pClean).ToList();
+                result = (IList<StackItem>) result.Concat(orderedPLocation).ToList();
                 return result;
-
             }
             else
             {
                 //for now we settle for taking all the pClean's as they are ordered, maybe we can add heurisitc that orders them as well.
-                result = (IList<StackItem>)result.Concat(pClean).ToList();
-                result = (IList<StackItem>)result.Concat(pLocation).ToList();
+                result = (IList<StackItem>) result.Concat(pClean).ToList();
+                result = (IList<StackItem>) result.Concat(pLocation).ToList();
                 return result;
             }
-
-
         }
 
         /// <summary>
@@ -77,6 +74,11 @@ namespace Heuristics
 
         #region PLocation sorting
 
+        /// <summary>
+        /// Order location predicates
+        /// </summary>
+        /// <param name="pLocations"></param>
+        /// <returns></returns>
         private IList<StackItem> OrderLocationPredicate(IList<StackItem> pLocations)
         {
             // split furnitures into groups
@@ -95,13 +97,16 @@ namespace Heuristics
             return this.MergeGroups(groups);
         }
 
-        enum GroupType
+        /// <summary>
+        /// Grouptype - PassDoor and SameRoom
+        /// </summary>
+        private enum GroupType
         {
             PassDoor,
             SameRoom
         }
 
-        class Group
+        private class Group
         {
             private GroupType groupType;
             private List<PLocation> furnitures;
@@ -115,31 +120,22 @@ namespace Heuristics
 
             public GroupType GroupType
             {
-                get
-                {
-                    return groupType;
-                }
+                get { return groupType; }
             }
+
             public List<PLocation> Furnitures
             {
-                get
-                {
-                    return furnitures;
-                }
+                get { return furnitures; }
             }
+
             // relevant only when groupType is PassDoor type
-            public bool PassUpperDoor
-            {
-                get;
-                set;
-            }
+            public bool PassUpperDoor { get; set; }
 
-            public List<int> DoorsPath
-            {
-                get;
-                set;
-            }
+            public List<int> DoorsPath { get; set; }
 
+            /// <summary>
+            /// Calculates representative path
+            /// </summary>
             public void CalcRepresentativePath()
             {
                 // take the representative as the last in the sort
@@ -149,7 +145,7 @@ namespace Heuristics
                 //path = Group.CalcRepresentativePath(startState, destState, this.DoorsPath);
                 path = Heuristic.CalculatePathByRect(startState, destState);
             }
-            
+
             private static List<Rectangle> FindPathBetweenDoors(Rectangle start, Rectangle end)
             {
                 // building for door room 2 to door room 3
@@ -164,14 +160,21 @@ namespace Heuristics
                 return subPath;
             }
 
-            public static List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end,int width,int height)
+            /// <summary>
+            /// find path between points
+            /// </summary>
+            /// <param name="start"></param>
+            /// <param name="end"></param>
+            /// <param name="width"></param>
+            /// <param name="height"></param>
+            /// <returns></returns>
+            public static List<Rectangle> FindPathBetweenPoints(Rectangle start, Rectangle end, int width, int height)
             {
-                
                 List<Rectangle> subPath = new List<Rectangle>();
 
                 int deltaY = Math.Sign(end.Y - start.Y);
                 int deltaX = Math.Sign(end.X - start.X);
-                
+
                 for (int i = start.Y; i != end.Y; i += deltaY)
                 {
                     subPath.Add(new Rectangle(start.X, i, width, height));
@@ -186,25 +189,27 @@ namespace Heuristics
                 return subPath;
             }
 
+            /// <summary>
+            /// return door location per room
+            /// </summary>
+            /// <param name="roomId"></param>
+            /// <returns></returns>
             public static Rectangle GetRoomDoor(int roomId)
             {
                 if (roomId == 2)
                 {
-                    return new Rectangle(11, 3,1,1);
+                    return new Rectangle(11, 3, 1, 1);
                 }
                     // roomId = 3
                 else
                 {
-                    return new Rectangle(11, 8,1,1);
+                    return new Rectangle(11, 8, 1, 1);
                 }
             }
 
             public List<Rectangle> Path
             {
-                get
-                {
-                    return path;
-                }
+                get { return path; }
             }
 
             public List<Rectangle> GetFurnituresInStart()
@@ -231,7 +236,8 @@ namespace Heuristics
         }
 
         #region Sort btween groups
-        class GroupsComparer : IComparer<Group>
+
+        private class GroupsComparer : IComparer<Group>
         {
             public int Compare(Group g1, Group g2)
             {
@@ -241,9 +247,9 @@ namespace Heuristics
                 List<Rectangle> testedGroupFurnituresInStart = g1.GetFurnituresInStart();
                 List<Rectangle> testedGroupFurnituresInDest = g1.GetFurnituresInDest();
                 int res = GroupsComparer.InternalCompare(g1.Path, g2.Path,
-                                               testedGroupFurnituresInStart, testedGroupFurnituresInDest,
-                                                otherGroupFurnituresInStart, otherGroupFurnituresInDest);
-                
+                                                         testedGroupFurnituresInStart, testedGroupFurnituresInDest,
+                                                         otherGroupFurnituresInStart, otherGroupFurnituresInDest);
+
                 return res;
             }
 
@@ -272,15 +278,17 @@ namespace Heuristics
                 return 0;
             }
 
-            public static int InternalCompare(List<Rectangle> testedPath,List<Rectangle> otherPath,
-                                        List<Rectangle> testedGroupFurnituresInStart, List<Rectangle> testedGroupFurnituresInDest,
-                                        List<Rectangle> otherGroupFurnituresInStart, List<Rectangle> otherGroupFurnituresInDest)
+            public static int InternalCompare(List<Rectangle> testedPath, List<Rectangle> otherPath,
+                                              List<Rectangle> testedGroupFurnituresInStart,
+                                              List<Rectangle> testedGroupFurnituresInDest,
+                                              List<Rectangle> otherGroupFurnituresInStart,
+                                              List<Rectangle> otherGroupFurnituresInDest)
             {
                 bool otherStartOnTestedPath = false;
                 bool otherDestOnTestedPath = false;
                 bool testedStartOnOtherPath = false;
                 bool testedDestOnOtherPath = false;
-                
+
                 // if a furniture from g2 in start state is on the path of g1 than g1 is smaller than g2
                 if (IsOnPath(testedPath, otherGroupFurnituresInStart))
                 {
@@ -351,7 +359,7 @@ namespace Heuristics
                 return false;
             }
 
-            private static bool IsOnPath(List<Rectangle> path,List<Rectangle> furnitures)
+            private static bool IsOnPath(List<Rectangle> path, List<Rectangle> furnitures)
             {
                 foreach (Rectangle currPathPart in path)
                 {
@@ -367,9 +375,11 @@ namespace Heuristics
                 return false;
             }
         }
+
         #endregion
 
         #region SplitToGroups
+
         private List<Group> SplitToGroups(IList<StackItem> locations)
         {
             // foreach room build a list of furnitures in start state and list of furnitures in destination state
@@ -379,17 +389,17 @@ namespace Heuristics
             this.FindFurnitures(locations, out room1StartStateFurnitures, out room1DestStateFurnitures,
                                 out room2StartStateFurnitures, out room2DestStateFurnitures,
                                 out room3StartStateFurnitures, out room3DestStateFurnitures);
-            
+
             // foreach room create a SameRoom-Group with all the furnitures in destination state and these furnitures are in start state in the current room
             Group sameRoomGroupInRoom1 = this.FindSameRoomGroups(room1StartStateFurnitures, room1DestStateFurnitures);
             Group sameRoomGroupInRoom2 = this.FindSameRoomGroups(room2StartStateFurnitures, room2DestStateFurnitures);
             Group sameRoomGroupInRoom3 = this.FindSameRoomGroups(room3StartStateFurnitures, room3DestStateFurnitures);
 
             // Create a PassDoor-Group with all the furnitures in destination state in the same room and these furnitures are in start state in other room together
-            List < Group > passDoorGroups = this.FindPassDoorGroups(room1StartStateFurnitures, room1DestStateFurnitures, 
-                                                                    room2StartStateFurnitures, room2DestStateFurnitures, 
-                                                                    room3StartStateFurnitures, room3DestStateFurnitures);
-            List < Group > groups = passDoorGroups;
+            List<Group> passDoorGroups = this.FindPassDoorGroups(room1StartStateFurnitures, room1DestStateFurnitures,
+                                                                 room2StartStateFurnitures, room2DestStateFurnitures,
+                                                                 room3StartStateFurnitures, room3DestStateFurnitures);
+            List<Group> groups = passDoorGroups;
             if (sameRoomGroupInRoom1 != null)
             {
                 groups.Add(sameRoomGroupInRoom1);
@@ -404,10 +414,14 @@ namespace Heuristics
             }
             return groups;
         }
-        private void FindFurnitures(IList<StackItem> locations, 
-                                    out List<Furniture> room1StartStateFurnitures, out List<Furniture> room1DestStateFurnitures,
-                                    out List<Furniture> room2StartStateFurnitures, out List<Furniture> room2DestStateFurnitures,
-                                    out List<Furniture> room3StartStateFurnitures, out List<Furniture> room3DestStateFurnitures)
+
+        private void FindFurnitures(IList<StackItem> locations,
+                                    out List<Furniture> room1StartStateFurnitures,
+                                    out List<Furniture> room1DestStateFurnitures,
+                                    out List<Furniture> room2StartStateFurnitures,
+                                    out List<Furniture> room2DestStateFurnitures,
+                                    out List<Furniture> room3StartStateFurnitures,
+                                    out List<Furniture> room3DestStateFurnitures)
         {
             room1StartStateFurnitures = new List<Furniture>();
             room1DestStateFurnitures = new List<Furniture>();
@@ -418,25 +432,25 @@ namespace Heuristics
 
             foreach (StackItem currLocation in locations)
             {
-                Rectangle destRect = ((PLocation)currLocation).rect;
-                Rectangle startRect = ((PLocation)currLocation).furniture.Description;
+                Rectangle destRect = ((PLocation) currLocation).rect;
+                Rectangle startRect = ((PLocation) currLocation).furniture.Description;
 
-                this.UpdateRoomsStart(((PLocation)currLocation).furniture,
-                                ref room1StartStateFurnitures,
-                                ref room2StartStateFurnitures,
-                                ref room3StartStateFurnitures);
+                this.UpdateRoomsStart(((PLocation) currLocation).furniture,
+                                      ref room1StartStateFurnitures,
+                                      ref room2StartStateFurnitures,
+                                      ref room3StartStateFurnitures);
 
-                this.UpdateRoomsDest(destRect, ((PLocation)currLocation).furniture.ID,
-                                ref room1DestStateFurnitures,
-                                ref room2DestStateFurnitures,
-                                ref room3DestStateFurnitures);
+                this.UpdateRoomsDest(destRect, ((PLocation) currLocation).furniture.ID,
+                                     ref room1DestStateFurnitures,
+                                     ref room2DestStateFurnitures,
+                                     ref room3DestStateFurnitures);
             }
         }
 
         private void UpdateRoomsStart(Furniture fur,
-                                    ref List<Furniture> room1Furnitures,
-                                    ref List<Furniture> room2Furnitures,
-                                    ref List<Furniture> room3Furnitures)
+                                      ref List<Furniture> room1Furnitures,
+                                      ref List<Furniture> room2Furnitures,
+                                      ref List<Furniture> room3Furnitures)
         {
             Rectangle rect = fur.Description;
 
@@ -445,12 +459,12 @@ namespace Heuristics
             {
                 room1Furnitures.Add(fur);
             }
-            // room 2
+                // room 2
             else if (rect.Y <= 5)
             {
                 room2Furnitures.Add(fur);
             }
-            // room 3
+                // room 3
             else
             {
                 room3Furnitures.Add(fur);
@@ -458,9 +472,9 @@ namespace Heuristics
         }
 
         private void UpdateRoomsDest(Rectangle rect, int id,
-                                    ref List<Furniture> room1Furnitures,
-                                    ref List<Furniture> room2Furnitures,
-                                    ref List<Furniture> room3Furnitures)
+                                     ref List<Furniture> room1Furnitures,
+                                     ref List<Furniture> room2Furnitures,
+                                     ref List<Furniture> room3Furnitures)
         {
             // room 1
             if (rect.X <= 11)
@@ -472,14 +486,15 @@ namespace Heuristics
             {
                 room2Furnitures.Add(new Furniture(rect, id));
             }
-            // room 3
+                // room 3
             else
             {
                 room3Furnitures.Add(new Furniture(rect, id));
             }
         }
 
-        private Group FindSameRoomGroups(List<Furniture> roomStartStateFurnitures, List<Furniture> roomDestStateFurnitures)
+        private Group FindSameRoomGroups(List<Furniture> roomStartStateFurnitures,
+                                         List<Furniture> roomDestStateFurnitures)
         {
             Group sameRoomGroup = new Group(GroupType.SameRoom);
             List<Furniture> roomStartStateFurnituresCpy = new List<Furniture>(roomStartStateFurnitures);
@@ -506,18 +521,27 @@ namespace Heuristics
             return sameRoomGroup;
         }
 
-        private List<Group> FindPassDoorGroups(List<Furniture> room1StartStateFurnitures,List<Furniture> room1DestStateFurnitures, 
-                                               List<Furniture> room2StartStateFurnitures,List<Furniture> room2DestStateFurnitures,
-                                               List<Furniture> room3StartStateFurnitures, List<Furniture> room3DestStateFurnitures)
+        private List<Group> FindPassDoorGroups(List<Furniture> room1StartStateFurnitures,
+                                               List<Furniture> room1DestStateFurnitures,
+                                               List<Furniture> room2StartStateFurnitures,
+                                               List<Furniture> room2DestStateFurnitures,
+                                               List<Furniture> room3StartStateFurnitures,
+                                               List<Furniture> room3DestStateFurnitures)
         {
             List<Group> groupsTemp = new List<Group>();
 
-            groupsTemp.Add(this.FindPassDoorGroups(room1DestStateFurnitures, room2StartStateFurnitures,true,new List<int>{2}));
-            groupsTemp.Add(this.FindPassDoorGroups(room1DestStateFurnitures, room3StartStateFurnitures, false, new List<int> { 3 }));
-            groupsTemp.Add(this.FindPassDoorGroups(room2DestStateFurnitures, room1StartStateFurnitures, true, new List<int> { 2}));
-            groupsTemp.Add(this.FindPassDoorGroups(room2DestStateFurnitures, room3StartStateFurnitures, false, new List<int> { 2,3 }));
-            groupsTemp.Add(this.FindPassDoorGroups(room3DestStateFurnitures, room1StartStateFurnitures, false, new List<int> { 3 }));
-            groupsTemp.Add(this.FindPassDoorGroups(room3DestStateFurnitures, room2StartStateFurnitures, true, new List<int> { 3,2 }));
+            groupsTemp.Add(this.FindPassDoorGroups(room1DestStateFurnitures, room2StartStateFurnitures, true,
+                                                   new List<int> {2}));
+            groupsTemp.Add(this.FindPassDoorGroups(room1DestStateFurnitures, room3StartStateFurnitures, false,
+                                                   new List<int> {3}));
+            groupsTemp.Add(this.FindPassDoorGroups(room2DestStateFurnitures, room1StartStateFurnitures, true,
+                                                   new List<int> {2}));
+            groupsTemp.Add(this.FindPassDoorGroups(room2DestStateFurnitures, room3StartStateFurnitures, false,
+                                                   new List<int> {2, 3}));
+            groupsTemp.Add(this.FindPassDoorGroups(room3DestStateFurnitures, room1StartStateFurnitures, false,
+                                                   new List<int> {3}));
+            groupsTemp.Add(this.FindPassDoorGroups(room3DestStateFurnitures, room2StartStateFurnitures, true,
+                                                   new List<int> {3, 2}));
 
             List<Group> groups = new List<Group>();
             foreach (Group currGroup in groupsTemp)
@@ -531,7 +555,8 @@ namespace Heuristics
             return groups;
         }
 
-        private Group FindPassDoorGroups(List<Furniture> destStateFurnitures, List<Furniture> startStateFurnitures,bool upperDoor,List<int> doorsPath)
+        private Group FindPassDoorGroups(List<Furniture> destStateFurnitures, List<Furniture> startStateFurnitures,
+                                         bool upperDoor, List<int> doorsPath)
         {
             List<PLocation> groupsFurnitures = new List<PLocation>();
             foreach (Furniture currFurInStartState in startStateFurnitures)
@@ -542,7 +567,7 @@ namespace Heuristics
                     {
                         groupsFurnitures.Add(new PLocation(currFurInStartState, currFurInDestState.Description));
                     }
-                }    
+                }
             }
 
             if (groupsFurnitures.Count == 0)
@@ -556,9 +581,11 @@ namespace Heuristics
             group.DoorsPath = doorsPath;
             return group;
         }
+
         #endregion SplitToGroups
 
         #region Sort group members
+
         private void SortGroup(Group group)
         {
             if (group.GroupType == GroupType.PassDoor)
@@ -570,9 +597,11 @@ namespace Heuristics
                 group.Furnitures.Sort(new FurnitureInSameRoomComparer());
             }
         }
-        class FurniturePassDoorComparer : IComparer<PLocation>
+
+        private class FurniturePassDoorComparer : IComparer<PLocation>
         {
-            Point doorLocation;
+            private Point doorLocation;
+
             public FurniturePassDoorComparer(bool upperDoor)
             {
                 if (upperDoor)
@@ -581,9 +610,10 @@ namespace Heuristics
                 }
                 else
                 {
-                    doorLocation = new Point(11,8);
+                    doorLocation = new Point(11, 8);
                 }
             }
+
             public int Compare(PLocation ploc1, PLocation ploc2)
             {
                 double dist1 = Math.Pow(ploc1.rect.X - doorLocation.X, 2) +
@@ -599,7 +629,8 @@ namespace Heuristics
                 return dist1 < dist2 ? 1 : -1;
             }
         }
-        class FurnitureInSameRoomComparer : IComparer<PLocation>
+
+        private class FurnitureInSameRoomComparer : IComparer<PLocation>
         {
             public int Compare(PLocation ploc1, PLocation ploc2)
             {
@@ -607,12 +638,13 @@ namespace Heuristics
                 List<Rectangle> ploc2Path = Heuristic.CalculatePathByRect(ploc2.furniture.Description, ploc2.rect);
 
                 return GroupsComparer.InternalCompare(ploc1Path, ploc2Path,
-                                                      new List<Rectangle> { ploc1.furniture.Description },
-                                                      new List<Rectangle> { ploc1.rect },
-                                                      new List<Rectangle> { ploc2.furniture.Description },
-                                                       new List<Rectangle> { ploc2.rect });
+                                                      new List<Rectangle> {ploc1.furniture.Description},
+                                                      new List<Rectangle> {ploc1.rect},
+                                                      new List<Rectangle> {ploc2.furniture.Description},
+                                                      new List<Rectangle> {ploc2.rect});
             }
         }
+
         #endregion
 
         private IList<StackItem> MergeGroups(List<Group> groups)
@@ -625,11 +657,14 @@ namespace Heuristics
 
             return mergedGroups;
         }
+
         #endregion
+
         #endregion
 
         private List<Direction> SortRemainingDirections(List<Direction> forbidenDir, List<Direction> remainingDirections,
-                                                        Rectangle rectToClean,Rectangle rectToMove, Furniture furniture, Direction originalForbbiden)
+                                                        Rectangle rectToClean, Rectangle rectToMove, Furniture furniture,
+                                                        Direction originalForbbiden)
         {
             List<Direction> sortRemainingDirections = new List<Direction>();
 
@@ -652,26 +687,26 @@ namespace Heuristics
                 oppToForbiden.Add(Direction.Right);
             }
 
-            var remainingDirectionsSorted=remainingDirections.Except(oppToForbiden).ToList();
+            var remainingDirectionsSorted = remainingDirections.Except(oppToForbiden).ToList();
             Dictionary<Direction, int> dictDists = new Dictionary<Direction, int>();
             if (remainingDirectionsSorted.Count == 0)
                 remainingDirectionsSorted = oppToForbiden;
             foreach (Direction currDir in remainingDirectionsSorted)
             {
                 int dirDist;
-                if(currDir==originalForbbiden)
+                if (currDir == originalForbbiden)
                     continue;
                 if (currDir == Direction.Up)
                 {
                     dirDist = rectToMove.Bottom - rectToClean.Y;
-                    Move move= new Move(furniture);
+                    Move move = new Move(furniture);
                     move.Direction = currDir;
                     move.HowManyStepsInDirection = dirDist;
                     var dest = move.CalculateRectDiff();
                     if (!Board.Instance.InBounds(dest))
                         continue;
                     if (!Board.Instance.IsEmpty(dest))
-                        dirDist = int.MaxValue-1;
+                        dirDist = int.MaxValue - 1;
                     if (currDir == originalForbbiden)
                         dirDist = int.MaxValue;
                 }
@@ -682,7 +717,7 @@ namespace Heuristics
                     move.Direction = currDir;
                     move.HowManyStepsInDirection = dirDist;
                     var dest = move.CalculateRectDiff();
-                    if(!Board.Instance.InBounds(dest))
+                    if (!Board.Instance.InBounds(dest))
                         continue;
                     if (!Board.Instance.IsEmpty(dest))
                         dirDist = int.MaxValue - 1;
@@ -713,20 +748,19 @@ namespace Heuristics
                     if (!Board.Instance.InBounds(dest))
                         continue;
                     if (!Board.Instance.IsEmpty(dest))
-                        dirDist = int.MaxValue-1;
+                        dirDist = int.MaxValue - 1;
                     if (currDir == originalForbbiden)
                         dirDist = int.MaxValue;
-
                 }
                 dictDists.Add(currDir, dirDist);
             }
 
-            var dictDistsSorted=dictDists.OrderBy(i => i.Value).ToDictionary(i=> i.Key, i=>i.Value);
+            var dictDistsSorted = dictDists.OrderBy(i => i.Value).ToDictionary(i => i.Key, i => i.Value);
             sortRemainingDirections.AddRange(dictDistsSorted.Keys.ToList());
             sortRemainingDirections.AddRange(oppToForbiden);
             sortRemainingDirections = sortRemainingDirections.Distinct().ToList();
 
-            
+
             return sortRemainingDirections;
         }
 
@@ -740,7 +774,7 @@ namespace Heuristics
                 move.HowManyStepsInDirection = 1;
                 var diffRect = move.CalculateRectDiff();
                 if (!Board.Instance.InBounds(diffRect) || !Board.Instance.IsNotWall(diffRect))
-                    result.Remove(direction);                
+                    result.Remove(direction);
             }
             return result;
         }
@@ -753,7 +787,8 @@ namespace Heuristics
         /// <returns></returns>
         public Operation ChooseOperation(Board board, Predicate predicateToSatisfy)
         {
-            Dictionary<Operation, List<Furniture>> blockingfurPerOperation = new Dictionary<Operation, List<Furniture>>();
+            Dictionary<Operation, List<Furniture>> blockingfurPerOperation =
+                new Dictionary<Operation, List<Furniture>>();
             Furniture furniture;
             Rectangle furDest;
             Rectangle furCurrPos;
@@ -771,29 +806,28 @@ namespace Heuristics
                 furDest = Board.Instance.furnitureDestination[furniture];
                 furCurrPos = furniture.Description;
                 currRoom = board.FindRoomPerRect(furniture.Description);
-                endRoom = board.FindRoomPerRect(furDest);   
-                List<Direction> forbbiden =(predicateToSatisfy as PClean).Forbbiden;
+                endRoom = board.FindRoomPerRect(furDest);
+                List<Direction> forbbiden = (predicateToSatisfy as PClean).Forbbiden;
                 var forbbidenSaved = forbbiden.First();
                 forbbiden.AddRange(FindFurbbidenDirections(furniture, (predicateToSatisfy as PClean).CleanRect));
-                forbbiden=forbbiden.Distinct().ToList();
+                forbbiden = forbbiden.Distinct().ToList();
                 Operation operation;
                 Dictionary<Operation, List<Furniture>> blocking = new Dictionary<Operation, List<Furniture>>();
                 if (currRoom == endRoom)
                 {
-                    var RemainigDirections = FindRemainingDirections(new List<Direction> { forbbidenSaved });
-                    var SortedRemainingDirections = SortRemainingDirections(new List<Direction> { forbbidenSaved },
+                    var RemainigDirections = FindRemainingDirections(new List<Direction> {forbbidenSaved});
+                    var SortedRemainingDirections = SortRemainingDirections(new List<Direction> {forbbidenSaved},
                                                                             RemainigDirections,
                                                                             (predicateToSatisfy as PClean).CleanRect,
-                                                                            furniture.Description, furniture, forbbidenSaved);
+                                                                            furniture.Description, furniture,
+                                                                            forbbidenSaved);
 
                     directionsSorted = SortedRemainingDirections;
                     directionsSorted = FilterUnVaildDirection(directionsSorted, furniture);
                     directions = FindPossibleDirections(furniture, board);
 
-                    // directions = FindPossibleDirections(furniture, board);
-                    // directionsSorted = SortDirectionsByDistance(furniture, directions, board);                  
-                    ////forbbiden =((predicateToSatisfy as PClean).Forbbiden);
-                    // directionsSorted = directionsSorted.Except(forbbiden).ToList(); 
+
+
                 }
                 else
                 {
@@ -801,22 +835,14 @@ namespace Heuristics
                     var SortedRemainingDirections = SortRemainingDirections(new List<Direction> {forbbidenSaved},
                                                                             RemainigDirections,
                                                                             (predicateToSatisfy as PClean).CleanRect,
-                                                                            furniture.Description,furniture, forbbidenSaved);
-                    
+                                                                            furniture.Description, furniture,
+                                                                            forbbidenSaved);
+
                     directionToDoorSorted = SortedRemainingDirections;
                     directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
-                    //directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
-                    //directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);                    
-                    ////forbbiden = ((predicateToSatisfy as PClean).Forbbiden);
-                    //directionToDoorSorted = directionToDoorSorted.Except(forbbiden).ToList();
-                    //if (currRoom == 1 && directionToDoorSorted.Count != 0 && ((11-(furniture.Description.X+furniture.Description.Width))<= 1) )
-                    //{
-                    //    var temp = new List<Direction> { directionToDoorSorted.First() };
-                    //    directionToDoorSorted = FindRemainingDirections(temp);
-                    //    directionToDoorSorted= SortRemainingDirections(forbbiden, directionToDoorSorted,(predicateToSatisfy as PClean).CleanRect, furniture.Description, furniture, forbbidenSaved);
-                    //}
                 }
-                if ((directionsSorted==null && directionToDoorSorted.Count==0) || (directionToDoorSorted==null && directionsSorted.Count==0))
+                if ((directionsSorted == null && directionToDoorSorted.Count == 0) ||
+                    (directionToDoorSorted == null && directionsSorted.Count == 0))
                 {
                     //create a list directions except for the forbidden
                     //sort list according to: first ortogonal to the forbbiden and internali the direction with min steps in clearing the rect
@@ -825,22 +851,25 @@ namespace Heuristics
                     if (remainingDirections.Count == 0)
                         remainingDirections = allDirection;
 
-                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections, (predicateToSatisfy as PClean).CleanRect, furniture.Description, furniture, forbbidenSaved);
+                    var remainingDirectionsSorted = SortRemainingDirections(forbbiden, remainingDirections,
+                                                                            (predicateToSatisfy as PClean).CleanRect,
+                                                                            furniture.Description, furniture,
+                                                                            forbbidenSaved);
                     //filter out un valid directions                   
                     remainingDirectionsSorted = FilterUnVaildDirection(remainingDirectionsSorted, furniture);
                     if (remainingDirectionsSorted.Count != 0)
                     {
-                        if (IsOpposite(remainingDirectionsSorted.First(), forbbidenSaved) && currRoom!=endRoom && !CanPassDoor(furniture, currRoom, endRoom))
+                        if (IsOpposite(remainingDirectionsSorted.First(), forbbidenSaved) && currRoom != endRoom &&
+                            !CanPassDoor(furniture, currRoom, endRoom))
                         {
                             operation = CheckIfCanRotate(new List<Direction>(), new Rotate(furniture), blocking);
                             if (operation != null)
                                 return operation;
-
                         }
                     }
-                    if (remainingDirectionsSorted.Count==0)
+                    if (remainingDirectionsSorted.Count == 0)
                         remainingDirectionsSorted = allDirection;
-                    operation = CheckIfCanMove(remainingDirectionsSorted, furniture,blocking);
+                    operation = CheckIfCanMove(remainingDirectionsSorted, furniture, blocking);
                     if (operation != null)
                     {
                         return operation;
@@ -849,45 +878,43 @@ namespace Heuristics
                     {
                         return ReturnOptimalOperation(blocking);
                     }
-
                 }
-
             }
-            //predicate is a location kind
+                //predicate is a location kind
             else
-            {                          
+            {
                 furniture = (predicateToSatisfy as PLocation).furniture;
                 furDest = (predicateToSatisfy as PLocation).rect;
                 furCurrPos = furniture.Description;
                 currRoom = board.FindRoomPerRect(furniture.Description);
                 endRoom = board.FindRoomPerRect(furDest);
-                 if (currRoom == endRoom)
+                if (currRoom == endRoom)
                 {
                     directions = FindPossibleDirections(furniture, board);
-                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);                   
+                    directionsSorted = SortDirectionsByDistance(furniture, directions, board);
                 }
                 else
                 {
                     directionsToDoor = FindPossibleDirectionsToDoor(furniture, currRoom, endRoom);
-                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);         
+                    directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);
                 }
-            }                           
+            }
             // in case sart & end positions are in the same room
             if (currRoom == endRoom)
-            {               
+            {
                 //check if both positions are in the same orientaion.
                 if (IsSameOrientaion(furCurrPos, furDest))
-                {   
+                {
                     //check if can move             
                     var operation = CheckIfCanMove(directionsSorted, furniture, blockingfurPerOperation);
                     if (operation != null)
                         return operation;
                     //can't move                   
-                        return ReturnOptimalOperation(blockingfurPerOperation);                                           
+                    return ReturnOptimalOperation(blockingfurPerOperation);
                 }
                 //if not the same orientation- check if can rotate
                 {
-                    Rotate rotate= new Rotate(furniture);
+                    Rotate rotate = new Rotate(furniture);
                     var operation = CheckIfCanRotate(directionsSorted, rotate, blockingfurPerOperation);
                     if (operation != null)
                         return operation;
@@ -896,9 +923,8 @@ namespace Heuristics
                     if (operation != null)
                         return operation;
                     //cant move or rotate
-                    return ReturnOptimalOperation(blockingfurPerOperation);  
-
-                }               
+                    return ReturnOptimalOperation(blockingfurPerOperation);
+                }
             }
             //else: star& end positions are not in the same room                     
             //if furniture is passing rooms:
@@ -906,14 +932,14 @@ namespace Heuristics
             {
                 directionsToDoor = FindPossibleDirections(furniture, board);
                 directionToDoorSorted = SortDirectionsByDistance(furniture, directionsToDoor, board);
-            }           
+            }
             if (CanPassDoor(furniture, currRoom, endRoom))
             {
                 var operation = CheckIfCanMove(directionToDoorSorted, furniture, blockingfurPerOperation);
                 if (operation != null)
                     return operation;
                 //cant move
-                return ReturnOptimalOperation(blockingfurPerOperation);           
+                return ReturnOptimalOperation(blockingfurPerOperation);
             }
             //cant pass door
             if (!CanPassDoor(furniture, currRoom, endRoom))
@@ -924,15 +950,21 @@ namespace Heuristics
                 if (operation != null)
                     return operation;
                 //cant rotate
-                 operation = CheckIfCanMove(directionToDoorSorted, furniture, blockingfurPerOperation);
+                operation = CheckIfCanMove(directionToDoorSorted, furniture, blockingfurPerOperation);
                 if (operation != null)
                     return operation;
                 //cant move or rotate
-                return ReturnOptimalOperation(blockingfurPerOperation);      
+                return ReturnOptimalOperation(blockingfurPerOperation);
             }
             return null;
         }
 
+        /// <summary>
+        /// Check if direction is oppose to
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="forbbiden"></param>
+        /// <returns></returns>
         private bool IsOpposite(Direction direction, Direction forbbiden)
         {
             switch (forbbiden)
@@ -941,23 +973,23 @@ namespace Heuristics
                     {
                         if (direction == Direction.Down)
                             return true;
-                        break;  
+                        break;
                     }
                 case Direction.Down:
                     {
                         if (direction == Direction.Up)
                             return true;
-                        break;                        
+                        break;
                     }
-                    case Direction.Left:
+                case Direction.Left:
                     {
                         if (direction == Direction.Right)
                             return true;
                         break;
                     }
-                    case Direction.Right:
+                case Direction.Right:
                     {
-                        if(direction== Direction.Left)
+                        if (direction == Direction.Left)
                             return true;
                         break;
                     }
@@ -965,6 +997,12 @@ namespace Heuristics
             return false;
         }
 
+        /// <summary>
+        /// Find furbbiden direction to move to
+        /// </summary>
+        /// <param name="furniture"></param>
+        /// <param name="cleanRect"></param>
+        /// <returns></returns>
         private List<Direction> FindFurbbidenDirections(Furniture furniture, Rectangle cleanRect)
         {
             List<Direction> result = new List<Direction>();
@@ -980,9 +1018,14 @@ namespace Heuristics
             return result;
         }
 
+        /// <summary>
+        /// Find remaining direction to move
+        /// </summary>
+        /// <param name="forbbiden"></param>
+        /// <returns></returns>
         private List<Direction> FindRemainingDirections(List<Direction> forbbiden)
         {
-            List<Direction> result= new List<Direction>();
+            List<Direction> result = new List<Direction>();
             result.Add(Direction.Down);
             result.Add(Direction.Up);
             result.Add(Direction.Left);
@@ -990,13 +1033,17 @@ namespace Heuristics
             return result.Except(forbbiden).ToList();
         }
 
+        /// <summary>
+        /// All move directions
+        /// </summary>
         public List<Direction> allDirection = new List<Direction>
-            {
-                Direction.Up,
-                Direction.Down,
-                Direction.Left,
-                Direction.Right
-            };
+                                                  {
+                                                      Direction.Up,
+                                                      Direction.Down,
+                                                      Direction.Left,
+                                                      Direction.Right
+                                                  };
+
         private Operation ReturnOptimalOperation(Dictionary<Operation, List<Furniture>> blockingfurPerOperation)
         {
             var operationSortedByMinNumOfBlockingFur = blockingfurPerOperation.OrderBy(i => i.Value.Count());
@@ -1009,18 +1056,18 @@ namespace Heuristics
         /// it calculates the euclidean ditstance after moving in each direction and sorts ascending order
         /// </summary>
         /// <param name="furniture"></param>
-        /// <param name="directionsToDoor"></param>
+        /// <param name="directions"></param>
         /// <param name="board"></param>
         /// <returns></returns>
         private List<Direction> SortDirectionsByDistance(Furniture furniture, List<Direction> directions, Board board)
         {
-            if (directions.Count()==1)
+            if (directions.Count() == 1)
             {
                 return directions;
             }
 
             var distPerDir = new Dictionary<Direction, double>();
-           // var sortedDir = new List<Direction>();          
+            // var sortedDir = new List<Direction>();          
 
             foreach (var direction in directions)
             {
@@ -1030,11 +1077,12 @@ namespace Heuristics
                 var diffRect = move.CalculateRectDiff();
 
                 Rectangle furnitureAfterMove = move.CalculateNewdestRectangle();
-                Rectangle furnitureDest = Board.Instance.furnitureDestination[furniture]; 
+                Rectangle furnitureDest = Board.Instance.furnitureDestination[furniture];
                 int destRoom = Board.Instance.FindRoomPerRect(furnitureDest);
                 bool isOnDoor = (Board.Instance.FindRoomPerRect(furnitureAfterMove) == 1) &&
-                             ((destRoom == 1) || (destRoom == 3)) &&
-                            (furnitureAfterMove.X + furnitureAfterMove.Width - 1 >= 11 && direction==Direction.Right);
+                                ((destRoom == 1) || (destRoom == 3)) &&
+                                (furnitureAfterMove.X + furnitureAfterMove.Width - 1 >= 11 &&
+                                 direction == Direction.Right);
 
                 if (!board.InBounds(diffRect) || !board.IsNotWall(diffRect) || isOnDoor)
                 {
@@ -1046,14 +1094,20 @@ namespace Heuristics
                 //var distance = board.RectanglesEuclideanDistance(newRect, board.furnitureDestination[furniture]);
                 distPerDir[direction] = distance;
             }
-            var distPerDirSorted=distPerDir.OrderBy(i => i.Value).ToDictionary(i=>i.Key,i=>i.Value);
+            var distPerDirSorted = distPerDir.OrderBy(i => i.Value).ToDictionary(i => i.Key, i => i.Value);
 
             return new List<Direction>(distPerDirSorted.Keys);
-
-           
         }
 
-        private List<RotationDirection> SortRotateDirectionsByDistance(Furniture furniture, List<RotationDirection> directions, Board board)
+        /// <summary>
+        /// Sort roataion direction by distance 
+        /// </summary>
+        /// <param name="furniture"></param>
+        /// <param name="directions"></param>
+        /// <param name="board"></param>
+        /// <returns></returns>
+        private List<RotationDirection> SortRotateDirectionsByDistance(Furniture furniture,
+                                                                       List<RotationDirection> directions, Board board)
         {
             if (directions.Count() == 1)
             {
@@ -1061,7 +1115,7 @@ namespace Heuristics
             }
             var sortedDir = new List<RotationDirection>();
 
-            Rotate rotate= new Rotate(furniture); 
+            Rotate rotate = new Rotate(furniture);
             rotate.RotationDirection = directions.First();
             var newRect1 = rotate.NewDestRect();
             var temp1 = CalculatePathByRect(newRect1, board.furnitureDestination[furniture]);
@@ -1070,7 +1124,7 @@ namespace Heuristics
             rotate.RotationDirection = directions.Last();
             var newRect2 = rotate.NewDestRect();
             var temp2 = CalculatePathByRect(newRect2, board.furnitureDestination[furniture]);
-            var distance2 = temp2.Count;           
+            var distance2 = temp2.Count;
 
             if (distance1 < distance2)
             {
@@ -1081,9 +1135,17 @@ namespace Heuristics
             sortedDir.Add(directions.Last());
             sortedDir.Add(directions.First());
             return sortedDir;
-            
         }
-        private Operation CheckIfCanMove(List<Direction> directions, Furniture furniture, Dictionary<Operation, List<Furniture>>blockingfurPerOperation)
+
+        /// <summary>
+        /// Checks if furniture can move
+        /// </summary>
+        /// <param name="directions"></param>
+        /// <param name="furniture"></param>
+        /// <param name="blockingfurPerOperation"></param>
+        /// <returns></returns>
+        private Operation CheckIfCanMove(List<Direction> directions, Furniture furniture,
+                                         Dictionary<Operation, List<Furniture>> blockingfurPerOperation)
         {
             foreach (var direction in directions)
             {
@@ -1095,28 +1157,36 @@ namespace Heuristics
                 {
                     if (Board.Instance.IsNotWall(diffRect))
                     {
-                        if(Board.Instance.IsEmpty(diffRect))
-                            return (Operation)move;
+                        if (Board.Instance.IsEmpty(diffRect))
+                            return (Operation) move;
                         else //is blocked by other fur'
                         {
                             var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
-                            blockingfurPerOperation.Add((Operation)move, problematicFur);
+                            blockingfurPerOperation.Add((Operation) move, problematicFur);
                         }
                     }
-                }                       
+                }
             }
             return null;
         }
 
-        private Operation CheckIfCanRotate(List<Direction> directions, Rotate rotate, Dictionary<Operation, List<Furniture>> blockingfurPerOperation )
+        /// <summary>
+        /// Check if furntiure can be rotated
+        /// </summary>
+        /// <param name="directions"></param>
+        /// <param name="rotate"></param>
+        /// <param name="blockingfurPerOperation"></param>
+        /// <returns></returns>
+        private Operation CheckIfCanRotate(List<Direction> directions, Rotate rotate,
+                                           Dictionary<Operation, List<Furniture>> blockingfurPerOperation)
         {
             //TODO: need to decide in what direction to rotate
-            List<RotationDirection> RDL =new List<RotationDirection>();
+            List<RotationDirection> RDL = new List<RotationDirection>();
             RDL.Add(RotationDirection.ClockWise);
-            RDL.Add(RotationDirection.CounterClockWise);            
+            RDL.Add(RotationDirection.CounterClockWise);
             var sortedRD = SortRotateDirectionsByDistance(rotate.Furniture, RDL, Board.Instance);
             foreach (var SRD in sortedRD)
-            {             
+            {
                 rotate.RotationDirection = SRD;
                 var diffRect = rotate.CalculateRectToBeCleanByDirection();
                 if (Board.Instance.InBounds(diffRect))
@@ -1127,15 +1197,22 @@ namespace Heuristics
                         {
                             return rotate;
                         }
-                         var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
-                         var newRotate = new Rotate(rotate.Furniture) { RotationDirection = SRD };
-                         blockingfurPerOperation.Add(newRotate, problematicFur);
+                        var problematicFur = Board.Instance.FindFurnitureInRect(diffRect);
+                        var newRotate = new Rotate(rotate.Furniture) {RotationDirection = SRD};
+                        blockingfurPerOperation.Add(newRotate, problematicFur);
                     }
                 }
-            }                               
+            }
             return null;
         }
 
+        /// <summary>
+        /// Checks if furniture can pass door
+        /// </summary>
+        /// <param name="furniture"></param>
+        /// <param name="currRoom"></param>
+        /// <param name="endRoom"></param>
+        /// <returns></returns>
         private bool CanPassDoor(Furniture furniture, int currRoom, int endRoom)
         {
             if (currRoom == 2 || endRoom == 2)
@@ -1155,14 +1232,21 @@ namespace Heuristics
             return false;
         }
 
-        private List<Direction> FindPossibleDirectionsToDoor(Furniture furniture,int currRoom, int endRoom)
+        /// <summary>
+        /// Finds possible directions to door
+        /// </summary>
+        /// <param name="furniture"></param>
+        /// <param name="currRoom"></param>
+        /// <param name="endRoom"></param>
+        /// <returns></returns>
+        private List<Direction> FindPossibleDirectionsToDoor(Furniture furniture, int currRoom, int endRoom)
         {
             var result = new List<Direction>();
             Rectangle rect = furniture.Description;
-            int rectXL= rect.X;
+            int rectXL = rect.X;
             int rectYH = rect.Y;
-            int rectXH = rect.X + rect.Width-1;
-            int rectYL = rect.Y + rect.Height-1;
+            int rectXH = rect.X + rect.Width - 1;
+            int rectYL = rect.Y + rect.Height - 1;
 
             // 1->2 or 1->3
             if (currRoom == 1)
@@ -1183,22 +1267,21 @@ namespace Heuristics
                         result.Add(Direction.Up);
                         return result;
                     }
-                    // the furniture is above the door
+                        // the furniture is above the door
                     else if (rectYH <= 1)
                     {
                         result.Add(Direction.Right);
                         result.Add(Direction.Down);
                         return result;
                     }
-                    // the furnite is right in front of the door
+                        // the furnite is right in front of the door
                     else
                     {
                         result.Add(Direction.Right);
                         return result;
                     }
-
                 }
-                // end room = 3
+                    // end room = 3
                 else
                 {
                     // the furniture is above the door
@@ -1215,14 +1298,14 @@ namespace Heuristics
                         result.Add(Direction.Down);
                         return result;
                     }
-                    // the furniture is below the door
+                        // the furniture is below the door
                     else if (rectYL >= 11)
                     {
                         result.Add(Direction.Right);
                         result.Add(Direction.Up);
                         return result;
                     }
-                    // the furnite is right in front of the door
+                        // the furnite is right in front of the door
                     else
                     {
                         result.Add(Direction.Right);
@@ -1240,21 +1323,21 @@ namespace Heuristics
                     result.Add(Direction.Left);
                     return result;
                 }
-                // the furniture is below the door
+                    // the furniture is below the door
                 else if (rectYL >= 4)
                 {
                     result.Add(Direction.Up);
                     result.Add(Direction.Left);
                     return result;
                 }
-                // the furnite is right in front of the door
+                    // the furnite is right in front of the door
                 else
                 {
                     result.Add(Direction.Left);
                     return result;
                 }
             }
-            // 3->1 or 3->2
+                // 3->1 or 3->2
             else
             {
                 // the furniture is above the door
@@ -1264,14 +1347,14 @@ namespace Heuristics
                     result.Add(Direction.Left);
                     return result;
                 }
-                // the furniture is below the door
+                    // the furniture is below the door
                 else if (rectYL >= 11)
                 {
                     result.Add(Direction.Up);
                     result.Add(Direction.Left);
                     return result;
                 }
-                // the furnite is right in front of the door
+                    // the furnite is right in front of the door
                 else
                 {
                     result.Add(Direction.Left);
@@ -1326,10 +1409,18 @@ namespace Heuristics
             return result;
         }
 
+        /// <summary>
+        /// Checks if both rectangles are in the same orientation
+        /// </summary>
+        /// <param name="furCurrPos"></param>
+        /// <param name="furDest"></param>
+        /// <returns></returns>
         private bool IsSameOrientaion(Rectangle furCurrPos, Rectangle furDest)
         {
             if (furCurrPos.Height == furDest.Height && furCurrPos.Width == furDest.Width)
+            {
                 return true;
+            }
             return false;
         }
 
@@ -1337,12 +1428,13 @@ namespace Heuristics
         /// calculates a map that count for each valid move the # of interrupts it creates
         /// </summary>
         /// <param name="board"></param>
-        /// <param name="problematicFur"></param>
+        /// <param name="furniture"></param>
+        /// <param name="predicateToSatisfy"></param>
         /// <returns>return the move with the minimum interrupts</returns>
         /// if there is no move that doesn't create interrupts we can implement a sort that between all operation preffer the move in dir.
         private Operation FindOptimalOperation(Board board, Furniture furniture, Predicate predicateToSatisfy)
         {
-            var opWhichSatisfiesPredMinInter =new Dictionary<int, List<Operation>>();
+            var opWhichSatisfiesPredMinInter = new Dictionary<int, List<Operation>>();
             var optimalOperation = new Dictionary<int, List<Operation>>();
 
             var listDirections = SortDirectionsByDistance(furniture,
@@ -1362,13 +1454,15 @@ namespace Heuristics
             //rotating           
             foreach (var rotationDirection in listRDirections)
             {
-                FindOptimalRotaion(new Rotate(furniture), rotationDirection, optimalOperation, board, opWhichSatisfiesPredMinInter, predicateToSatisfy);
-            }          
+                FindOptimalRotaion(new Rotate(furniture), rotationDirection, optimalOperation, board,
+                                   opWhichSatisfiesPredMinInter, predicateToSatisfy);
+            }
             //moving 
             foreach (var dir in listDirections)
             {
-                FindOptimalMove(new Move(furniture), dir, optimalOperation, board, opWhichSatisfiesPredMinInter, predicateToSatisfy);
-            }                   
+                FindOptimalMove(new Move(furniture), dir, optimalOperation, board, opWhichSatisfiesPredMinInter,
+                                predicateToSatisfy);
+            }
             if (opWhichSatisfiesPredMinInter.Count > 0)
             {
                 var opWhichSatisfiesPredMinInterSorted = opWhichSatisfiesPredMinInter.OrderBy(i => i.Key);
@@ -1378,26 +1472,37 @@ namespace Heuristics
             return optimalOperationSorted.First().Value.First();
         }
 
-        private void FindOptimalMove(Move move, Direction direction, Dictionary<int, List<Operation>> optimalOperation, Board board, Dictionary<int, List<Operation>> opWhichSatisfiesPredMinInter, Predicate predicateToSatisfy)
+        /// <summary>
+        /// Finds the optimal move to perform
+        /// </summary>
+        /// <param name="move"></param>
+        /// <param name="direction"></param>
+        /// <param name="optimalOperation"></param>
+        /// <param name="board"></param>
+        /// <param name="opWhichSatisfiesPredMinInter"></param>
+        /// <param name="predicateToSatisfy"></param>
+        private void FindOptimalMove(Move move, Direction direction, Dictionary<int, List<Operation>> optimalOperation,
+                                     Board board, Dictionary<int, List<Operation>> opWhichSatisfiesPredMinInter,
+                                     Predicate predicateToSatisfy)
         {
-            var tempList = new List<Operation>();            
+            var tempList = new List<Operation>();
             move.Direction = direction;
             move.HowManyStepsInDirection = 1;
             Rectangle rectToBeClean = move.CalculateRectDiff();
             if (!board.InBounds(move.CalculateNewdestRectangle()) || !board.IsNotWall(rectToBeClean)) return;
-            var numberOfFurInRect = board.FindFurnitureInRect(rectToBeClean).Count;            
+            var numberOfFurInRect = board.FindFurnitureInRect(rectToBeClean).Count;
             var newDestRect = move.CalculateNewdestRectangle();
-            Operation op = (Operation)move;
+            Operation op = (Operation) move;
             if (PredIsSatisfied(newDestRect, predicateToSatisfy))
             {
-                var tempList1= new List<Operation>();
+                var tempList1 = new List<Operation>();
                 if (opWhichSatisfiesPredMinInter.ContainsKey(numberOfFurInRect))
                 {
                     opWhichSatisfiesPredMinInter[numberOfFurInRect].Add(op);
                     return;
                 }
                 tempList1.Add(op);
-                opWhichSatisfiesPredMinInter[numberOfFurInRect] = tempList1;                              
+                opWhichSatisfiesPredMinInter[numberOfFurInRect] = tempList1;
                 return;
             }
             //else                                   
@@ -1410,30 +1515,48 @@ namespace Heuristics
             optimalOperation[numberOfFurInRect] = tempList;
         }
 
+        /// <summary>
+        /// Check if perdicate is satisfied
+        /// </summary>
+        /// <param name="newDestRect"></param>
+        /// <param name="predicateToSatisfy"></param>
+        /// <returns></returns>
         private bool PredIsSatisfied(Rectangle newDestRect, Predicate predicateToSatisfy)
         {
             if (predicateToSatisfy is PLocation)
             {
                 var rect = (predicateToSatisfy as PLocation).rect;
-                return newDestRect == rect ? true: false;
+                return newDestRect == rect ? true : false;
             }
             var pClean = predicateToSatisfy as PClean;
             if (pClean != null)
             {
                 var rect1 = pClean.CleanRect;
-                return newDestRect == rect1 ? true: false;
+                return newDestRect == rect1 ? true : false;
             }
             return false;
         }
 
-        private void FindOptimalRotaion(Rotate rotate, RotationDirection RD, Dictionary<int, List<Operation>> optimalOperation, Board board, Dictionary<int, List<Operation>> opWhichSatisfiesPredMinInter, Predicate predicateToSatisfy)
+        /// <summary>
+        /// Finds which rotation is the optimal to perform in current situation
+        /// </summary>
+        /// <param name="rotate"></param>
+        /// <param name="RD"></param>
+        /// <param name="optimalOperation"></param>
+        /// <param name="board"></param>
+        /// <param name="opWhichSatisfiesPredMinInter"></param>
+        /// <param name="predicateToSatisfy"></param>
+        private void FindOptimalRotaion(Rotate rotate, RotationDirection RD,
+                                        Dictionary<int, List<Operation>> optimalOperation, Board board,
+                                        Dictionary<int, List<Operation>> opWhichSatisfiesPredMinInter,
+                                        Predicate predicateToSatisfy)
         {
             var tempList = new List<Operation>();
             rotate.RotationDirection = RD;
             Rectangle rectToBeClean = rotate.CalculateRectToBeCleanByDirection();
             if (!board.InBounds(rectToBeClean) || !board.IsNotWall(rectToBeClean)) return;
-            var numberOfFurInRect = board.FindFurnitureInRect(rectToBeClean).Count;         
-            Operation op = (Operation)rotate;
+            var numberOfFurInRect = board.FindFurnitureInRect(rectToBeClean).Count;
+            Operation op = (Operation) rotate;
             var newDestRect = rotate.NewDestRect();
             if (PredIsSatisfied(newDestRect, predicateToSatisfy))
             {
@@ -1454,7 +1577,7 @@ namespace Heuristics
                 return;
             }
             tempList.Add(op);
-            optimalOperation[numberOfFurInRect] = tempList;                                             
+            optimalOperation[numberOfFurInRect] = tempList;
         }
 
         private bool CanMoveInDir(Furniture furniture, Direction direction, Board board)
@@ -1464,15 +1587,21 @@ namespace Heuristics
             move.HowManyStepsInDirection = 1;
             Rectangle diffRect = move.CalculateRectDiff();
             if (board.InBounds(diffRect))
-            {                
+            {
                 if (board.IsEmpty(diffRect))
-                    {   
-                        return true;
-                    }                
+                {
+                    return true;
+                }
             }
             return false;
         }
-      
+
+        /// <summary>
+        /// Finds possible direction to move in
+        /// </summary>
+        /// <param name="furniture"></param>
+        /// <param name="board"></param>
+        /// <returns></returns>
         private List<Direction> FindPossibleDirections(Furniture furniture, Board board)
         {
             var directions = new List<Direction>();
@@ -1487,13 +1616,13 @@ namespace Heuristics
                              Board.Instance.FindRoomPerRect(dest) == 1) &&
                             (furniture.Description.X + furniture.Description.Width - 1 >= 11);
 
-            if((destY-currPosY) > 0)
+            if ((destY - currPosY) > 0)
                 directions.Add(Direction.Down);
-            if ((destY-currPosY) < 0)
+            if ((destY - currPosY) < 0)
                 directions.Add(Direction.Up);
             if ((destX - currPosX) > 0)
                 directions.Add(Direction.Right);
-            if((destX-currPosX)< 0)
+            if ((destX - currPosX) < 0)
                 directions.Add(Direction.Left);
 
             //support cases in which curr room & end room are 1, and block is in the passage
@@ -1504,6 +1633,12 @@ namespace Heuristics
             return directions;
         }
 
+        /// <summary>
+        /// Finds which furniture intefere others
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public List<Furniture> InterruptingFurniture(Board board, Predicate predicate)
         {
             var result = new List<Furniture>();
@@ -1518,15 +1653,21 @@ namespace Heuristics
             return result;
         }
 
-        public static  List<Rectangle> CalculatePathByRect(Rectangle startRect, Rectangle endRect)
+        /// <summary>
+        /// calculate the path by rectangle
+        /// </summary>
+        /// <param name="startRect"></param>
+        /// <param name="endRect"></param>
+        /// <returns></returns>
+        public static List<Rectangle> CalculatePathByRect(Rectangle startRect, Rectangle endRect)
         {
             List<Rectangle> path = new List<Rectangle>();
-           var startRoom= Board.Instance.FindRoomPerRect(startRect);
-           var endRoom = Board.Instance.FindRoomPerRect(endRect);
-           //moving from room 2 to room 3 or vice a versa
-            if (startRoom != 1 && endRoom!=1)
-           {
-               // moving to the door
+            var startRoom = Board.Instance.FindRoomPerRect(startRect);
+            var endRoom = Board.Instance.FindRoomPerRect(endRect);
+            //moving from room 2 to room 3 or vice a versa
+            if (startRoom != 1 && endRoom != 1)
+            {
+                // moving to the door
                 var doorRect = Group.GetRoomDoor(startRoom);
                 int width = startRect.Width;
                 int height = startRect.Height;
@@ -1535,34 +1676,34 @@ namespace Heuristics
                     width = startRect.Height;
                     height = startRect.Width;
                 }
-                path.AddRange(Group.FindPathBetweenPoints(startRect, doorRect,width,height));   
-                   
-                //move rect width time left
-               for (int i = 1; i <= startRect.Width; i++)
-               {
-                   path.Add(new Rectangle(doorRect.X - i, doorRect.Y, width, height));
-               }
+                path.AddRange(Group.FindPathBetweenPoints(startRect, doorRect, width, height));
 
-               Rectangle currLoc = path.Last();
-               var secDoorRect = Group.GetRoomDoor(startRoom);
-               if (height > secDoorRect.Height)
-               {
-                   int temp = width;
-                   width = height;
-                   height = temp;
-               }
-               path.AddRange(Group.FindPathBetweenPoints(currLoc, secDoorRect, width,height));
-               path.AddRange(Group.FindPathBetweenPoints(secDoorRect, endRect, endRect.Width, endRect.Height));    
-           }
+                //move rect width time left
+                for (int i = 1; i <= startRect.Width; i++)
+                {
+                    path.Add(new Rectangle(doorRect.X - i, doorRect.Y, width, height));
+                }
+
+                Rectangle currLoc = path.Last();
+                var secDoorRect = Group.GetRoomDoor(startRoom);
+                if (height > secDoorRect.Height)
+                {
+                    int temp = width;
+                    width = height;
+                    height = temp;
+                }
+                path.AddRange(Group.FindPathBetweenPoints(currLoc, secDoorRect, width, height));
+                path.AddRange(Group.FindPathBetweenPoints(secDoorRect, endRect, endRect.Width, endRect.Height));
+            }
             else
             {
                 // furniture on the middle of the door
                 if (!(((endRoom == 2) && (startRoom == 1) && (startRect.Y >= 2) && (startRect.Y <= 3)) ||
-                        ((endRoom == 3) && (startRoom == 1) && (startRect.Y >= 7) && (startRect.Y <= 10))))
+                      ((endRoom == 3) && (startRoom == 1) && (startRect.Y >= 7) && (startRect.Y <= 10))))
                 {
                     int width = Math.Max(startRect.Width, startRect.Height);
                     int height = Math.Min(startRect.Width, startRect.Height);
-                    Rectangle currLoc = new Rectangle(startRect.X, startRect.Y, width,height);
+                    Rectangle currLoc = new Rectangle(startRect.X, startRect.Y, width, height);
                     while (currLoc.X + startRect.Width >= 11)
                     {
                         path.Add(currLoc);
@@ -1571,11 +1712,9 @@ namespace Heuristics
                     startRect = new Rectangle(currLoc.X + 1, currLoc.Y, width, height);
                 }
 
-                path.AddRange(Group.FindPathBetweenPoints(startRect, endRect, endRect.Width, endRect.Height)); 
-
+                path.AddRange(Group.FindPathBetweenPoints(startRect, endRect, endRect.Width, endRect.Height));
             }
             return path;
         }
-
     }
 }

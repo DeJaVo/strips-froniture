@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using BoardDataModel;
 
@@ -55,11 +54,6 @@ namespace Heuristics
         /// </summary>
         public RotationDirection RotationDirection { get; set; }
 
-        /// <summary>
-        /// Angle
-        /// </summary>
-        public int Angle { get; set; }
-
         public override string ToString()
         {
             return "Rotate Furniture " + this.Furniture.ID + " " + this.RotationDirection.ToString();
@@ -92,8 +86,6 @@ namespace Heuristics
         /// <summary>
         ///  Check rotation rectangles for bounds and empty.
         /// </summary>
-        /// <param name="temp1"></param>
-        /// <param name="temp2"></param>
         /// <returns></returns>
         public Rectangle CalculateRectToBeCleanByDirection()
         {
@@ -143,7 +135,7 @@ namespace Heuristics
                 new Rectangle(furniture.Description.X,
                               furniture.Description.Y,
                               furniture.Description.Width,
-                              furniture.Description.Height);                      
+                              furniture.Description.Height);
             if (IsValidRotate())
             {
                 Rectangle rect1 = NewDestRect();
@@ -158,7 +150,6 @@ namespace Heuristics
                 board.AllocateOnBoard(furniture);
                 this.FurnitureNewData = rect1;
             }
-
         }
 
         /// <summary>
@@ -198,6 +189,10 @@ namespace Heuristics
             return result;
         }
 
+        /// <summary>
+        /// Returns the new destination rectangle
+        /// </summary>
+        /// <returns></returns>
         public Rectangle NewDestRect()
         {
             if (furniture.Description.Width == furniture.Description.Height)

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using BoardDataModel;
 
 namespace Heuristics
@@ -12,6 +7,6 @@ namespace Heuristics
     {
         IList<StackItem> OrderPredicates(IList<StackItem> predicates);
 
-        Operation ChooseOperation(Board board,Predicate predicateToSatisfy);
+        Operation ChooseOperation(Board board, Predicate predicateToSatisfy);
     }
 }

@@ -7,7 +7,8 @@ namespace BoardDataModel
     public class Board
     {
         private static Board instance;
-        public enum CellType 
+
+        public enum CellType
         {
             Empty,
             Allocated,
@@ -22,8 +23,8 @@ namespace BoardDataModel
         /// <summary>
         /// List of furnitures
         /// </summary>
-        public IDictionary<Furniture, Rectangle> furnitureDestination;        
-        
+        public IDictionary<Furniture, Rectangle> furnitureDestination;
+
         /// <summary>
         /// Board constructor
         /// </summary>
@@ -42,7 +43,7 @@ namespace BoardDataModel
 
         public void Reset()
         {
-            Rooms = new CellType[13, 22];
+            Rooms = new CellType[13,22];
             //Rooms = new CellType[10, 20];
 
             for (int i = 0; i < 13; i++)
@@ -75,7 +76,7 @@ namespace BoardDataModel
             {
                 if (((i >= 2) && (i <= 3)) || ((i >= 7) && (i <= 10)))
                 {
-                    Rooms[i, 11] = CellType.Empty;// Door;
+                    Rooms[i, 11] = CellType.Empty; // Door;
                 }
             }
 
@@ -92,12 +93,14 @@ namespace BoardDataModel
         /// <returns>if given params are valid ->creates new furnitre at start position and returns id of the furniture, else -> -1</returns>
         public int CreateFurniture(Rectangle furStart, Rectangle furDest)
         {
-            if (Instance.InBounds(furStart) && Instance.InBounds(furDest) && Instance.IsEmpty(furStart) && Instance.IsNotWall(furDest) && IsDestNotOverlapps(furDest) && Instance.IsDestFurValid(furStart, furDest) && Instance.WillPassDoor(furStart, furDest))
+            if (Instance.InBounds(furStart) && Instance.InBounds(furDest) && Instance.IsEmpty(furStart) &&
+                Instance.IsNotWall(furDest) && IsDestNotOverlapps(furDest) && Instance.IsDestFurValid(furStart, furDest) &&
+                Instance.WillPassDoor(furStart, furDest))
             {
                 //create new furniture
-                var newFurniture = new Furniture(furStart, furnitureDestination.Count+1);
+                var newFurniture = new Furniture(furStart, furnitureDestination.Count + 1);
                 //add furniture and its end position to the boards' map
-                furnitureDestination.Add(newFurniture,furDest);
+                furnitureDestination.Add(newFurniture, furDest);
                 // change the relevant cell type on the board to allocated
                 AllocateOnBoard(newFurniture);
                 return newFurniture.ID;
@@ -151,7 +154,7 @@ namespace BoardDataModel
 
             //int furDestRight = furDest.X + furDest.Width;
             //int furDestBottom = furDest.Y + furDest.Height;
-            
+
             // pass room1 to room 2 or vise versa
             if (((furStart.X <= 11) && (furDest.X > 11) && (furDest.Y < 5)) ||
                 ((furDest.X <= 11) && (furStart.X > 11) && (furStart.Y < 5)))
@@ -164,7 +167,7 @@ namespace BoardDataModel
             {
                 needToPassLowerDoor = true;
             }
-            // pass room 2 to room 3 or vise versa
+                // pass room 2 to room 3 or vise versa
             else if ((furStart.X > 11) && (furDest.X > 11) &&
                      (((furStart.Y < 5) && (furDest.Y > 5)) ||
                       ((furDest.Y < 5) && (furStart.Y > 5))))
@@ -193,7 +196,7 @@ namespace BoardDataModel
         /// </summary>
         /// <param name="furniture"></param>
         public void AllocateOnBoard(Furniture furniture)
-        {            
+        {
             var rect = furniture.Description;
             int xl = rect.X;
             int yl = rect.Y;
@@ -204,9 +207,9 @@ namespace BoardDataModel
             {
                 for (int j = xl; j < xh; j++)
                 {
-                    instance.Rooms[i,j] = CellType.Allocated;
+                    instance.Rooms[i, j] = CellType.Allocated;
                 }
-            }   
+            }
         }
 
         /// <summary>
@@ -241,8 +244,10 @@ namespace BoardDataModel
                 Rectangle furDestDescription = furnitureDestination[currFur];
                 if ((currFur.Description.X != furDestDescription.X) ||
                     (currFur.Description.Y != furDestDescription.Y) ||
-                    (((currFur.Description.Width != furDestDescription.Width) || (currFur.Description.Height != furDestDescription.Height)) &&
-                     ((currFur.Description.Height == furDestDescription.Width) || (currFur.Description.Width != furDestDescription.Height))))
+                    (((currFur.Description.Width != furDestDescription.Width) ||
+                      (currFur.Description.Height != furDestDescription.Height)) &&
+                     ((currFur.Description.Height == furDestDescription.Width) ||
+                      (currFur.Description.Width != furDestDescription.Height))))
                 {
                     return false;
                 }
@@ -263,7 +268,7 @@ namespace BoardDataModel
             {
                 for (int y = rectangle.Y; y < rectangle.Y + height; y++)
                 {
-                    if (Rooms[ y,x] != CellType.Empty)
+                    if (Rooms[y, x] != CellType.Empty)
                     {
                         return false;
                     }
@@ -294,7 +299,6 @@ namespace BoardDataModel
             }
             furniture = null;
             return true;
-
         }
 
         public bool IsNotWall(Rectangle rectangle)
@@ -312,10 +316,7 @@ namespace BoardDataModel
                 }
             }
             return true;
-
-
         }
-
 
 
         /// <summary>
@@ -328,7 +329,7 @@ namespace BoardDataModel
             var result = new List<Furniture>();
             foreach (Furniture furniture in furnitureDestination.Keys)
             {
-                if(rect.IntersectsWith(furniture.Description))
+                if (rect.IntersectsWith(furniture.Description))
                     result.Add(furniture);
             }
             return result;
@@ -341,7 +342,7 @@ namespace BoardDataModel
         /// <param name="furId"></param>
         /// <param name="rectangle"></param>
         /// <returns></returns>
-        public bool IsFurnitureInRectangle(int furId,Rectangle rectangle)
+        public bool IsFurnitureInRectangle(int furId, Rectangle rectangle)
         {
             foreach (Furniture currFur in furnitureDestination.Keys)
             {
@@ -372,12 +373,13 @@ namespace BoardDataModel
         {
             int deltaX = (rectDest.X - rectSrc.X);
             int deltaY = (rectDest.Y - rectSrc.Y);
-            double distance = Math.Sqrt(Math.Pow(deltaX,2) + Math.Pow(deltaY,2));
+            double distance = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
             return distance;
         }
 
         public int FindRoomPerRect(Rectangle rectangle)
-        {   //room1
+        {
+            //room1
             if (rectangle.X < 11)
                 return 1;
             //room2

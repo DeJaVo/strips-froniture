@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BoardDataModel;
 using System.Drawing;
-
 using Heuristics;
 
 namespace BusinessLogic
@@ -11,23 +9,19 @@ namespace BusinessLogic
     public class Strips
     {
         //public IList<Operation> operationList= new List<Operation>();
-        private Stack<IList<StackItem>> stack = new Stack<IList<StackItem>>();
-        private Board board;
-        private IHeuristic heuristics;
+        private readonly Stack<IList<StackItem>> stack = new Stack<IList<StackItem>>();
+        private readonly Board board;
+        private readonly IHeuristic heuristics;
 
         //maybe hold a list with all final operations- usefull for get next operation. 
         public Strips(Board board)
         {
             this.board = board;
 
-            var goalState = FindGoalStatePredicates(board);
+            var goalState = FindGoalStatePredicates();
             stack.Push(goalState);
 
             heuristics = new Heuristic();
-            //while (stack.Count>0)
-            //{
-            //    StripsStep(stack, board);
-            //}                     
         }
 
         /// <summary>
@@ -35,16 +29,14 @@ namespace BusinessLogic
         /// returns the executed operation.
         /// if there was no Operation in the current step returns null
         /// </summary>
-        /// <param name="stack"></param>
-        /// <param name="board"></param>
         private Operation StripsStep()
-        {          
+        {
             var item = stack.Peek();
             bool satisfied = false;
             bool allArePredicateKind = CheckAllArePredicate(item);
-            if(allArePredicateKind)
+            if (allArePredicateKind)
                 satisfied = GoalsAreSatisfied(item);
-            
+
             //case 1- goals is satisfied- pop and return
             if (allArePredicateKind && satisfied)
             {
@@ -70,39 +62,38 @@ namespace BusinessLogic
             // case 3- goal is a single unsatisfied goal- choose an operation push it and all its pre condtiotions
             if (allArePredicateKind && item.Count == 1 && !satisfied)
             {
-                Operation operation = heuristics.ChooseOperation(board, (Predicate)item[0]);
-                stack.Push(new List<StackItem>{operation});
+                Operation operation = heuristics.ChooseOperation(board, (Predicate) item[0]);
+                stack.Push(new List<StackItem> {operation});
 
                 // push it's pre condition into stack - need to implement a function that calculates precondition per move
                 if (operation is Move)
                 {
-                    Rectangle rectToBeClean = ((Move)operation).CalculateRectDiff();                    
+                    Rectangle rectToBeClean = ((Move) operation).CalculateRectDiff();
                     var clean = new PClean(rectToBeClean);
-                    clean.Forbbiden= operation.ForbbidenDirections();
-                    stack.Push(new List<StackItem>{clean});
-                    
+                    clean.Forbbiden = operation.ForbbidenDirections();
+                    stack.Push(new List<StackItem> {clean});
                 }
-                // Rotate
+                    // Rotate
                 else
                 {
-                    Rectangle rect =((Rotate)operation).CalculateRectToBeCleanByDirection();
+                    Rectangle rect = ((Rotate) operation).CalculateRectToBeCleanByDirection();
                     var clean = new PClean(rect);
-                    clean.Forbbiden= operation.ForbbidenDirections();
-                    stack.Push(new List<StackItem> { clean });
+                    clean.Forbbiden = operation.ForbbidenDirections();
+                    stack.Push(new List<StackItem> {clean});
                 }
                 return null;
             }
             //case 4- item is an operation- pop it, execute it and add to operation list
-            if (item.Count==1 && item.First() is Operation)
+            if (item.Count == 1 && item.First() is Operation)
             {
                 var operation = stack.Pop().First();
 
-                ((Operation)operation).Execute();
-                return (Operation)operation;
+                ((Operation) operation).Execute();
+                return (Operation) operation;
             }
 
             return null;
-        }      
+        }
 
         /// <summary>
         /// returns the next move to execute
@@ -121,6 +112,7 @@ namespace BusinessLogic
         }
 
         private bool pause = false;
+
         public void Pause()
         {
             pause = true;
@@ -139,13 +131,12 @@ namespace BusinessLogic
         /// <summary>
         /// checks if all goals are satisfied - yes return true, else return false
         /// </summary>
-        /// <param name="item"></param>
         /// <returns></returns>
         private bool GoalsAreSatisfied(IList<StackItem> predicatesToSatisfy)
         {
             foreach (StackItem currItem in predicatesToSatisfy)
             {
-                Predicate currPredicateToSatisfy = (Predicate)currItem;
+                Predicate currPredicateToSatisfy = (Predicate) currItem;
                 if (currPredicateToSatisfy is PClean)
                 {
                     if (!this.CheckClean(currPredicateToSatisfy as PClean))
@@ -165,22 +156,31 @@ namespace BusinessLogic
             return true;
         }
 
+        /// <summary>
+        /// Checks if predicate rectangle is clean
+        /// </summary>
+        /// <param name="cleanPredicate"></param>
+        /// <returns></returns>
         private bool CheckClean(PClean cleanPredicate)
         {
             return this.board.IsEmpty(cleanPredicate.CleanRect);
         }
 
+        /// <summary>
+        /// Checks if predicate rectangle is in location rectangle
+        /// </summary>
+        /// <param name="locationPredicate"></param>
+        /// <returns></returns>
         private bool CheckLocation(PLocation locationPredicate)
         {
             return this.board.IsFurnitureInRectangle(locationPredicate.furniture.ID, locationPredicate.rect);
         }
-        
+
         /// <summary>
         /// finds all predicates that describe the goal positions
         /// </summary>
-        /// <param name="board"></param>
         /// <returns>return a list of predicates</returns>
-        public IList<StackItem> FindGoalStatePredicates(Board board)
+        public IList<StackItem> FindGoalStatePredicates()
         {
             IList<StackItem> predicates = new List<StackItem>();
             foreach (KeyValuePair<Furniture, Rectangle> pair in board.furnitureDestination)
@@ -191,9 +191,4 @@ namespace BusinessLogic
             return predicates;
         }
     }
-
-
-
-
-    }
-
+}
